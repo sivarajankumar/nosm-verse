@@ -1,0 +1,2030 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <title>Asset Detail</title>
+    
+    <script type="text/javascript" src="jquery-1.3.2.js"></script>
+
+    <script type="text/javascript" src="jquery.field.js"></script>
+
+
+    <script type="text/javascript" src="readXMLEdit.js"></script>
+    <script type="text/javascript" src="jgcharts/namespace.js"></script>
+    <script src="jgcharts/Utils.txt" type="text/javascript"></script>
+
+    <script type="text/javascript" src="http://maps.google.com/maps?file=api&amp;v=2&amp;sensor=false&amp;key=ABQIAAAAwz5ST2VlEF9GI_ehSurO-xR-jg49YJ_zgRquJ1rr3fz7TwNTlBRxpHi7TNi0Jp4oPpYd2EXgniWvjg"></script>
+    <!--
+    // will work on our server??
+    <script src="http://maps.google.com/maps?file=api&v=2&key=ABQIAAAAKtBwpoUmQp880AOn2bPHchQ1drgaxzUFtAJfmampr5QfiaN69xRL0AQ4Z06eJuoei2G6roE3X9VNIw"
+        type="text/javascript"></script-->
+    <script src="http://slurl.com/_scripts/slmapapi.js" type="text/javascript"></script>
+    <link rel="stylesheet" type="text/css" href="http://slurl.com/_styles/MAIN.css" />
+
+   <script type="text/javascript" src="googlemaps.js"></script>
+
+    <script src="jgcharts/chartmaker.js" type="text/javascript"></script>
+    
+    
+<script type="text/javascript">
+var mapInstance;
+function loadmap() {
+  // creates the map
+  mapInstance = new SLMap(document.getElementById('map-container'), 
+                          {hasZoomControls: false, hasPanningControls: false});
+  mapInstance.centerAndZoomAtSLCoord(new XYPoint(997, 1002), 2);
+  
+  (document.getElementById('zoom_level')).innerHTML = mapInstance.getCurrentZoomLevel();
+}
+
+function setZoom(level) {
+  mapInstance.setCurrentZoomLevel(level);
+  (document.getElementById('zoom_level')).innerHTML = mapInstance.getCurrentZoomLevel();
+}
+
+function zoomIn() {
+  mapInstance.zoomIn();
+  (document.getElementById('zoom_level')).innerHTML = mapInstance.getCurrentZoomLevel();
+}
+
+function zoomOut() {
+  mapInstance.zoomOut();
+  (document.getElementById('zoom_level')).innerHTML = mapInstance.getCurrentZoomLevel();
+}
+var regionName = 'nossum';
+
+var xmlhttp;
+
+function loadXMLDoc(url)
+{
+xmlhttp=GetXmlHttpObject();
+if (xmlhttp==null)
+  {
+  alert ("Your browser does not support XMLHTTP!");
+  return;
+  }
+xmlhttp.onreadystatechange=stateChanged;
+xmlhttp.open("GET",url,true);
+xmlhttp.send(null);
+}
+
+function GetXmlHttpObject()
+{
+if (window.XMLHttpRequest)
+  {
+  // code for IE7+, Firefox, Chrome, Opera, Safari
+  return new XMLHttpRequest();
+  }
+if (window.ActiveXObject)
+  {
+  // code for IE6, IE5
+  return new ActiveXObject("Microsoft.XMLHTTP");
+  }
+return null;
+}
+
+function stateChanged()
+{
+if (xmlhttp.readyState==4)
+  {
+  if (xmlhttp.status==200)
+    {
+    alert(xmlhttp.responseXML);
+    }
+  else
+    {
+    alert("Problem retrieving XML data:" + xmlhttp.statusText);
+    }
+  }
+}
+
+
+function SLPoint(params, callback)
+{
+	var s = params[0].innerHTML.split("/"); //first element of params must be this format: region/x/y/z
+	var regionName = s[0];
+	var localX = s[1];
+	var localY = s[2];
+	var varName = "slRegionPos_result";
+	var scriptURL = "https://cap.secondlife.com/cap/0/d661249b-2b5a-4436-966a-3d3b8d7a574f?var=" + varName + "&sim_name=" + encodeURIComponent(regionName);
+	var onLoadHandler = function () 
+	{
+		if (slRegionPos_result.error)
+		{
+			//alert("The region name '" + regionName + "' was not recognised.");
+		}
+		else
+		{
+			callback(params, regionName, slRegionPos_result.x + (localX/slTileSize), slRegionPos_result.y + (localY/slTileSize));
+		}
+	};
+	slAddDynamicScript(scriptURL, onLoadHandler);
+}
+
+//loadXMLDoc('https://cap.secondlife.com/cap/0/d661249b-2b5a-4436-966a-3d3b8d7a574f?var=foo&sim_name="+regionName+"')
+
+var foo = {'x' : 1148, 'y' : 1164 };
+zoomInt = "1";
+"http://map.secondlife.com/map-"+zoomInt+"-"+foo[0]+"-"+foo[1]+"-objects.jpg"
+
+//global variables
+_mSvgEnabled = true;
+_mSvgForced = true;
+var map, projection;
+var diagrams=[];
+var svgNS = "http://www.w3.org/2000/svg";
+var initLat = 47;
+var initLng = 8.5;
+var prevViewBoxX, prevViewBoxY; // = 33915 for 47, 8.5 and 22751 for 47, 8.5;
+var prevZoom = 8;
+var top = 0;
+var left = 0;
+
+function load() {
+
+if (GBrowserIsCompatible()) {
+	
+	//load map
+	map = new GMap2(document.getElementById("map"), G_NORMAL_MAP);
+	
+	//add control and set map center
+	map.addControl(new GLargeMapControl());
+	map.setCenter(new GLatLng(initLat, initLng), prevZoom, G_NORMAL_MAP);
+	projection = map.getCurrentMapType().getProjection();
+	
+	prevViewBoxX = getSWBoundsInPixel().x;
+	prevViewBoxY = getNEBoundsInPixel().y;
+	
+	//create new div node for the svg root element
+	var svgDiv = document.createElement("div");
+	svgDiv.setAttribute("id","svgDivison");
+	map.getPane(G_MAP_MAP_PANE).appendChild(svgDiv);
+	
+	//create new svg root element and set attributes
+	var svgRoot = document.createElementNS(svgNS, "svg");
+	svgRoot.setAttribute("id", "customSvgRoot");
+	svgRoot.setAttribute("style", "position:absolute; top:0px; left:0px");
+	svgRoot.setAttribute("viewBox", "0 0 800 600");
+	svgRoot.setAttribute("width", "800");
+	svgRoot.setAttribute("height", "600");
+	svgDiv.appendChild(svgRoot);
+	
+	//read the svg file
+	readData(svgRoot);
+	
+	//add all event listener
+	//event listener which place the diagrams after zoom or move
+	GEvent.addListener(map, "moveend", function(){
+		removeSvgChildren(svgRoot);
+		for(var i=0; i < diagrams.length; i++){
+			replaceSvgNode(svgRoot, diagrams[i].cloneNode(true),
+			parseFloat(diagrams[i].getAttribute("lat")),
+			parseFloat(diagrams[i].getAttribute("lng")),
+			map.getZoom());
+		}
+		
+		var sw = getSWBoundsInPixel();
+		var ne = getNEBoundsInPixel();
+		
+		var zoom = map.getZoom();
+		if(zoom != prevZoom) prevZoom = zoom;
+		else {
+			left += (sw.x - prevViewBoxX);
+			top += (ne.y - prevViewBoxY);
+			svgRoot.setAttributeNS(null, "style", "position:absolute; top:" + top +
+				"px; left:" + left + "px");
+		}
+		prevViewBoxX = sw.x;
+		prevViewBoxY = ne.y;
+	});
+	
+	//event listeners which shows the coordinates
+	GEvent.addListener(map, "mousemove", function(latlng){
+		var latStr = "Lat: " + (Math.round(latlng.lat()*100)/100);
+		var lngStr = "Lng: " + (Math.round(latlng.lng()*100)/100);
+		document.getElementById("lat").firstChild.nodeValue = latStr;
+		document.getElementById("lng").firstChild.nodeValue = lngStr;
+	});
+	
+	GEvent.addListener(map, "mouseout", function(latlng){
+		document.getElementById("lat").firstChild.nodeValue = "";
+		document.getElementById("lng").firstChild.nodeValue = "";
+	});
+	
+}
+	
+// display a warning if the browser was not compatible
+else {
+	alert("Sorry, the Google Maps API is not compatible with this browser");
+}
+}
+
+function replaceSvgNode(svgNode, node, lat, lng, zoom){
+	var sw = getSWBoundsInPixel();
+	var ne = getNEBoundsInPixel();
+	
+	svgNode.setAttribute("viewBox", sw.x + " " + ne.y + " 800 600");
+	
+	var curr = projection.fromLatLngToPixel(new GLatLng(lat, lng), zoom);
+	
+	//var newScale = 0.0011 * Math.pow(2, zoom);
+	var newScale = 0.2;
+	var transformStr = "translate(" + curr.x + ", " + curr.y
+		+ ") scale(" + newScale + ")";
+	node.setAttribute("transform", transformStr);
+	
+	svgNode.appendChild(node);
+	
+	//add dom event listeners to the diagrams
+	//on click show info window
+	GEvent.addDomListener(node, "click", function(evt){
+		var htmlStr = "Stadt: " + node.getAttribute("id") + 
+			"<br/>L&auml;nge: " + node.getAttribute("lat") +
+			"<br/>Breite: " + node.getAttribute("lng");
+		map.openInfoWindowHtml(new GLatLng(node.getAttribute("lat"),
+			node.getAttribute("lng")), htmlStr);
+	});
+	//on mouse over show coordinates and higlight diagram
+	GEvent.addDomListener(node, "mouseover", function(evt){
+		var currentOpacity = parseFloat(node.getAttributeNS(null,
+			"fill-opacity"));
+		node.setAttributeNS(null, "fill-opacity", currentOpacity*2);
+		document.getElementById("text").firstChild.nodeValue =
+			node.getAttribute("id");
+	});
+	GEvent.addDomListener(node, "mouseout", function(evt){
+		var currentOpacity = parseFloat(node.getAttributeNS(null,
+			"fill-opacity"));
+		node.setAttributeNS(null, "fill-opacity", currentOpacity/2);
+		document.getElementById("text").firstChild.nodeValue = "";
+	});
+}
+
+function readData(svgNode){
+	GDownloadUrl("symbol.svg", function(data, responseCode) {
+		var xml = GXml.parse(data);
+		diagrams = xml.documentElement.getElementsByTagName("g");
+		for (var i = 0; i < diagrams.length; i++){
+			replaceSvgNode(svgNode, diagrams[i].cloneNode(true),
+			parseFloat(diagrams[i].getAttribute("lat")),
+			parseFloat(diagrams[i].getAttribute("lng")),
+			map.getZoom());
+		}
+	});
+}
+
+function getSWBoundsInPixel(){
+	var currentBounds = map.getBounds();
+	var sw = currentBounds.getSouthWest();
+	return projection.fromLatLngToPixel(new GLatLng(sw.lat(), sw.lng()), map.getZoom());
+}
+
+function getNEBoundsInPixel(){
+	var currentBounds = map.getBounds();
+	var ne = currentBounds.getNorthEast();
+	return projection.fromLatLngToPixel(new GLatLng(ne.lat(), ne.lng()), map.getZoom());
+}
+
+function removeSvgChildren(svgNode){
+	while(svgNode.lastChild != null){
+		svgNode.removeChild(svgNode.lastChild);
+	}
+}
+
+
+
+</script>  
+    <style type="text/css">
+        .colorPicker
+        {
+            width: 16px;
+            height: 16px;
+            border: 2px #cccccc inset;
+        }
+        .hidden
+        {
+            display: none;
+        }
+        .unhidden
+        {
+            display: block;
+        }
+    </style>
+</head>
+<body onload="loadmap()" onunload="GUnload()">
+    <form name="hidden dummy" action="/dummyaction">
+    <input type="hidden" name="assetTargetIN" />
+    <input type="hidden" name="assetValueIN" />
+    <input type="hidden" name="assetNameIN" />
+    <input type="hidden" name="assetTypeIN" />
+    <input type="hidden" name="assetTargetOUT" />
+    <input type="hidden" name="assetValueOUT" />
+    <input type="hidden" name="assetNameOUT" />
+    <input type="hidden" name="assetTypeOUT" />
+    <input type="hidden" name="currentUIpairs" />
+    </form>
+    <br />
+    <h1>
+        Asset Details</h1>
+    <br />
+    <form name="mainDummy" action="javascript:void(0);">
+   
+        Asset Name:
+        <input type="text" name="assetName" size="30" />
+        Asset Type:
+        <select name="selector" id="selector" onchange="selectorSwitch(this)">
+            <option value="slanimation">Animate the avatar(s)</option>
+            <option value="slbodypart">Give avatar(s) a body part</option>
+            <option value="slchat">Use a chat channel (talk to in-world objects)</option>
+            <option value="slhud">Give avatar(s) a HUD</option>
+            <option value="slim">Send an Instant Message (IM)</option>
+            <option value="slinnergame">Trigger an external game</option>
+            <option value="sllandmark">Give avatar(s) a landmark</option>
+            <option value="slmove">Move avatar(s)</option>
+            <option value="slnotecard">Give avatar(s) a notecard</option>
+            <option value="slobject">Give avatar(s) an object</option>
+            <option value="slpackage">Give avatar(s) a package (crate)</option>
+            <option value="slparticlesystem">Trigger a particle manifestation</option>
+            <option value="slpoint">Avatar(s) make pointing gesture</option>
+            <option value="slsound">Play a sound</option>
+            <option value="sltexture">Give avatar(s) a texture</option>
+            <option value="vpdimage">Show an external image on parcel viewer(s)</option>
+            <option value="vpdmedia">Show an external movie on parcel viewer(s)</option>
+            <option value="vpdtext">Show text on parcel viewer(s)</option>
+            <option value="slgoogleapiimage">Show a dynamic chart on parcel viewer(s)</option>
+            <option value="slgoogleapihtml">Show an address with Google Maps on parcel viewer(s)</option>
+            <option value="slamazonmapimage">Show a Second Life region on parcel viewer(s)</option>
+        </select>
+        <a href="javascript:void(0);" onclick='saveChanges()'>Save changes</a>
+        
+    <div id="type_slanimation" class="hidden">
+        <br />
+        <h2>
+            Animation options:</h2>
+        <br />
+        <p>
+            Use Canned SL Animations
+            <input type="radio" id="canned" value="canned" name="atc" onclick="showonlyone($('input[name= \'atc\' ] ').getValue(), 'animType');" />
+            or Use VERSE Custom Animations
+            <input type="radio" id="custom" value="custom" name="atc" onclick="showonlyone($('input[name= \'atc\' ] ').getValue(), 'animType');" /><br />
+        </p>
+        <div id="animType_canned" class="hidden">
+            Built-in Second Life Animations:
+            <select name="isla">
+                <option value="express_afraid">express_afraid</option>
+                <option value="aim_l_bow">aim_l_bow</option>
+                <option value="aim_r_bazooka">aim_r_bazooka</option>
+                <option value="aim_r_handgun">aim_r_handgun</option>
+                <option value="aim_r_rifle">aim_r_rifle</option>
+                <option value="angry_fingerwag">angry_fingerwag</option>
+                <option value="angry_tantrum">angry_tantrum</option>
+                <option value="away">away</option>
+                <option value="backflip">backflip</option>
+                <option value="blowkiss">blowkiss</option>
+                <option value="bow">bow</option>
+                <option value="brush">brush</option>
+                <option value="busy">busy</option>
+                <option value="clap">clap</option>
+                <option value="courtbow">courtbow</option>
+                <option value="crouch">crouch</option>
+                <option value="crouchwalk">crouchwalk</option>
+                <option value="dance1">dance1</option>
+                <option value="dance2">dance2</option>
+                <option value="dance3">dance3</option>
+                <option value="dance4">dance4</option>
+                <option value="dance5">dance5</option>
+                <option value="dance6">dance6</option>
+                <option value="dance7">dance7</option>
+                <option value="dance8">dance8</option>
+                <option value="dead">dead</option>
+                <option value="drink">drink</option>
+                <option value="express_afraid_emote">express_afraid_emote</option>
+                <option value="express_anger">express_anger</option>
+                <option value="express_anger_emote">express_anger_emote</option>
+                <option value="express_bored">express_bored</option>
+                <option value="express_bored_emote">express_bored_emote</option>
+                <option value="express_cry">express_cry</option>
+                <option value="express_cry_emote">express_cry_emote</option>
+                <option value="express_disdain">express_disdain</option>
+                <option value="express_embarrased">express_embarrased</option>
+                <option value="express_embarrassed_emote">express_embarrassed_emote</option>
+                <option value="express_frown">express_frown</option>
+                <option value="express_kiss">express_kiss</option>
+                <option value="express_laugh">express_laugh</option>
+                <option value="express_laugh_emote">express_laugh_emote</option>
+                <option value="express_open_mouth">express_open_mouth</option>
+                <option value="express_repulsed">express_repulsed</option>
+                <option value="express_repulsed_emote">express_repulsed_emote</option>
+                <option value="express_sad">express_sad</option>
+                <option value="express_sad_emote">express_sad_emote</option>
+                <option value="express_shrug">express_shrug</option>
+                <option value="express_shrug_emote">express_shrug_emote</option>
+                <option value="express_smile">express_smile</option>
+                <option value="express_surprise">express_surprise</option>
+                <option value="express_surprise_emote">express_surprise_emote</option>
+                <option value="express_tongue_out">express_tongue_out</option>
+                <option value="express_toothsmile">express_toothsmile</option>
+                <option value="express_wink">express_wink</option>
+                <option value="express_wink_emote">express_wink_emote</option>
+                <option value="express_worry">express_worry</option>
+                <option value="express_worry_emote">express_worry_emote</option>
+                <option value="falldown">falldown</option>
+                <option value="female_walk">female_walk</option>
+                <option value="fist_pump">fist_pump</option>
+                <option value="fly">fly</option>
+                <option value="flyslow">flyslow</option>
+                <option value="hello">hello</option>
+                <option value="hold_l_bow">hold_l_bow</option>
+                <option value="hold_r_bazooka">hold_r_bazooka</option>
+                <option value="hold_r_handgun">hold_r_handgun</option>
+                <option value="hold_r_rifle">hold_r_rifle</option>
+                <option value="hold_throw_r">hold_throw_r</option>
+                <option value="hover">hover</option>
+                <option value="hover_down">hover_down</option>
+                <option value="hover_up">hover_up</option>
+                <option value="impatient">impatient</option>
+                <option value="jump">jump</option>
+                <option value="jumpforjoy">jumpforjoy</option>
+                <option value="kick_roundhouse_r">kick_roundhouse_r</option>
+                <option value="kissmybutt">kissmybutt</option>
+                <option value="land">land</option>
+                <option value="laugh_short">laugh_short</option>
+                <option value="motorcycle_sit">motorcycle_sit</option>
+                <option value="musclebeach">musclebeach</option>
+                <option value="no_head">no_head</option>
+                <option value="no_unhappy">no_unhappy</option>
+                <option value="nyanya">nyanya</option>
+                <option value="peace">peace</option>
+                <option value="point_me">point_me</option>
+                <option value="point_you">point_you</option>
+                <option value="prejump">prejump</option>
+                <option value="punch_l">punch_l</option>
+                <option value="punch_onetwo">punch_onetwo</option>
+                <option value="punch_r">punch_r</option>
+                <option value="rps_countdown">rps_countdown</option>
+                <option value="rps_paper">rps_paper</option>
+                <option value="rps_rock">rps_rock</option>
+                <option value="rps_scissors">rps_scissors</option>
+                <option value="run">run</option>
+                <option value="salute">salute</option>
+                <option value="shoot_l_bow">shoot_l_bow</option>
+                <option value="shout">shout</option>
+                <option value="sit">sit</option>
+                <option value="sit_female">sit_female</option>
+                <option value="sit_generic">sit_generic</option>
+                <option value="sit_ground">sit_ground</option>
+                <option value="sit_ground_constrained">sit_ground_constrained</option>
+                <option value="sit_to_stand">sit_to_stand</option>
+                <option value="sleep">sleep</option>
+                <option value="smoke_idle">smoke_idle</option>
+                <option value="smoke_inhale">smoke_inhale</option>
+                <option value="smoke_throw_down">smoke_throw_down</option>
+                <option value="snapshot">snapshot</option>
+                <option value="soft_land">soft_land</option>
+                <option value="stand">stand</option>
+                <option value="stand_1">stand_1</option>
+                <option value="stand_2">stand_2</option>
+                <option value="stand_3">stand_3</option>
+                <option value="stand_4">stand_4</option>
+                <option value="standup">standup</option>
+                <option value="stretch">stretch</option>
+                <option value="stride">stride</option>
+                <option value="surf">surf</option>
+                <option value="sword_strike_r">sword_strike_r</option>
+                <option value="talk">talk</option>
+                <option value="throw_r">throw_r</option>
+                <option value="tryon_shirt">tryon_shirt</option>
+                <option value="turn_180">turn_180</option>
+                <option value="turnback_180">turnback_180</option>
+                <option value="turnleft">turnleft</option>
+                <option value="turnright">turnright</option>
+                <option value="type">type</option>
+                <option value="walk">walk</option>
+                <option value="whisper">whisper</option>
+                <option value="whistle">whistle</option>
+                <option value="wink_hollywood">wink_hollywood</option>
+                <option value="yes_happy">yes_happy</option>
+                <option value="yes_head">yes_head</option>
+                <option value="yoga_float">yoga_float</option>
+            </select></div>
+        <div id="animType_custom" class="hidden">
+            custom Animations:
+            <select name="csla">
+                <option value="Simon_Blood_pressure">Simon_Blood_pressure</option>
+                <option value="Simon_Chart">Simon_Chart</option>
+                <option value="Simon_Draw_blood">Simon_Draw_blood</option>
+                <option value="Simon_Ears">Simon_Ears</option>
+                <option value="Simon_Fingers">Simon_Fingers</option>
+                <option value="Simon_Glands_neck">Simon_Glands_neck</option>
+                <option value="Simon_IV_done">Simon_IV_done</option>
+                <option value="Simon_Mask_gloves">Simon_Mask_gloves</option>
+                <option value="Simon_Pupils">Simon_Pupils</option>
+                <option value="Simon_Reclined_abdomen">Simon_Reclined_abdomen</option>
+                <option value="Simon_Reclined_CPR">Simon_Reclined_CPR</option>
+                <option value="Simon_Reclined_reflex">Simon_Reclined_reflex</option>
+                <option value="Simon_Reflex_feet">Simon_Reflex_feet</option>
+                <option value="Simon_Reflex_knees">Simon_Reflex_knees</option>
+                <option value="Simon_Stethascope">Simon_Stethascope</option>
+                <option value="Simon_Thermometer_in">Simon_Thermometer_in</option>
+                <option value="Simon_Thermometer_out">Simon_Thermometer_out</option>
+                <option value="Simon_Wash_hands">Simon_Wash_hands</option>
+                <option value="Simon_Xray_done">Simon_Xray_done</option>
+                <option value="accident-03-damage head-yokoyama">accident-03-damage head-yokoyama</option>
+                <option value="accident-04-damage right leg-yokoyama">accident-04-damage right leg-yokoyama</option>
+                <option value="accident-05-damage right arm-yokoyama">accident-05-damage right arm-yokoyama</option>
+                <option value="accident-06-damage left leg-yokoyama">accident-06-damage left leg-yokoyama</option>
+                <option value="accident-07-damage left arm-yokoyama">accident-07-damage left arm-yokoyama</option>
+                <option value="accident-08-damage rightfoot-yokoyama">accident-08-damage rightfoot-yokoyama</option>
+                <option value="accident-09-damage leftfoot-yokoyama">accident-09-damage leftfoot-yokoyama</option>
+                <option value="accident-10-spasm-yokoyama">accident-10-spasm-yokoyama</option>
+                <option value="accident-11-fall down-azumi">accident-11-fall down-azumi</option>
+                <option value="accident-12-twist foot-yokoyama">accident-12-twist foot-yokoyama</option>
+                <option value="accident-13-damage back-yokoyama">accident-13-damage back-yokoyama</option>
+                <option value="accident-15-knock head 2-azumi">accident-15-knock head 2-azumi</option>
+                <option value="gesture_etc-05-touch nose-yokoyama">gesture_etc-05-touch nose-yokoyama</option>
+                <option value="gesture_etc-06-jiggle knee-yokoyama">gesture_etc-06-jiggle knee-yokoyama</option>
+                <option value="gesture_etc-08-stretch-yokoyama">gesture_etc-08-stretch-yokoyama</option>
+                <option value="gesture_etc-14-apologize-yokoyama">gesture_etc-14-apologize-yokoyama</option>
+                <option value="gesture_etc-17-drink-yokoyama">gesture_etc-17-drink-yokoyama</option>
+                <option value="gesture_etc-18-eat-yokoyama">gesture_etc-18-eat-yokoyama</option>
+                <option value="gesture_etc-22-mobile receive-azumi">gesture_etc-22-mobile receive-azumi</option>
+                <option value="gesture_etc-23-mobile call-yokoyama">gesture_etc-23-mobile call-yokoyama</option>
+                <option value="gesture_etc-32-no-yokoyama">gesture_etc-32-no-yokoyama</option>
+                <option value="gesture_etc-45-feel dizzy -yokoyama">gesture_etc-45-feel dizzy -yokoyama</option>
+                <option value="gesture_etc-46-vomit of blood-yokoyama">gesture_etc-46-vomit of blood-yokoyama</option>
+                <option value="gesture_etc-51-cramp-yokoyama">gesture_etc-51-cramp-yokoyama</option>
+                <option value="pain-01-headache-yokoyama">pain-01-headache-yokoyama</option>
+                <option value="pain-02-stomachache-yokoyama">pain-02-stomachache-yokoyama</option>
+                <option value="pain-03-toothache-yokoyama">pain-03-toothache-yokoyama</option>
+                <option value="pain-04-chest and barf-yokoyama">pain-04-chest and barf-yokoyama</option>
+                <option value="pain-05-backache-yokoyama">pain-05-backache-yokoyama</option>
+                <option value="pain-06-muscleache-azumi">pain-06-muscleache-azumi</option>
+                <option value="pain-07-arthritic-yokoyama">pain-07-arthritic-yokoyama</option>
+                <option value="open_aggres">open_aggres</option>
+                <option value="open_aggres2">open_aggres2</option>
+                <option value="open_aggres3">open_aggres3</option>
+                <option value="open_aggres4">open_aggres4</option>
+                <option value="open_cas1">open_cas1</option>
+                <option value="open_cas2">open_cas2</option>
+                <option value="open_caut">open_caut</option>
+                <option value="open_cur">open_cur</option>
+                <option value="open_cur2">open_cur2</option>
+                <option value="open_cur3">open_cur3</option>
+                <option value="open_exub">open_exub</option>
+                <option value="BoxerWarming1">BoxerWarming1</option>
+                <option value="cellphone">cellphone</option>
+                <option value="drunk1">drunk1</option>
+                <option value="embrace">embrace</option>
+                <option value="f_amble">f_amble</option>
+                <option value="f_fast">f_fast</option>
+                <option value="f_frail">f_frail</option>
+                <option value="f_neutral">f_neutral</option>
+                <option value="f_sad">f_sad</option>
+                <option value="FallStunt1">FallStunt1</option>
+                <option value="frail_rhnd">frail_rhnd</option>
+                <option value="frail_stop">frail_stop</option>
+                <option value="funky_heavy">funky_heavy</option>
+                <option value="funky_rhnd">funky_rhnd</option>
+                <option value="funky">funky</option>
+                <option value="g_bthhnds">g_bthhnds</option>
+                <option value="g_cool">g_cool</option>
+                <option value="g_funky">g_funky</option>
+                <option value="g_swagger1">g_swagger1</option>
+                <option value="g_swagger2">g_swagger2</option>
+                <option value="g_tiptoes">g_tiptoes</option>
+                <option value="g_young">g_young</option>
+                <option value="limp1">limp1</option>
+                <option value="messy1">messy1</option>
+                <option value="messy2">messy2</option>
+                <option value="ol_f_tired">ol_f_tired</option>
+                <option value="old_bthhnd">old_bthhnd</option>
+                <option value="old_f">old_f</option>
+                <option value="old_rhnd">old_rhnd</option>
+                <option value="onelegdance">onelegdance</option>
+                <option value="rhnd_amble">rhnd_amble</option>
+                <option value="rhnd_sad">rhnd_sad</option>
+                <option value="rowingboat">rowingboat</option>
+                <option value="sad">sad</option>
+                <option value="slouch_b">slouch_b</option>
+                <option value="slow_quick">slow_quick</option>
+                <option value="spectator">spectator</option>
+                <option value="stand_yoyo">stand_yoyo</option>
+                <option value="strident1">strident1</option>
+                <option value="strident2">strident2</option>
+                <option value="stumble1">stumble1</option>
+                <option value="stumble2">stumble2</option>
+                <option value="teen_bthhnd">teen_bthhnd</option>
+                <option value="tire_brsk">tire_brsk</option>
+                <option value="tired_swing">tired_swing</option>
+                <option value="traffic">traffic</option>
+                <option value="very_drunk">very_drunk</option>
+                <option value="w_strident">w_strident</option>
+                <option value="walk-02-drank-yokoyama">walk-02-drank-yokoyama</option>
+                <option value="walk-25-tired-yokoyama">walk-25-tired-yokoyama</option>
+                <option value="walk-26-exhausted-yokoyama">walk-26-exhausted-yokoyama</option>
+                <option value="walkslip1">walkslip1</option>
+                <option value="wall">wall</option>
+                <option value="whoaholdon">whoaholdon</option>
+            </select></div>
+        <p>
+            Duration:
+            <input name="al" size="3" value="1" type="text" />
+            <i>(in seconds)</i></p>
+        <p>
+            Should it loop?
+            <input name="ail" type="checkbox" value="true" />
+            How many times?
+            <input name="alc" size="2" value="1" type="text" /></p>
+    </div>
+    <div id="type_slbodypart" class="hidden">
+        <br />
+        <h2>
+            Bodypart options:</h2>
+        <br />
+        <p>
+            Type:
+            <select name="bpt">
+                <option value="Skin">Skin</option>
+                <option value="Shape">Shape</option>
+                <option value="Eyes">Eyes</option>
+                <option value="Hair">Hair</option>
+            </select></p>
+        <p>
+            Name:
+            <select name="bpn">
+                <option value="Hair">hair01</option>
+                <option value="Hair">eyes02</option>
+            </select></p>
+    </div>
+    <div id="type_slchat" class="hidden">
+        <br />
+        <h2>
+            Chat options:</h2>
+        <br />
+        <p>
+            Chats, messages and commands can be sent on the following channels:
+            <select name="cc" onchange="showonlyone(this.options[this.selectedIndex].text, 'channelType')">
+                <option value="0">Public</option>
+                <option value="9993">Horizons_Holodeck-viewer_area_edition</option>
+                <option value="-8787">Registration_Booth</option>
+                <option value="687686">Main_Parcel_Game Controller</option>
+                <option value="-63342">Controller_Media_Relay</option>
+                <option value="687687">NOSM_Bracelet_Multicast</option>
+                <option value="">Other</option>
+            </select><br />
+        </p>
+        <div id="channelType_Other" class="hidden">
+            <p>
+                Channel:
+                <input name="chatChannelValue" size="12" type="text" /></p>
+            <p>
+                Message to be chatted :
+                <input name="chatChannelMsg" type="text" size="50" /><br />
+            </p>
+        </div>
+        <div id="channelType_Public">
+            Message to be chatted on public channel (channel '0') :
+            <input name="chatValue0" size="50" type="text" /></div>
+        <div id="channelType_Registration_Booth" class="hidden">
+            API Command for NOSM Registration Booth:
+            <input name="chatValue-8787" size="50" type="text" /></div>
+        <div id="channelType_NOSM_Bracelet_Multicast" class="hidden">
+            API Command for all NOSM Staff &amp; Bracelets in range:
+            <input name="chatValue687687" size="50" type="text" /></div>
+        <div id="channelType_Controller_Media_Relay" class="hidden">
+            Parcel URL:
+            <input name="chatValue-63342" size="50" type="text" /></div>
+        <div id="channelType_Horizons_Holodeck-viewer_area_edition" class="hidden">
+            Holodeck commands:
+            <select name="Holodeck_chat_cmds" onchange="showonlyone(this.options[this.selectedIndex].value.replace(/\s+/g,'').substring(0,4), 'HH_sname')">
+                <option value="list scenes">Lists available scenes on public chat channel</option>
+                <option value="clear">Clears the current scene</option>
+                <option value="end scene">Clears this scene:</option>
+                <option value="run scene">Runs this scene:</option>
+                <option value="list shells">Lists available shells</option>
+                <option value="run shell">Loads this shell:</option>
+                <option value="end shell">Clears the current shell</option>
+                <option value="list staff">Lists authorized staff (set in your notecard)</option>
+                <option value="list guests">Lists authorized guests (set in your notecard)</option>
+                <option value="hide">Makes the rezer invisible</option>
+                <option value="hide shell">Makes the shell invisible</option>
+                <option value="hide floor">Makes the shell floor invisible (in supported shells.)</option>
+                <option value="show">Makes the rezzer visible</option>
+                <option value="show shell">Makes the shell visible</option>
+                <option value="show floor">Makes the shell floor visible (in supported shells)</option>
+                <option value="exit">Rez a holodeck arch for easy access to the control panel</option>
+            </select></div>
+        <div id="HH_sname_runs" class="hidden">
+            <br />
+            <p>
+                Scene/Shell to run:
+                <select name="sname">
+                    <option value=""></option>
+                </select></p>
+        </div>
+        <div id="HH_sname_ends" class="hidden">
+            Scene/Shell to clear:
+            <select name="sename">
+                <option value=""></option>
+            </select></div>
+        <div id="channelType_Main_Parcel_Game Controller" class="hidden">
+            Controller Commands:
+            <select name="controller_cmds" onchange="showonlyone(this.options[this.selectedIndex].value.replace(/\s+/g,'').substring(0,4), 'HH_sname')">
+                <option value="start">Start the Labyrinth</option>
+                <option value="reset">Reset the Controller</option>
+                <option value="options">Show Options on viewer</option>
+                <option value="option">Select an Option Button</option>
+                <option value="text">Show VPD text on viewer</option>
+                <option value="media">Show Any VPDMedia/Image (if more than one, display a list</option>
+                <option value="back">Use Back Button (if supported)</option>
+                <option value="menu">Show Main Menu (supported?)</option>
+                <option value="help">Show Help Text</option>
+                <option value="hardreset">Reset scripts for controller (if crashes)</option>
+            </select></div>
+        <div id="linkopt_option" class="hidden">
+            <br />
+            <p>
+                Select the equivalent button number (ie link), as listed on the in-world controller
+                board:
+                <select name="controller_opt">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                </select></p>
+        </div>
+        <br />
+        <p>
+            Loudness/Range:<br />
+            whisper:
+            <input name="csm" value="whisper" type="radio" />
+            <i>(can only be heard within 10 meters of the speaker)</i><br />
+            say it normally:
+            <input name="csm" value="say" type="radio" />
+            <i>(can only be heard within 20 meters of the speaker)</i><br />
+            shout it:
+            <input name="csm" value="shout" type="radio" />
+            <i>(can only be heard within 100 meters of the speaker)</i><br />
+            region-wide:
+            <input name="csm" value="region" type="radio" />
+            <i>(can be heard within the entire region)</i><br />
+        </p>
+    </div>
+    <div id="type_slhud" class="hidden">
+        <br />
+        <h2>
+            Heads-Up Display (HUD) options:</h2>
+        <br />
+        <p>
+            Name:
+            <select name="hn">
+                <option value="nosm HUD">nosm HUD</option>
+                <option value="LCK HUD">LCK HUD</option>
+                <option value="PIVOTE HUD">PIVOTE HUD</option>
+            </select></p>
+        <br />
+        Give to Inventory
+        <input name="hioc" type="radio" onclick="showonlyone(this.value, 'hud')" value="inv" />
+        or Rez the Object
+        <input name="hioc" type="radio" onclick="showonlyone(this.value, 'hud')" value="rez" /><br />
+        <div id="hud_rez" class="hidden">
+            The new object should appear
+            <input name="hm" size="3" value=".5" type="text" />
+            meters
+            <select name="hw">
+                <option value="above">above</option>
+                <option value="below">below</option>
+                <option value="left">left</option>
+                <option value="right">right</option>
+                <option value="infront">in front of</option>
+                <option value="behind">behind</option>
+            </select>
+            the player.
+        </div>
+        <br />
+        <p>
+            Prompt user to attach this HUD?</p>
+        <p>
+            Where:
+            <select name="hap">
+                <option value="ATTACH_HUD_CENTER_1">Centre</option>
+                <option value="ATTACH_HUD_TOP_RIGHT">Right</option>
+                <option value="ATTACH_HUD_TOP_CENTER">Top Centre</option>
+                <option value="ATTACH_HUD_TOP_LEFT">Top Left</option>
+                <option value="ATTACH_HUD_CENTER_2">Centre</option>
+                <option value="ATTACH_HUD_BOTTOM_LEFT">Bottom Left</option>
+                <option value="ATTACH_HUD_BOTTOM">Bottom</option>
+                <option value="ATTACH_HUD_BOTTOM_RIGHT">Bottom Right</option>
+            </select></p>
+    </div>
+    <div id="type_slim" class="hidden">
+        <br />
+        <h2>
+            Instant Message (IM) options:</h2>
+        <br />
+        <p>
+            Player Name:
+            <input name="imv" size="50" value="" type="text" /></p>
+    </div>
+    <div id="type_slinnergame" class="hidden">
+        <br />
+        <h2>
+            Inner Game options:</h2>
+        <br />
+        <p>
+            Game URL:
+            <input name="igu" size="50" value="http://" type="text" /></p>
+    </div>
+    <div id="type_sllandmark" class="hidden">
+        <br />
+        <h2>
+            Landmark options:</h2>
+        <br />
+        <p>
+            <select name="lmn">
+                <!-- **ASP** -->
+                <option value="nossum island">nossum island</option>
+                <option value="St Georges">St Georges</option>
+                <option value="Free Dove">Free Dove</option>
+                <!-- **/ASP** -->
+            </select><br />
+        </p>
+    </div>
+    <div id="type_slmove" class="hidden">
+        <br />
+        <h2>
+            Move options:</h2>
+        <br />
+        <p>
+            <select name="mt">
+                <option value="vector">Vector</option>
+                <option value="object">Object</option>
+                <option value="Person">Person</option>
+            </select></p>
+        <p>
+            Value:
+            <input name="mv" size="40" value="" type="text" /></p>
+    </div>
+    <div id="type_slnotecard" class="hidden">
+        <br />
+        <h2>
+            Notecard options:</h2>
+        <br />
+        <p>
+            <select name="ncn">
+                <!-- **ASP** -->
+                <option value="pivotecfg">pivotecfg</option>
+                <option value="test">test</option>
+                <!-- **//ASP** -->
+            </select></p>
+    </div>
+    <div id="type_slobject" class="hidden">
+        <br />
+        <h2>
+            POSLO (plain old SL object) options:</h2>
+        <br />
+        Give to Inventory
+        <input name="oioc" type="radio" onclick="showonlyone(this.value, 'obj')" value="inv" />
+        or Rez the Object
+        <input name="oioc" type="radio" onclick="showonlyone(this.value, 'obj')" value="rez" /><br />
+        <div id="obj_rez" class="hidden">
+            The new object should appear
+            <input name="om" size="3" value=".5" type="text" />
+            meters
+            <select name="ow">
+                <option value="above">above</option>
+                <option value="below">below</option>
+                <option value="left">left</option>
+                <option value="right">right</option>
+                <option value="infront">in front of</option>
+                <option value="behind">behind</option>
+            </select>
+            the player.
+        </div>
+        <p>
+            VERSE/PIVOTE Objects:</p>
+        <p>
+            MVP Paramedic Equipment Box 1.12
+            <select name="omvp">
+                <option value="MVP Bandage">Bandage</option>
+                <option value="MVP Blanket">Blanket</option>
+                <option value="MVP Blood Glucose Machine">Blood Glucose Machine</option>
+                <option value="MVP Blood Pressure Cuff">Blood Pressure Cuff</option>
+                <option value="MVP Box Splint">Box Splint</option>
+                <option value="MVP Burns Dressing">Burns Dressing</option>
+                <option value="MVP Carry Chair">Carry Chair</option>
+                <option value="MVP Cervical Collar">Cervical Collar</option>
+                <option value="MVP Chest Needle 1.0.2">Chest Needle</option>
+                <option value="MVP ECG 1.0.2">ECG</option>
+                <option value="MVP ET Airway">ET Airway</option>
+                <option value="MVP Handheld Radio 1.0.2">Handheld Radio</option>
+                <option value="MVP IM Hypodermic 1.0.2">IM Hypodermic</option>
+                <option value="MVP IV Cannular">IV Cannular</option>
+                <option value="MVP LMA Airway 1.0.6">LMA Airway</option>
+                <option value="MVP Nasal Cannula 1.0.2">Nasal Cannula</option>
+                <option value="MVP Nebuliser Mask 1.0.2">Nebuliser Mask</option>
+                <option value="MVP NP Airway 1.0.2">NP Airway</option>
+                <option value="MVP OP Airway 1.0.2">OP Airway</option>
+                <option value="MVP Orthopedic Stretcher 1.0.2">Orthopedic Stretcher</option>
+                <option value="MVP Oxygen Mask 1.0.2">Oxygen Mask</option>
+                <option value="MVP Peak Flow">Peak Flow</option>
+                <option value="MVP Pill Bottle">Pill Bottle</option>
+                <option value="MVP Pulse Oximeter 1.0.2">Pulse Oximeter</option>
+                <option value="MVP Rectal Diazepam Tube 1.0.2">Rectal Diazepam Tube</option>
+                <option value="MVP Rescue Board 1.0.2">Rescue Board</option>
+                <option value="MVP Shears 1.0.2">Shears</option>
+                <option value="MVP Suction Unit 1.0.6">Suction Unit</option>
+                <option value="MVP Traction Splint 1.0.2">Traction Splint</option>
+                <option value="MVP Trolley Bed 1.0.3">Trolley Bed</option>
+                <option value="MVP Tympanic Thermometer 1.0.2">Tympanic Thermometer</option>
+            </select>
+            <br />
+            Other objects
+            <select name="on">
+                <option value="mo wax Poseball">mo wax poseball</option>
+                <option value="Object">Object</option>
+            </select>
+        </p>
+        <p>
+            Prompt user to attach this object?</p>
+        <p>
+            Where:
+            <select name="oap">
+                <option value="ATTACH_CHEST">chest</option>
+                <option value="ATTACH_HEAD">head</option>
+                <option value="ATTACH_LSHOULDER">left shoulder</option>
+                <option value="ATTACH_RSHOULDER">right shoulder</option>
+                <option value="ATTACH_LHAND">left hand</option>
+                <option value="ATTACH_RHAND">right hand</option>
+                <option value="ATTACH_LFOOT">left foot</option>
+                <option value="ATTACH_RFOOT">right foot</option>
+                <option value="ATTACH_BACK ">back</option>
+                <option value="ATTACH_PELVIS">pelvis</option>
+                <option value="ATTACH_MOUTH">mouth</option>
+                <option value="ATTACH_CHIN">chin</option>
+                <option value="ATTACH_LEAR">left ear</option>
+                <option value="ATTACH_REAR">right ear</option>
+                <option value="ATTACH_LEYE">left eye</option>
+                <option value="ATTACH_REYE">right eye</option>
+                <option value="ATTACH_NOSE">nose</option>
+                <option value="ATTACH_RUARM">right upper arm</option>
+                <option value="ATTACH_RLARM">right lower arm</option>
+                <option value="ATTACH_LUARM">left upper arm</option>
+                <option value="ATTACH_LLARM">left lower arm</option>
+                <option value="ATTACH_RHIP">right hip</option>
+                <option value="ATTACH_LHIP">left hip</option>
+                <option value="ATTACH_RULEG">right upper leg</option>
+                <option value="ATTACH_RLLEG">right lower leg</option>
+                <option value="ATTACH_LULEG">left upper leg</option>
+                <option value="ATTACH_LLLEG">left lower leg</option>
+                <option value="ATTACH_BELLY">belly/stomach/tummy</option>
+                <option value="ATTACH_RPEC">right pectoral</option>
+                <option value="ATTACH_LPEC">left pectoral</option>
+            </select><br />
+        </p>
+    </div>
+    <div id="type_slpackage" class="hidden">
+        <br />
+        <h2>
+            Package (crate, gift, installer, etc) options:</h2>
+        <br />
+        <p>
+            <select name="pn">
+                <option value="holodeck scene crate">holodeck scene crate</option>
+                <option value="Mo Wax Poseballs (boxed)">Mo Wax Poseballs (boxed)</option>
+            </select></p>
+        Give to Inventory
+        <input name="pioc" type="radio" onclick="showonlyone(this.value, 'crate')" value="inv" />
+        or Rez the Object
+        <input name="pioc" type="radio" onclick="showonlyone(this.value, 'crate')" value="rez" /><br />
+        <div id="crate_rez">
+            The new object should appear
+            <input name="pm" size="3" value=".5" type="text" />
+            meters
+            <select name="pw">
+                <option value="above">above</option>
+                <option value="below">below</option>
+                <option value="left">left</option>
+                <option value="right">right</option>
+                <option value="infront">in front of</option>
+                <option value="behind">behind</option>
+            </select>
+            the player.
+        </div>
+    </div>
+    <div id="type_slparticlesystem" class="hidden">
+        <br />
+        <h2>
+            Particle System options:</h2>
+        <br />
+        <p>
+            <input name="psfn" value="MyParticle" type="hidden" />
+            <b>Texture:</b>
+            <select name="pstn">
+                <option value="text1">texture1</option>
+                <option value="text2">texture2</option>
+                <option value="text3">texture3</option>
+            </select></p>
+        <p>
+            <input name="psem" type="checkbox" />
+            <b>Glowing.</b> <i>(Particles will glow in the dark, otherwise will reflect the ambiant
+                light)</i></p>
+        <p>
+            &nbsp;</p>
+        <p>
+            <b>Particle Life Time:</b>
+            <input name="age" size="5" value="1" type="text" />
+            <i>(How many seconds each particle lives for: 0.1 to 60.0 seconds.)</i><br />
+            <br />
+            <input name="psic" type="checkbox" />
+            <b>Interpolate Color.</b> <i>(Turns on or off interpolating color.)</i><br />
+            <b>Start color:</b><br />
+            <input name="psscr" size="3" value="1" onchange="valide_start_color();" type="text" />
+            ,
+            <input name="psscg" size="3" value="1" onchange="valide_start_color();" type="text" />
+            ,
+            <input name="psscb" size="3" value="1" onchange="valide_start_color();" type="text" />
+            <i>(Initial color value, RGB (values between 0.0 to 1.0)</i><br />
+            <br />
+            <b>End color:</b><br />
+            <input name="psecr" size="3" value="1" onchange="valide_end_color();" type="text" />
+            ,
+            <input name="psecg" size="3" value="1" onchange="valide_end_color();" type="text" />
+            ,
+            <input name="psecb" size="3" value="1" onchange="valide_end_color();" type="text" />
+            <i>(Final color value, RGB (values between 0.0 to 1.0))</i><br />
+            <input name="pssa" size="3" value="1" type="text" />
+            <i>(Initial transparency value. Range: 0.0 to 1.0)</i><br />
+            <b>End Apha:</b>
+            <input name="psea" size="3" value="1" type="text" />
+            <i>(final transparency value. Range: 0.0 to 1.0)</i></p>
+        <p>
+            <input name="psis" type="checkbox" />
+            <b>Interpolate Scale.</b><i>(Turns on or off interpolating scale.)</i><br />
+            <b>Start Scale:</b><br />
+            X:
+            <input name="psssx" size="5" value="0.04" type="text" />
+            m<br />
+            Y:
+            <input name="psssy" size="5" value="0.04" type="text" />
+            m <i>(Initial scale value. Range (0.04m to 4m))</i><br />
+            <b>End Scale:</b><br />
+            X:
+            <input name="psesx" size="5" value="0.04" type="text" />
+            m Y:
+            <input name="psesy" size="5" value="0.04" type="text" />
+            m <i>(final scale value. Range (0.04m to 4m))</i><br />
+        </p>
+        <h3>
+            <b>Particle Behavior:</b></h3>
+        <br />
+        <p>
+            <b>Pattern:</b><i>(type of emission)</i><br />
+            <select name="pspp">
+                <option value="PSYS_SRC_PATTERN_EXPLODE">EXPLODE (Sends particles in all directions.)</option>
+                <option value="PSYS_SRC_PATTERN_DROP">DROP (Droping effects.)</option>
+                <option value="PSYS_SRC_PATTERN_ANGLE_CONE">ANGLE CONE (Uses Angle values to make rings
+                    &amp; cones.)</option>
+                <option value="PSYS_SRC_PATTERN_ANGLE_CONE_EMPTY">ANGLE CONE EMPTY (Sends particles
+                    excepts in the defined ring or cone.)</option>
+                <option value="PSYS_SRC_PATTERN_ANGLE">ANGLE (Uses Angle to make flat wedges.)</option>
+            </select><br />
+            <br />
+            <b>Initial Position Distance Radius:</b>
+            <input name="pspr" size="5" value="0" type="text" />
+            m <i>(Distance between emitter and each new particle, 0.0 to 64.)</i><br />
+        </p>
+        <table summary="" border="0">
+            <tbody>
+                <tr valign="middle">
+                    <td>
+                        <img alt="" src="angles.jpg" align="top" border="1" hspace="4" />
+                    </td>
+                    <td>
+                        <b>Begin Angle:</b>
+                        <input name="psban" size="5" value="0" type="text" />
+                        &iexcl;<br />
+                        <i>(Emission Cone begin angle (0 to 180 degrees))</i><br />
+                        <br />
+                        <b>End Angle:</b>
+                        <input name="psean" size="5" value="180" type="text" />
+                        &iexcl;<br />
+                        <i>(Emission Cone end angle (0 to 180 degrees))</i>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <p>
+            <b>Minimum Speed:</b>
+            <input name="psmns" size="5" value="1" type="text" />
+            m <i>(Slowest speed of new particles. 0.01 to ? (Speed is ignored when in DROP Pattern
+                mode.))</i><br />
+            <b>Maximum Speed:</b>
+            <input name="psmxs" size="5" value="1" type="text" />
+            m <i>(Fastest speed of new particles. 0.01 to ? (Speed is ignored when in DROP Pattern
+                mode.))</i><br />
+            <br />
+            <b>Acceleration vector:</b><br />
+            X:
+            <input name="psax" size="3" value="0" type="text" />
+            , Y:
+            <input name="psay" size="3" value="0" type="text" />
+            , Z:
+            <input name="psaz" size="3" value="0" type="text" />
+            <i>(A continous force pushed on particles. Use small settings for long lived particles.)</i><br />
+            <br />
+            <b>Rotation (Omega):</b> &lt; X:
+            <input name="psmox" size="3" value="0" type="text" />
+            , Y:
+            <input name="psmoy" size="3" value="0" type="text" />
+            , Z:
+            <input name="psmoz" size="3" value="0" type="text" /><br />
+            <i>(How much to rotate the emitter around the X, Y &amp; Z axes after each burst.)</i><br />
+            <br />
+            <input name="psfs" type="checkbox" />
+            <b>Follow Source.</b> <i>(Moves particles when emitter moves. Disables Radius.)</i><br />
+            <input name="psfv" type="checkbox" />
+            <b>Follow Velocity.</b><i>(Particles rotate towards their heading.)</i><br />
+            <input name="psw" type="checkbox" />
+            <b>Wind.</b> <i>(Sim's wind will push particles.)</i><br />
+            <input name="psb" type="checkbox" />
+            <b>Bounce.</b><i>(Make particles bounce above the Z altitude of emitter.)</i><br />
+            <input name="pstr" type="checkbox" />
+            <b>Target.</b><i>(Turns on or off targeting of particles.)</i> <b>Target Key:</b></p>
+        <p>
+            <input name="pstrk" value="object" type="hidden" />
+            <b>Generation setup:</b></p>
+        <p>
+            <b>Particle Burst:</b></p>
+        <p>
+            <b>Rate:</b>
+            <input name="psr" size="5" value="1" type="text" />
+            <i>(Seconds between particle bursts, 0.0 to 60.)</i></p>
+        <p>
+            <b>Number of Particles per Burst:</b>
+            <input name="psc" size="5" value="50" type="text" />
+            <i>(Number of particles per burst, 1 to 4096.)</i><br />
+            <br />
+            <b>Emission Duration:</b>
+            <input name="psl" size="5" value="0" type="text" />
+            <i>(Number of seconds to wait before shutting off, 0.1 to 60. (0.0 never stops.))</i><br />
+        </p>
+    </div>
+    <div id="type_slpoint" class="hidden">
+        <br />
+        <h2>
+            Point motion options:</h2>
+        <br />
+        <p>
+            Point to:
+            <select name="pt">
+                <option value="vector">Vector</option>
+                <option value="object">Object</option>
+                <option value="Person">Person</option>
+            </select></p>
+        <p>
+            Value:
+            <input name="pv" size="50" value="" type="text" /></p>
+    </div>
+    <div id="type_slsound" class="hidden">
+        <br />
+        <h2>
+            Sound options:</h2>
+        <br />
+        <p>
+            <select name="sn">
+                <option value="damnit.wav">damnit.wav</option>
+                <option value="cheer.wav">cheer.wav</option>
+            </select></p>
+        <p>
+            Volume:
+            <select name="sv">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+            </select></p>
+        <p>
+            Loop
+            <input name="sl" value="true" type="checkbox" />
+            <i>The sound should play repeatedly</i><br />
+        </p>
+        <p>
+            Duration
+            <input name="sd" size="2" value="" type="text" />
+            <i>in seconds</i></p>
+    </div>
+    <div id="type_sltexture" class="hidden">
+        <br />
+        <h2>
+            Texture options:</h2>
+        <br />
+        <p>
+            <select name="tn">
+                <option value="brick.png">brick.png</option>
+                <option value="steel_grey.jpg">steel_grey.jpg</option>
+            </select></p>
+        <br />
+    </div>
+    <div id="type_vpdimage" class="hidden">
+        <br />
+        <h2>
+            Virtual Patient Image options:</h2>
+        <br />
+        <table width="826" border="0">
+            <tr>
+                <td>
+                    Content Type ('application/dicom' MIME is not supported on Second life parcel viewers):
+                </td>
+                <td>
+                    &nbsp;
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    VPDImage: image MIME type(s) desired
+                </td>
+                <td>
+                    <select multiple="multiple" name="VPDImageContentType" id="Select13">
+                        <option value="image/jpeg">JPEG image</option>
+                        <option value="image/gif">GIF (still)</option>
+                        <option value="image/png">PNG</option>
+                        <option value="image/jp2">JP2</option>
+                        <option value="image/tiff">tiff image data</option>
+                        <option value="image/bmp">bitmap image data</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <em>Image Data Parameters:</em>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    FrameNumber: Specifies that the single frame with that number within a multi-frame
+                    image object that shall be returned
+                </td>
+                <td>
+                    <input name="frameNumber" type="text" id="Text3" />integer
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Annotate patient data from a DICOM object retrieved
+                </td>
+                <td>
+                    <input name="annotation2" type="checkbox" id="Checkbox1" value="annotatePat" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Annotate technique data from a DICOM object retrieved
+                </td>
+                <td>
+                    <input name="annotation" type="checkbox" id="Checkbox2" value="annotateTech" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Anonymize data (recommended): Sets the removal of all patient identification information
+                    from within the DICOM object, if not already done
+                </td>
+                <td>
+                    <input name="anonymize" type="checkbox" id="Checkbox3" value="yes" checked="checked" />
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <em>Presentation:</em>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    ImageQuality:If the requested MIME type is for a lossy compressed image, set the
+                    quality
+                </td>
+                <td>
+                    <input name="imageQuality" type="text" id="Text4" />1-100
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Height: the image height to be returned
+                </td>
+                <td>
+                    <input name="rows" type="text" id="Text5" />pixels
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Width: the image width to be returned
+                </td>
+                <td>
+                    <input name="columns" type="text" id="Text6" />pixels
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    (If both rows and columns are specified, then each shall be interpreted as a maximum,
+                    and a size will be chosen for the image within these constraints, maintaining the
+                    correct aspect ratio. If the number of rows is absent and the number of columns
+                    is present, the number of rows shall be chosen in order to maintain the correct
+                    aspect ratio. If both are absent, the image (or selected region) is sent in its
+                    original size (or the size of the presentation state applied on the image), resulting
+                    as one pixel of screen image for each value in the image data matrix.)
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <em>Region:</em>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    TopLeftX: double : the x position of the top left hand corner of the region to be
+                    retrieved, 0.0 corresponding to the first column of the image matrix
+                </td>
+                <td>
+                    <input name="region-tlx" type="text" id="Text7" />double
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    TopLeftY: double: the y position of the top left hand corner of the region to be
+                    retrieved, 0.0 corresponding to the top row of the image matrix
+                </td>
+                <td>
+                    <input name="region-tly" type="text" id="Text8" />double
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    BottomRightX: double : the x position of the bottom right hand extent of the region,
+                    1.0 corresponding to the last column of the image matrix, 0.0 being forbidden.
+                </td>
+                <td>
+                    <input name="region-brx" type="text" id="Text9" />double
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    BottomRightY: double : the y position of the bottom right hand extent of the region,
+                    1.0 corresponding to the last row of the image matrix, 0.0 being forbidden.
+                </td>
+                <td>
+                    <input name="region-bry" type="text" id="Text10" />double
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Contrast: Controls the contrast of the image double
+                </td>
+                <td>
+                    <input name="windowWidth" type="text" id="Text11" />double
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Luminosity: Controls the luminosity of the image
+                </td>
+                <td>
+                    <input name="windowCenter" type="text" id="Text12" />double
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <em>Presentation State Storage IDs:</em>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Presentation Series UID: Sets the Series Instance UID of the series containing the
+                    presentation state storage object to be applied on the image.
+                </td>
+                <td>
+                    <input name="presentationSeriesUID" type="text" id="Text14" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Presentation UID: SOP Instance UID of the presentation state storage object to be
+                    applied to the image.
+                </td>
+                <td>
+                    <input name="presentationUID" type="text" id="Text15" />
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div id="type_vpdmedia" class="hidden">
+        <br />
+        <h2>
+            Virtual Patient Media options:</h2>
+        <br />
+        <table width="826" border="0">
+            <tr>
+                <td>
+                    Content Type ('application/dicom' MIME is not supported on Second life parcel viewers):
+                </td>
+                <td>
+                    &nbsp;
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    VPDMedia: media MIME type(s) desired
+                </td>
+                <td>
+                    <select multiple="multiple" name="VPDMediaContentType" id="VPDMediaContentType">
+                        <option value="image/gif">GIF (animated)</option>
+                        <option value="video/mpeg">MPEG-4 movie</option>
+                    </select>
+                </td>
+            </tr>
+        </table>
+        Other:
+        <p>
+            URL of movie:<input name="vmu" size="50" value="http://" type="text" /></p>
+    </div>
+    <div id="type_vpdtext" class="hidden">
+        <br />
+        <h2>
+            Virtual Patient Data Text options:</h2>
+        <br />
+        <p>
+            none (inherited from current node's title)</p>
+        <br />
+        or
+        <br />
+        <input type="checkbox" name="useExtText" onclick="if(this.checked == true){document.getElementById('vpd_vpd').style.display = 'block';document.getElementById('vpdtext_params').style.display = 'block';}else{document.getElementById('vpd_vpd').style.display = 'none';document.getElementById('vpdtext_params').style.display = 'none'}" />
+        <div id="vpdtext_params" class="hidden">
+            <table width="826" border="0">
+                <tr>
+                    <td>
+                        Content Type ('application/dicom' MIME is not supported on Second life parcel viewers):
+                    </td>
+                    <td>
+                        &nbsp;
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <br />
+                        VPDText : text MIME type(s) desired
+                    </td>
+                    <td>
+                        <select multiple="multiple" name="VPDTextContentType" id="Select7">
+                            <option value="text/plain">non-PDF plain text data</option>
+                            <option value="text/xml">XML, HTML, AND DICOM meta-data</option>
+                            <option value="text/html">HTML and DICOM meta-data</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Character set with which the returned object is to be encoded
+                    </td>
+                    <td>
+                        <select multiple="multiple" name="charset" id="Select8">
+                            <option value="?">Arial</option>
+                            <option value="?">Time New Roman</option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div id="vpd_vpd" class="hidden">
+        <table summary="" width="826" border="0">
+            <tr>
+                <td width="458">
+                    Server: A system managing DICOM Persistent Objects and able to transmit them on
+                    request to the Web Client System.
+                </td>
+                <td width="352">
+                    <select name="serverImplType" id="Select1">
+                        <option value=""></option>
+                        <option value="cherrywado">cherrywado</option>
+                        <option value="o3-dpacs">O3-dpacs server</option>
+                        <option value="dcm4che">dcm4chee/dcm4che 2 server</option>
+                        <option value="Grassroots">Grassroots</option>
+                        <option value="wado-on-rails">wado-on-rails</option>
+                        <option value="dicomcs">local dicomCS (experimental)</option>
+                        <option value="other">Other</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <em>Required DICOM Object Instance IDs:</em>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Study UID (Study Instance Identifier)
+                </td>
+                <td>
+                    <input name="studyUID" type="text" size="50" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Series UID (Series Instance Unique identifier)
+                </td>
+                <td>
+                    <input name="seriesUID" type="text" id="Text1" size="50" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    DICOM Object UID (SOP Instance UID of the requested object)
+                </td>
+                <td>
+                    <input name="objectUID" type="text" id="Text2" size="50" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Sets the Transfer Syntax ID to be used within the DICOM image object
+                </td>
+                <td>
+                    <input name="transferSyntax" type="text" id="Text13" />
+                </td>
+            </tr>
+        </table>
+        <input name="requestType" type="hidden" id="Hidden1" value="WADO" />
+    </div>
+    <div id="type_slgoogleapiimage" class="hidden">
+        <br />
+        Google Chart Google Map SLUrl Map
+        <table border="0">
+            <tbody>
+                <tr>
+                    <td valign="top">
+                        <form action="/dummy/action" onsubmit="return false;">
+                        <table border="0">
+                            <tbody>
+                                <tr>
+                                    <td colspan="3">
+                                        Title:
+                                        <input value="Sample" id="title" title="chart's title text" size="33" type="text" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Chart&nbsp;type:
+                                    </td>
+                                    <td colspan="2" align="right">
+                                        <select id="kind" title="what kind of chart">
+                                            <option value="line">Line Graph</option>
+                                            <option selected="selected" value="bar">Bar Chart</option>
+                                            <option value="pie">Pie Chart</option>
+                                            <option value="venn">Venn Diagram</option>
+                                            <option value="scatter">Scatter Plot</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr id="barOptionsContainer" style="">
+                                    <td colspan="3">
+                                        <select id="barDir" title="whether the bars are vertical or horizontal">
+                                            <option selected="selected" value="vertical">Vertical</option>
+                                            <option value="horizontal">Horizontal</option>
+                                        </select>
+                                        <select id="barType" title="whether the bars are stacked or side-by-side">
+                                            <option selected="selected" value="stacked">Stacked</option>
+                                            <option value="groups">Groups</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr id="pieOptionsContainer" style="display: none;">
+                                    <td colspan="3">
+                                        <select id="pieType" title="flat pie or 3-D pie">
+                                            <option selected="selected" value="flat">Flat</option>
+                                            <option value="3d">3-D</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Width:
+                                        <input value="400" id="width" title="width of the chart" size="3" type="text" />
+                                    </td>
+                                    <td>
+                                    </td>
+                                    <td align="right">
+                                        Height:
+                                        <input value="300" id="height" title="height of the chart" size="3" type="text" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">
+                                        Background&nbsp;color:
+                                    </td>
+                                    <td align="right">
+                                        <div style="background-color: rgb(255, 255, 255);" id="backgroundColor" title="background color"
+                                            class="colorPicker">
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">
+                                        Chart&nbsp;color:
+                                    </td>
+                                    <td align="right">
+                                        <div style="background-color: rgb(255, 255, 204);" id="chartColor" title="chart color"
+                                            class="colorPicker">
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3">
+                                        <span id="gridContainer" style="">Grid:
+                                            <select id="grid" title="type of grid lines">
+                                                <option value="none">&nbsp;</option>
+                                                <option value="horizontal">-</option>
+                                                <option value="vertical">|</option>
+                                                <option selected="selected" value="both">+</option>
+                                            </select>
+                                        </span><span id="marksContainer" title="mark data points" style="display: none;">
+                                            <input checked="checked" id="marks" type="checkbox" />Marks </span>
+                                    </td>
+                                </tr>
+                                <tr id="data1Container1">
+                                    <td>
+                                    </td>
+                                </tr>
+                                <tr id="data1Container2">
+                                    <td>
+                                        Data&nbsp;set&nbsp;1:
+                                    </td>
+                                    <td>
+                                        <input value="x^2" id="data1Legend" title="data set 1 legend" size="9" type="text" />
+                                    </td>
+                                    <td align="right">
+                                        <div style="background-color: rgb(255, 0, 0);" id="data1Color" title="data set 1 color"
+                                            class="colorPicker">
+                                        </div>
+                                        <table id="vennColorsContainer" style="display: none;" border="0" cellpadding="0"
+                                            cellspacing="2">
+                                            <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <div style="background-color: rgb(255, 0, 0); display: none;" id="vennColor1" title="Venn diagram color 1"
+                                                            class="colorPicker">
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div style="background-color: rgb(0, 255, 0); display: none;" id="vennColor2" title="Venn diagram color 2"
+                                                            class="colorPicker">
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div style="background-color: rgb(0, 0, 255); display: none;" id="vennColor3" title="Venn diagram color 3"
+                                                            class="colorPicker">
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr id="data1Container3">
+                                    <td colspan="3">
+                                        <input value="0,0 1,1 2,4 3,9 4,16 5,25 6,36 7,49" id="data1" title="data set 1"
+                                            size="39" type="text" />
+                                    </td>
+                                </tr>
+                                <tr id="data2Container1">
+                                    <td>
+                                    </td>
+                                </tr>
+                                <tr id="data2Container2">
+                                    <td>
+                                        Data&nbsp;set&nbsp;2:
+                                    </td>
+                                    <td>
+                                        <input value="2^x" id="data2Legend" title="data set 2 legend" size="9" type="text" />
+                                    </td>
+                                    <td align="right">
+                                        <div style="background-color: rgb(0, 255, 0);" id="data2Color" title="data set 2 color"
+                                            class="colorPicker">
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr id="data2Container3">
+                                    <td colspan="3">
+                                        <input value="0,1 1,2 2,4 3,8 4,16 5,32 6,64 7,128" id="data2" title="data set 2"
+                                            size="39" type="text" />
+                                    </td>
+                                </tr>
+                                <tr id="data3Container1">
+                                    <td>
+                                    </td>
+                                </tr>
+                                <tr id="data3Container2">
+                                    <td>
+                                        Data&nbsp;set&nbsp;3:
+                                    </td>
+                                    <td>
+                                        <input id="data3Legend" title="data set 3 legend" size="9" type="text" />
+                                    </td>
+                                    <td align="right">
+                                        <div style="background-color: rgb(0, 0, 255);" id="data3Color" title="data set 3 color"
+                                            class="colorPicker">
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr id="data3Container3">
+                                    <td colspan="3">
+                                        <input id="data3" title="data set 3" size="39" type="text" />
+                                    </td>
+                                </tr>
+                                <tr id="data4Container1">
+                                    <td>
+                                    </td>
+                                </tr>
+                                <tr id="data4Container2">
+                                    <td>
+                                        Data&nbsp;set&nbsp;4:
+                                    </td>
+                                    <td>
+                                        <input id="data4Legend" title="data set 4 legend" size="9" type="text" />
+                                    </td>
+                                    <td align="right">
+                                        <div style="background-color: rgb(255, 0, 255);" id="data4Color" title="data set 4 color"
+                                            class="colorPicker">
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr id="data4Container3">
+                                    <td colspan="3">
+                                        <input id="data4" title="data set 4" size="39" type="text" />
+                                    </td>
+                                </tr>
+                                <tr id="pieLabelsColorsContainer1" style="display: none;">
+                                    <td width="33%">
+                                        <table border="0" cellpadding="0" cellspacing="2">
+                                            <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <input value="One" style="display: none;" id="pieLabel1" title="pie chart label 1"
+                                                            size="7" type="text" />
+                                                    </td>
+                                                    <td>
+                                                        <div style="background-color: rgb(255, 0, 0); display: none;" id="pieColor1" title="pie chart color 1"
+                                                            class="colorPicker">
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                    <td width="33%">
+                                        <table border="0" cellpadding="0" cellspacing="2">
+                                            <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <input value="Two" style="display: none;" id="pieLabel2" title="pie chart label 2"
+                                                            size="7" type="text" />
+                                                    </td>
+                                                    <td>
+                                                        <div style="background-color: rgb(0, 255, 0); display: none;" id="pieColor2" title="pie chart color 2"
+                                                            class="colorPicker">
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                    <td width="33%">
+                                        <table border="0" cellpadding="0" cellspacing="2">
+                                            <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <input value="Three" style="display: none;" id="pieLabel3" title="pie chart label 3"
+                                                            size="7" type="text" />
+                                                    </td>
+                                                    <td>
+                                                        <div style="background-color: rgb(0, 0, 255); display: none;" id="pieColor3" title="pie chart color 3"
+                                                            class="colorPicker">
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr id="pieLabelsColorsContainer2" style="display: none;">
+                                    <td width="33%">
+                                        <table border="0" cellpadding="0" cellspacing="2">
+                                            <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <input value="Four" style="display: none;" id="pieLabel4" title="pie chart label 4"
+                                                            size="7" type="text" />
+                                                    </td>
+                                                    <td>
+                                                        <div style="background-color: rgb(255, 255, 0); display: none;" id="pieColor4" title="pie chart color 4"
+                                                            class="colorPicker">
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                    <td width="33%">
+                                        <table border="0" cellpadding="0" cellspacing="2">
+                                            <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <input value="Five" style="display: none;" id="pieLabel5" title="pie chart label 5"
+                                                            size="7" type="text" />
+                                                    </td>
+                                                    <td>
+                                                        <div style="background-color: rgb(255, 0, 255); display: none;" id="pieColor5" title="pie chart color 5"
+                                                            class="colorPicker">
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                    <td width="33%">
+                                        <table border="0" cellpadding="0" cellspacing="2">
+                                            <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <input value="Six" style="display: none;" id="pieLabel6" title="pie chart label 6"
+                                                            size="7" type="text" />
+                                                    </td>
+                                                    <td>
+                                                        <div style="background-color: rgb(0, 255, 255); display: none;" id="pieColor6" title="pie chart color 6"
+                                                            class="colorPicker">
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr id="pieLabelsColorsContainer3" style="display: none;">
+                                    <td width="33%">
+                                        <table border="0" cellpadding="0" cellspacing="2">
+                                            <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <input value="Seven" style="display: none;" id="pieLabel7" title="pie chart label 7"
+                                                            size="7" type="text" />
+                                                    </td>
+                                                    <td>
+                                                        <div style="background-color: rgb(255, 153, 0); display: none;" id="pieColor7" title="pie chart color 7"
+                                                            class="colorPicker">
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                    <td width="33%">
+                                        <table border="0" cellpadding="0" cellspacing="2">
+                                            <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <input value="Eight" style="display: none;" id="pieLabel8" title="pie chart label 8"
+                                                            size="7" type="text" />
+                                                    </td>
+                                                    <td>
+                                                        <div style="background-color: rgb(255, 153, 153); display: none;" id="pieColor8"
+                                                            title="pie chart color 8" class="colorPicker">
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                    <td width="33%">
+                                        <table border="0" cellpadding="0" cellspacing="2">
+                                            <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <input value="Nine" style="display: none;" id="pieLabel9" title="pie chart label 9"
+                                                            size="7" type="text" />
+                                                    </td>
+                                                    <td>
+                                                        <div style="background-color: rgb(153, 153, 153); display: none;" id="pieColor9"
+                                                            title="pie chart color 9" class="colorPicker">
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        </form>
+                    </td>
+                    <td align="left" valign="top">
+                        <table border="0">
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div id="chartContainer" style="position: relative; width: 416px; height: 316px;">
+                                            <img id="chart" title="chart" style="border: 3px outset rgb(204, 204, 153); padding: 5px;
+                                                width: 400px; height: 300px; background-color: rgb(255, 255, 255);" src="jgcharts/chart.png"
+                                                alt="chart" />
+                                            <div id="resize" title="resize chart by dragging" style="position: absolute; right: 0px;
+                                                bottom: 0px; width: 10px; height: 10px; cursor: se-resize;" onmousedown="DragStart();">
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        URL:
+                                        <input value="http://chart.apis.google.com/chart?chtt=Sample&amp;cht=bvs&amp;chs=400x300&amp;chf=bg,s,ffffff|c,s,ffffcc&amp;chdl=x%5E2|2%5Ex&amp;chco=ff0000,00ff00&amp;chxt=x,y&amp;chxr=0,0,7|1,0,200&amp;chxp=0,0,2,4,6|1,0,50,100,150,200&amp;chg=100,25,1,0&amp;chd=t:0,0.5,2,4.5,8,12.5,18,24.5|0.5,1,2,4,8,16,32,64"
+                                            id="url" title="URL for the chart" readonly="readonly" size="60" style="background-color: rgb(221, 221, 221);"
+                                            type="text" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        TinyURL:
+                                        <input value="http://tinyurl.com/2dsaoa" id="tinyurl" title="TinyURL for the chart"
+                                            readonly="readonly" size="56" style="background-color: rgb(221, 221, 221);" type="text" />
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+
+            </tbody>
+        </table>
+    </div>
+
+    <div id="type_slgoogleapihtml" class="hidden">
+        
+      
+    <input id="gmapaddr" name="gmapaddr" type="text" value="935 Ramsey Lake Road, Sudbury, Ontario, Canada" size="70"  /><br/>
+     
+      <select id="gmapzoom" title="zoom">
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option selected="selected" value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        </select>
+        <br/>
+        <a href="javascript:void(0);" onclick="updateGMap();">Update Map</a>
+        <br/>
+        <div id="google-map" class="google-map" >&nbsp;</div>
+    </div>
+    
+    
+    
+   <div id="type_slamazonmapimage" class="hidden">
+        
+      
+    <input id="slmapregion" name="slmapregion" type="text" value="nossum" size="70"  /><br/>
+     
+      <select id="slmapzoom" title="zoom">
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option selected="selected" value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        </select>
+        <br/>
+        <a href="javascript:void(0);" onclick="document.getElementById('mainDiv').style.display = 'block';load();">Update Map</a>
+        <br/>
+        <div id="mainDiv" class="mainDiv" >&nbsp;</div>
+    </div>
+    
+    
+    
+    
+    </form>
+    <script type="text/javascript">  
+    function updateGMap( )
+    {
+      document.getElementById('google-map').style.display = 'block';
+    $(".google-map").googlemap({addresses: [document.getElementById('gmapaddr').value]});
+    }
+    
+    </script>
+</body>
+</html>

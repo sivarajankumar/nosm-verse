@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<labyrinth>
+  <mnodetitle>ID%3D%5B2%5D%5D%5D%5D+%2D+start++there+is+an+open+space+present+a+sphere+and</mnodetitle>
+  <javascripttime></javascripttime>
+  <mapname>Test+OL%2DPivote</mapname>
+  <mapid>233</mapid>
+  <mnodeid>8336</mnodeid>
+  <mapscore></mapscore>
+  <timestring></timestring>
+  <message>%3Cp%3Estart++there+is+an+open+space+present+a+sphere+and+a+cube%3C%2Fp%3E</message>
+  <colourbar></colourbar>
+  <linker>%3Cp%3E%3Ca+href%3D%27mnode%5Fclient%2Easp%3Fid%3D8337%26mode%3Dremote%26sessID%3D3D6092D0%2DA5B6%2D4A8B%2D84F4%2D2CEA10BCA73C%27%3EID%3D%5B3%5D%5D%5D%5D+%2D+click+on+sphere++you+are+in+a+simple+white+room+%2D+%3C%2Fa%3E%3C%2Fp%3E%3Cp%3E%3Ca+href%3D%27mnode%5Fclient%2Easp%3Fid%3D8338%26mode%3Dremote%26sessID%3D3D6092D0%2DA5B6%2D4A8B%2D84F4%2D2CEA10BCA73C%27%3EID%3D%5B5%5D%5D%5D%5D+%2D+click+on+cube++you+are+in+a+dark+room+with+two+com%3C%2Fa%3E%3C%2Fp%3E</linker>
+
+  <tracestring>%3Ca+href%3D%22%23%22+onclick%3D%22toggle%5Fvisibility%28%27track%27%29%3B%22%3E%3Cp+class%3D%27style2%27%3E%3Cstrong%3EReview+your+pathway%3C%2Fstrong%3E%3C%2Fp%3E%3C%2Fa%3E%3Cdiv+id%3D%27track%27+style%3D%27display%3Anone%27%3E%3Cp%3E%3Ca+href%3D%27mnode%2Easp%3Fid%3Dqarsx9qu3lpfvu3lpfv1rx7jz%27%3EID%3D%5B2%5D%5D%5D%5D+%2D+start++there+is+an+open+space+present+a+sphere+and%3C%2Fa%3E%3C%2Fp%3E%3C%2Fdiv%3E</tracestring>
+  <rootnode>8336</rootnode>
+  <infolink></infolink>
+  <usermode></usermode>
+  <dam></dam>
+  <mysession>3D6092D0-A5B6-4A8B-84F4-2CEA10BCA73C</mysession>
+  <counterstring></counterstring>
+  <navme></navme>
+  <maptype>maze</maptype>
+  <remoteredir></remoteredir>
+</labyrinth>

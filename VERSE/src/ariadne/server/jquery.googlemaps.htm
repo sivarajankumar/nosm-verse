@@ -1,0 +1,374 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Addresses you can map you can add</title>
+
+    <script type="text/javascript" src="jquery-1.3.2.js"></script>
+    <script src="http://maps.google.com/maps?file=api&v=2&key=ABQIAAAAKtBwpoUmQp880AOn2bPHchQ1drgaxzUFtAJfmampr5QfiaN69xRL0AQ4Z06eJuoei2G6roE3X9VNIw"
+        type="text/javascript"></script>
+    <script src="http://slurl.com/_scripts/slmapapi.js" type="text/javascript"></script>
+    <link rel="stylesheet" type="text/css" href="http://slurl.com/_styles/MAIN.css" />
+    
+    
+    <script type="text/javascript" src="http://maps.google.com/maps?file=api&amp;v=2&amp;sensor=false&amp;key=ABQIAAAAwz5ST2VlEF9GI_ehSurO-xR-jg49YJ_zgRquJ1rr3fz7TwNTlBRxpHi7TNi0Jp4oPpYd2EXgniWvjg"></script>
+   <script type="text/javascript" src="googlemaps.js"></script>
+
+    
+    
+    
+    <script type="text/javascript" src="googlemaps.js"></script>
+    <script type="text/javascript">
+    
+    /*
+    For each grid coordinate there's an API to fetch the region name:
+https://cap.secondlife.com/cap/0/b713fe80-283b-4585-af4d-a3b7d9a32492?var=x&grid_x={X}&grid_y={Y}
+
+So in theory you could go through all possible grid coordinates (y = 1 to 1280, x = 1 to ?) and see if there's a region there. A bit time-consuming and millions of hits to the API server, so not ideal.
+
+It's possible to find region names and UUIDs through Linden Labs' Google Search Appliance, but of the 21,000 total only 2000 are available this way (1000 sorted by descending date, 1000 by ascending date):
+http://search.secondlife.com/client_search.php?q=http://world.secondlife.com/region/*&site=Places&sort=date:D:R:d1&start=0
+http://search.secondlife.com/client_search.php?q=http://world.secondlife.com/region/*&site=Places&sort=date:A:R:d1&start=0
+(the UUID is in the link: http://world.secondlife.com/region/{UUID})
+
+After finding regions using the search appliance, there's an API to fetch the grid coordinates for each named region:
+https://cap.secondlife.com/cap/0/d661249b-2b5a-4436-966a-3d3b8d7a574f?var=foo&sim_name={REGION-NAME}
+
+The image tile for particular coordinates is available:
+http://secondlife.com/apps/mapapi/grid/map_image/{X}-{Y}-{ZOOM}-0.jpg
+(note that the y-coordinate of the image tile is 1279 - grid y coordinate, and small islands only show up at the highest zoom level, 1)
+
+To teleport to the center of any region (as regions are 256x256), use a link like this:
+secondlife:///app/teleport/{REGION-NAME}/128/128/0/
+
+    */
+
+            
+
+        </script>
+
+    <style type="text/css">
+        .canvas
+        {
+            position: relative;
+            width: 800px;
+            height: 600px;
+            margin: 15px auto 0px;
+        }
+        div#map-container
+        {
+            width: 500px;
+            height: 500px;
+        }
+    </style>
+
+
+<script type="text/javascript">
+var mapInstance;
+function loadmap() {
+  // creates the map
+  mapInstance = new SLMap(document.getElementById('map-container'), 
+                          {hasZoomControls: false, hasPanningControls: false});
+  mapInstance.centerAndZoomAtSLCoord(new XYPoint(997, 1002), 2);
+  
+  (document.getElementById('zoom_level')).innerHTML = mapInstance.getCurrentZoomLevel();
+}
+
+function setZoom(level) {
+  mapInstance.setCurrentZoomLevel(level);
+  (document.getElementById('zoom_level')).innerHTML = mapInstance.getCurrentZoomLevel();
+}
+
+function zoomIn() {
+  mapInstance.zoomIn();
+  (document.getElementById('zoom_level')).innerHTML = mapInstance.getCurrentZoomLevel();
+}
+
+function zoomOut() {
+  mapInstance.zoomOut();
+  (document.getElementById('zoom_level')).innerHTML = mapInstance.getCurrentZoomLevel();
+}
+var regionName = 'nossum';
+
+var xmlhttp;
+
+function loadXMLDoc(url)
+{
+xmlhttp=GetXmlHttpObject();
+if (xmlhttp==null)
+  {
+  alert ("Your browser does not support XMLHTTP!");
+  return;
+  }
+xmlhttp.onreadystatechange=stateChanged;
+xmlhttp.open("GET",url,true);
+xmlhttp.send(null);
+}
+
+function GetXmlHttpObject()
+{
+if (window.XMLHttpRequest)
+  {
+  // code for IE7+, Firefox, Chrome, Opera, Safari
+  return new XMLHttpRequest();
+  }
+if (window.ActiveXObject)
+  {
+  // code for IE6, IE5
+  return new ActiveXObject("Microsoft.XMLHTTP");
+  }
+return null;
+}
+
+function stateChanged()
+{
+if (xmlhttp.readyState==4)
+  {
+  if (xmlhttp.status==200)
+    {
+    alert(xmlhttp.responseXML);
+    }
+  else
+    {
+    alert("Problem retrieving XML data:" + xmlhttp.statusText);
+    }
+  }
+}
+
+
+function SLPoint(params, callback)
+{
+	var s = params[0].innerHTML.split("/"); //first element of params must be this format: region/x/y/z
+	var regionName = s[0];
+	var localX = s[1];
+	var localY = s[2];
+	var varName = "slRegionPos_result";
+	var scriptURL = "https://cap.secondlife.com/cap/0/d661249b-2b5a-4436-966a-3d3b8d7a574f?var=" + varName + "&sim_name=" + encodeURIComponent(regionName);
+	var onLoadHandler = function () 
+	{
+		if (slRegionPos_result.error)
+		{
+			//alert("The region name '" + regionName + "' was not recognised.");
+		}
+		else
+		{
+			callback(params, regionName, slRegionPos_result.x + (localX/slTileSize), slRegionPos_result.y + (localY/slTileSize));
+		}
+	};
+	slAddDynamicScript(scriptURL, onLoadHandler);
+}
+
+//loadXMLDoc('https://cap.secondlife.com/cap/0/d661249b-2b5a-4436-966a-3d3b8d7a574f?var=foo&sim_name="+regionName+"')
+
+var foo = {'x' : 1148, 'y' : 1164 };
+zoomInt = "1";
+"http://map.secondlife.com/map-"+zoomInt+"-"+foo[0]+"-"+foo[1]+"-objects.jpg"
+
+//global variables
+_mSvgEnabled = true;
+_mSvgForced = true;
+var map, projection;
+var diagrams=[];
+var svgNS = "http://www.w3.org/2000/svg";
+var initLat = 47;
+var initLng = 8.5;
+var prevViewBoxX, prevViewBoxY; // = 33915 for 47, 8.5 and 22751 for 47, 8.5;
+var prevZoom = 8;
+var top = 0;
+var left = 0;
+
+function load() {
+
+if (GBrowserIsCompatible()) {
+	
+	//load map
+	map = new GMap2(document.getElementById("map"), G_NORMAL_MAP);
+	
+	//add control and set map center
+	map.addControl(new GLargeMapControl());
+	map.setCenter(new GLatLng(initLat, initLng), prevZoom, G_NORMAL_MAP);
+	projection = map.getCurrentMapType().getProjection();
+	
+	prevViewBoxX = getSWBoundsInPixel().x;
+	prevViewBoxY = getNEBoundsInPixel().y;
+	
+	//create new div node for the svg root element
+	var svgDiv = document.createElement("div");
+	svgDiv.setAttribute("id","svgDivison");
+	map.getPane(G_MAP_MAP_PANE).appendChild(svgDiv);
+	
+	//create new svg root element and set attributes
+	var svgRoot = document.createElementNS(svgNS, "svg");
+	svgRoot.setAttribute("id", "customSvgRoot");
+	svgRoot.setAttribute("style", "position:absolute; top:0px; left:0px");
+	svgRoot.setAttribute("viewBox", "0 0 800 600");
+	svgRoot.setAttribute("width", "800");
+	svgRoot.setAttribute("height", "600");
+	svgDiv.appendChild(svgRoot);
+	
+	//read the svg file
+	readData(svgRoot);
+	
+	//add all event listener
+	//event listener which place the diagrams after zoom or move
+	GEvent.addListener(map, "moveend", function(){
+		removeSvgChildren(svgRoot);
+		for(var i=0; i < diagrams.length; i++){
+			replaceSvgNode(svgRoot, diagrams[i].cloneNode(true),
+			parseFloat(diagrams[i].getAttribute("lat")),
+			parseFloat(diagrams[i].getAttribute("lng")),
+			map.getZoom());
+		}
+		
+		var sw = getSWBoundsInPixel();
+		var ne = getNEBoundsInPixel();
+		
+		var zoom = map.getZoom();
+		if(zoom != prevZoom) prevZoom = zoom;
+		else {
+			left += (sw.x - prevViewBoxX);
+			top += (ne.y - prevViewBoxY);
+			svgRoot.setAttributeNS(null, "style", "position:absolute; top:" + top +
+				"px; left:" + left + "px");
+		}
+		prevViewBoxX = sw.x;
+		prevViewBoxY = ne.y;
+	});
+	
+	//event listeners which shows the coordinates
+	GEvent.addListener(map, "mousemove", function(latlng){
+		var latStr = "Lat: " + (Math.round(latlng.lat()*100)/100);
+		var lngStr = "Lng: " + (Math.round(latlng.lng()*100)/100);
+		document.getElementById("lat").firstChild.nodeValue = latStr;
+		document.getElementById("lng").firstChild.nodeValue = lngStr;
+	});
+	
+	GEvent.addListener(map, "mouseout", function(latlng){
+		document.getElementById("lat").firstChild.nodeValue = "";
+		document.getElementById("lng").firstChild.nodeValue = "";
+	});
+	
+}
+	
+// display a warning if the browser was not compatible
+else {
+	alert("Sorry, the Google Maps API is not compatible with this browser");
+}
+}
+
+function replaceSvgNode(svgNode, node, lat, lng, zoom){
+	var sw = getSWBoundsInPixel();
+	var ne = getNEBoundsInPixel();
+	
+	svgNode.setAttribute("viewBox", sw.x + " " + ne.y + " 800 600");
+	
+	var curr = projection.fromLatLngToPixel(new GLatLng(lat, lng), zoom);
+	
+	//var newScale = 0.0011 * Math.pow(2, zoom);
+	var newScale = 0.2;
+	var transformStr = "translate(" + curr.x + ", " + curr.y
+		+ ") scale(" + newScale + ")";
+	node.setAttribute("transform", transformStr);
+	
+	svgNode.appendChild(node);
+	
+	//add dom event listeners to the diagrams
+	//on click show info window
+	GEvent.addDomListener(node, "click", function(evt){
+		var htmlStr = "Stadt: " + node.getAttribute("id") + 
+			"<br/>L&auml;nge: " + node.getAttribute("lat") +
+			"<br/>Breite: " + node.getAttribute("lng");
+		map.openInfoWindowHtml(new GLatLng(node.getAttribute("lat"),
+			node.getAttribute("lng")), htmlStr);
+	});
+	//on mouse over show coordinates and higlight diagram
+	GEvent.addDomListener(node, "mouseover", function(evt){
+		var currentOpacity = parseFloat(node.getAttributeNS(null,
+			"fill-opacity"));
+		node.setAttributeNS(null, "fill-opacity", currentOpacity*2);
+		document.getElementById("text").firstChild.nodeValue =
+			node.getAttribute("id");
+	});
+	GEvent.addDomListener(node, "mouseout", function(evt){
+		var currentOpacity = parseFloat(node.getAttributeNS(null,
+			"fill-opacity"));
+		node.setAttributeNS(null, "fill-opacity", currentOpacity/2);
+		document.getElementById("text").firstChild.nodeValue = "";
+	});
+}
+
+function readData(svgNode){
+	GDownloadUrl("symbol.svg", function(data, responseCode) {
+		var xml = GXml.parse(data);
+		diagrams = xml.documentElement.getElementsByTagName("g");
+		for (var i = 0; i < diagrams.length; i++){
+			replaceSvgNode(svgNode, diagrams[i].cloneNode(true),
+			parseFloat(diagrams[i].getAttribute("lat")),
+			parseFloat(diagrams[i].getAttribute("lng")),
+			map.getZoom());
+		}
+	});
+}
+
+function getSWBoundsInPixel(){
+	var currentBounds = map.getBounds();
+	var sw = currentBounds.getSouthWest();
+	return projection.fromLatLngToPixel(new GLatLng(sw.lat(), sw.lng()), map.getZoom());
+}
+
+function getNEBoundsInPixel(){
+	var currentBounds = map.getBounds();
+	var ne = currentBounds.getNorthEast();
+	return projection.fromLatLngToPixel(new GLatLng(ne.lat(), ne.lng()), map.getZoom());
+}
+
+function removeSvgChildren(svgNode){
+	while(svgNode.lastChild != null){
+		svgNode.removeChild(svgNode.lastChild);
+	}
+}
+
+
+
+</script>
+</head>
+<body onload="loadmap()" onunload="GUnload()">
+<div id="google-map" class="canvas">
+        <!-- Google map container 1 -->
+    </div>
+    <div id="google-map2" class="canvas">
+        <!-- Google map container 2 -->
+    </div>
+    
+<p>This map has the usual pan/zoom controls disabled, and the hyperlinks 
+below implement custom pan/zoom controls via SLMap Javascript calls.</p>
+<h2>Set the zoom level</h2>
+<h3>The Current Zoom Level is <span style='color:red' id='zoom_level'></span></h3>
+
+<a href="javascript: setZoom(1);">1</a>
+<a href="javascript: setZoom(2);">2</a>
+<a href="javascript: setZoom(3);">3</a>
+<a href="javascript: setZoom(4);">4</a>
+<a href="javascript: setZoom(5);">5</a>
+<a href="javascript: setZoom(6);">6</a>
+<a href="javascript: setZoom(7);">7</a>
+<a href="javascript: setZoom(8);">8</a>
+<a href="javascript: zoomIn();">zoom in</a>
+<a href="javascript: zoomOut();">zoom out</a>
+
+<h2>Pan Around</h2>
+
+<a href="javascript: mapInstance.panLeft();">left</a>
+<a href="javascript: mapInstance.panRight();">right</a>
+<a href="javascript: mapInstance.panUp();">up</a>
+<a href="javascript: mapInstance.panDown();">down</a>
+<br/><br/>
+
+<div id="map-container"></div>
+<p>Click on these links to be teleported into Second Life via a SLURL:</p>
+<p><a href="javascript:gotoSLURL(997, 1002, mapInstance)"> Go to (997, 1002) </a>(where the welcome fountain is) <br />
+<a href="javascript:gotoSLURL(996.5, 1001.6, mapInstance)"> Go to (996.5, 1001.6) </a> <br />
+
+<a href="javascript:gotoSLURL(1000, 1000, mapInstance)"> Go to (1000, 1000) </a><br />
+
+
+</body>
+</html>
