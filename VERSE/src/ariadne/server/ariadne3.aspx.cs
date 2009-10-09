@@ -80,15 +80,16 @@ public partial class ariadne3 : System.Web.UI.Page
                             string strMNodeTitle = HttpUtility.UrlDecode(extractNode("//labyrinth/mnodetitle", OLResults));
                             string thisNodeID = extractNode("//labyrinth/mnodeid", OLResults);
                             int intMNodeID = Convert.ToInt32(thisNodeID);
+                            //always add vpdtext
+                            outboundXMLText = outboundXMLText + "<Asset type=\"VPDText\" name=\"nodenm\" targettype=\"PIVOTE\" value=\"" + strMNodeTitle + "\" ></Asset>";
 
-                            DataTable aT = getDataTable4SimpleSQL("SELECT Assets.AssetID, Assets.AssetTypeID, Assets.AssetTargetType, Assets.AssetName, AssetMapNode.MNodeID, Assets.AssetValue, AssetType.AssetTypeName FROM AssetMapNode", thisNodeID, "");
+                            DataTable aT = (DataTable)this.ExecuteQuery("SELECT Lower(AssetTypeName) as AssetTypeName, NodeAssetName,NodeAssetTarget, NodeAssetValue, AssetTypeDesc, MNodeID, AssetTypeUIPairs FROM AssetMapNode mapped, AssetType types where mapped.AssetTypeID = types.AssetTypeID and mapped.MNodeID = @param", thisNodeID, true);
+
                             foreach (DataRow row in aT.Rows)
                             {
                                 outboundXMLText = outboundXMLText + "<Asset type=\"" + row[0] + "\" name=\"" + row[1] + "\" targettype=\"" + row[2] + "\" value=\"" + row[3] + "\" ></Asset>";
                             }
 
-                            //always add vpdtext
-                            outboundXMLText = outboundXMLText + "<Asset type=\"VPDText\" name=\"nodenm\" targettype=\"PIVOTE\" value=\"" + strMNodeTitle + "\" ></Asset>";
                    
                             //links
                             outboundXMLText = outboundXMLText + getLinkSetXML(extractNode("//labyrinth/linker", OLResults));
@@ -109,8 +110,9 @@ public partial class ariadne3 : System.Web.UI.Page
                             if (Session["ol-sessid"] != null) Session["ol-sessid"] = sessID; // needed?
 
                             string OLResults = getOLXml(mnodeID, sessID);
+//throw new Exception("OLResults: " + OLResults);
                             string olXMLSess = extractNode("//labyrinth/mysession", OLResults);
-
+throw new Exception("olXMLSess: " + olXMLSess);
                             if (sessID == "")
                                 Session["ol-sessid"] = olXMLSess;
                             else
@@ -119,27 +121,46 @@ public partial class ariadne3 : System.Web.UI.Page
                             
                             
                             string strMNodeTitle = HttpUtility.UrlDecode(extractNode("//labyrinth/mnodetitle", OLResults));
-                            string thisNodeID = extractNode("//labyrinth/mnodeid", OLResults);
+                            string thisNodeID = extractNode("/labyrinth/mnodeid", OLResults);
                             int intMNodeID = Convert.ToInt32(thisNodeID);
-
-                            DataTable aT = getDataTable4SimpleSQL("SELECT Assets.AssetID, Assets.AssetTypeID, Assets.AssetTargetType, Assets.AssetName, AssetMapNode.MNodeID, Assets.AssetValue, AssetType.AssetTypeName FROM AssetMapNode", thisNodeID, "");
-                            foreach (DataRow row in aT.Rows)
-                            {
-                                outboundXMLText = outboundXMLText + "<Asset type=\"" + row[0] + "\" name=\"" + row[1] + "\" targettype=\"" + row[2] + "\" value=\"" + row[3] + "\" ></Asset>";
-                            }
                             //always add vpdtext
                             outboundXMLText = outboundXMLText + "<Asset type=\"VPDText\" name=\"nodenm\" targettype=\"PIVOTE\" value=\"" + strMNodeTitle + "\" ></Asset>";
 
+                            DataTable aT = (DataTable)this.ExecuteQuery("SELECT Lower(AssetTypeName) as AssetTypeName, NodeAssetName,NodeAssetTarget, NodeAssetValue, AssetTypeDesc, MNodeID, AssetTypeUIPairs FROM AssetMapNode mapped, AssetType types where mapped.AssetTypeID = types.AssetTypeID and mapped.MNodeID = 8336 ", thisNodeID, true);
 
-                            // add asset attrib xml
-                            DataTable aT2 = getDataTable4SimpleSQL("SELECT Assets.AssetID, Assets.AssetTypeID, Assets.AssetTargetType, Assets.AssetName, AssetMapNode.MNodeID, Assets.AssetValue, AssetType.AssetTypeName FROM AssetMapNode", thisNodeID, "");
-                            foreach (DataRow row in aT2.Rows)
+
+                            foreach (DataRow row in aT.Rows)
                             {
-                                    outboundXMLText = outboundXMLText + "<assetattrib name=\"" + row[0] + "\" value=\"" + row[1] + "\" label=\"" + row[2] + "\"/></<assetattrib>";
+//throw new Exception("hey some rows!: ");
+                                outboundXMLText = outboundXMLText + "<Asset type=\"" + row[0] + "\" name=\"" + row[1] + "\" targettype=\"" + row[2] + "\" value=\"" + row[3] + "\" ></Asset>";
+
+
+
+			    }
+/*
+			    DataTable aT3 = (DataTable)this.ExecuteQuery("select AssetTypeID from AssetType", " ", true);
+                            foreach (DataRow row3 in aT3.Rows)
+                            {
+
+                             	// add asset attrib xml, FOR EACH ASSET TYPE
+                            	DataTable aT2 = (DataTable)this.ExecuteQuery("SELECT AssetTypeAttribValue, CASE  WHEN(SELECT SUM(1) FROM AssetTypeAttribs attr WHERE  attr.AssetTypeID = (select distinct AssetTypeID  from AssetType where   AssetType.AssetTypeID = @param )  ) > 1  THEN 'select' ELSE 'input' END as FROM  AssetTypeAttribs  WHERE AssetTypeAttribs.AssetTypeID = @param  ", Convert.ToInt32(row3[0].ToString()), true);
+
+                            	foreach (DataRow row2 in aT2.Rows)
+                            	{
+                                    	outboundXMLText = outboundXMLText + "<assetattrib name=\"\" value=\"" + row2[0] + "\" label=\"" + (string)row2[0] + "\" ftype=\"" + row2[1] + "\"/></<assetattrib>";
+                            	}
+
                             }
+*/
+//throw new Exception("OLResults string: " + OLResults);
 
                             //links
-                            outboundXMLText = outboundXMLText + getLinkSetXML(extractNode("//labyrinth/linker", OLResults));
+				string linkXML = extractNode("/labyrinth/linker", OLResults);
+
+throw new Exception("linkXML string: " + linkXML);
+
+                            outboundXMLText = outboundXMLText + getLinkSetXML(linkXML);
+
                         }
                         break;
 
@@ -177,7 +198,7 @@ public partial class ariadne3 : System.Web.UI.Page
         }
         catch (Exception Ex)
         {
-            outboundXMLText = "General Error Trapping [" + Ex.Message + "]";
+            outboundXMLText = "General Error Trapping [" + Ex.Message + Ex.Data.Values.ToString() + Ex.GetBaseException().StackTrace.ToString()+ "]";
         }
 
         // run xslt?
@@ -192,10 +213,47 @@ public partial class ariadne3 : System.Web.UI.Page
 
     public string extractNode(string nodePath, string xml)
     {
+/*
         XmlDocument xDoc = new XmlDocument();
         xDoc.LoadXml(xml);
         XmlNode xmlNode = (XmlNode)xDoc.SelectNodes(nodePath).Item(0);
         return xmlNode.Value;
+
+
+  XPathNavigator nav;
+   XPathDocument docNav;
+   XPathNodeIterator NodeIter;
+
+     docNav = new XPathDocument(xml);
+     nav = docNav.CreateNavigator();
+     string strExpression = nav.Evaluate(nodePath).ToString();
+    return strExpression ;
+
+
+
+XmlDocument xmldoc = new XmlDocument();
+xmldoc.Load(xml);
+System.IO.StringReader sr = new System.IO.StringReader(xmldoc.InnerXml);
+XPathDocument doc = new XPathDocument(sr);
+XPathNavigator nav = doc.CreateNavigator();
+XPathExpression ex = nav.Compile(nodePath);
+*/
+
+XmlTextReader reader = new XmlTextReader(xml);
+XmlDocument doc = new XmlDocument(); 
+doc.Load(reader);
+//reader.Close();
+
+XmlNode xmlNode ;
+XmlElement root = doc.DocumentElement;
+xmlNode  = root.SelectSingleNode(@nodePath);
+
+
+return xmlNode.Value;
+
+
+
+
     }
 
     public string getX(string n, string v)
@@ -226,6 +284,8 @@ public partial class ariadne3 : System.Web.UI.Page
 
     public string getLinkSetXML(string strLinker)
     {
+throw new Exception("linker string: " + strLinker);
+
         string xmlout = "";
         strLinker = strLinker.Replace("<p>", "");
         strLinker = strLinker.Replace("</p>", "");
@@ -281,20 +341,26 @@ public partial class ariadne3 : System.Web.UI.Page
         string OLResults = String.Empty;
         string str2append = String.Empty;
         string OLAddress = System.Configuration.ConfigurationManager.AppSettings["OLURL"].ToString();
+
         if (sessID == "" || sessID == null)
         {
             // First call.
             OLAddress += "mnode.asp?mode=remote&id=" + mnodeID;
+//throw new Exception("OLAddress: " + OLAddress+"<-");
             OLResults = GetPageAsString(OLAddress);
+//throw new Exception("OLResults: " + OLResults);
         }
         else
         {
             // Subsequent call.
             OLAddress += "mnode.asp?mode=remote&id=" + mnodeID + "&sessID=" + sessID;
+//throw new Exception("OLAddress: " + OLAddress);
+
             OLResults = GetPageAsString(OLAddress);
+//throw new Exception("OLResults: " + OLResults);
         }
 
-        if (OLResults.Contains("<labyrinth>"))  // it's valid XML vs. error message
+        if (OLResults.Contains("<labyrinth>") && !OLResults.Contains("<labyrinth>Not a valid"))  // it's valid XML vs. error message
         {
             str2append = str2append + OLResults;
         }
@@ -305,10 +371,6 @@ public partial class ariadne3 : System.Web.UI.Page
         return str2append;
     }
 
-    public DataTable getDataTable4SimpleSQL(string queryprefix, string theTxtkey, string querysuffix)
-    {
-        return (DataTable)this.ExecuteQuery(queryprefix + " '" + theTxtkey + "' " + querysuffix);
-    }
 
 
     public static string GetPageAsString(string address)
@@ -360,10 +422,10 @@ public partial class ariadne3 : System.Web.UI.Page
         return contents;
     }
 
-    private DataTable ExecuteQuery(string SQLstring)
+    private DataTable ExecuteQuery(string SQLstring, object theKey, bool useNumber)
     {
         DataTable dt;
-        SqlConnection conn = new SqlConnection(System.Web.Configuration.WebConfigurationManager.ConnectionStrings["AriadneConnectionString"].ToString());
+        SqlConnection conn = new SqlConnection(System.Web.Configuration.WebConfigurationManager.ConnectionStrings["AriadneConnectionString2"].ToString());
         //DataTable dt = new DataTable("AssetType");
         using (conn)
         {
@@ -374,11 +436,17 @@ public partial class ariadne3 : System.Web.UI.Page
             cmd.Connection = conn;
             SqlDataAdapter da = new SqlDataAdapter();
             da.SelectCommand = cmd;
+		SqlParameter p1 = new SqlParameter("@param", theKey );
+		
+//if (useNumber){
+//p1 = new SqlParameter("@param", thekey, SqlDbType.VarChar);
 
-            //SqlParameter p1 = new SqlParameter(param, SqlDbType.VarChar);
-            //p1.Direction = ParameterDirection.Input;
-            //p1.Value = Convert.ToInt32(paramVal);
-            //cmd.Parameters.Add(p1);
+//}
+
+            
+            p1.Direction = ParameterDirection.Input;
+            p1.Value = Convert.ToInt32(theKey);
+            cmd.Parameters.Add(p1);
 
             dt = new DataTable();
             da.Fill(dt);

@@ -1,36 +1,4 @@
-function Querystring(qs) { // optionally pass a querystring to parse
-	this.params = {};
-	
-	if (qs == null) qs = location.search.substring(1, location.search.length);
-	if (qs.length == 0) return;
 
-// Turn <plus> back to <space>
-// See: http://www.w3.org/TR/REC-html40/interact/forms.html#h-17.13.4.1
-	qs = qs.replace(/\+/g, ' ');
-	var args = qs.split('&'); // parse out name/value pairs separated via &
-	
-// split out each name=value pair
-	for (var i = 0; i < args.length; i++) {
-		var pair = args[i].split('=');
-		var name = decodeURIComponent(pair[0]);
-		
-		var value = (pair.length==2)
-			? decodeURIComponent(pair[1])
-			: name;
-		
-		this.params[name] = value;
-	}
-}
-
-Querystring.prototype.get = function(key, default_) {
-	var value = this.params[key];
-	return (value != null) ? value : default_;
-}
-
-Querystring.prototype.contains = function(key) {
-	var value = this.params[key];
-	return (value != null);
-}
 
 
 $(document).ready(function(){
@@ -39,23 +7,29 @@ $(document).ready(function(){
             assetType = $(this).attr("type");
             assetName = $(this).attr("name");
             // alert ('in asset attribs: ' + assetName);
-            var qStr = new Querystring(location.search.substring(1, location.search.length));
-            var aName = qStr.get("asset");
-            var aType = qStr.get("assetType");
-            if (assetName.toLowerCase() == qStr.get("asset").toLowerCase() && assetType.toLowerCase() == qStr.get("assetType").toLowerCase()) {
+            //var qStr = new Querystring(location.search.substring(1, location.search.length));
+            var aName = $(document).getUrlParam("asset");
+            var assetType = $(document).getUrlParam("assetType");
+            //var aName = qStr.get("asset");
+            //var aType = qStr.get("assetType");
+            
+            if (assetName.toLowerCase() == aName.toLowerCase() && assetType.toLowerCase() == assetType.toLowerCase()) {
                // alert("found match: " + aName + '~' + aType);
                 $("input[name='assetTypeIN']").setValue(assetType);
                 $("input[name='assetNameIN']").setValue(assetName);
                 $("input[name='assetTargetIN']").setValue($(this).attr("targettype"));
                 $("input[name='assetValueIN']").setValue($(this).attr("value"));
                 //alert('assetValueIN populated with: ' + $("input[name='assetValueIN']").getValue());
-                qStr = new Querystring(location.search.substring(1, location.search.length));
+                //qStr = new Querystring(location.search.substring(1, location.search.length));
                 populateFields();
-                showonlyone("" + qStr.get("asset"), 'type');
+                showonlyone(aName, 'type');
             }
         });
         window.oSelector = $("#selector");
         updateGMap( );
+        
+        //eventually call all fields that are visible, not just main selector
+        document.getElementById("selector").onchange();
     });
     
     //$.get("OLXML.xml",{},function(xml){ // passing current mnode
@@ -308,40 +282,28 @@ function gv4ks(url, key2look){
 }
 
 
-/*
- function getVisibleFieldsValues(divname)
+
+ function getVisibleFieldsValues()
      {
- var myObj = document.getElementById(divname);
- var iInput = myObj.innerHTML.toLowerCase().indexOf("<input");
- var iSelect = myObj.innerHTML.toLowerCase().indexOf("<select");
+                //var curVal = gv4ks($("input[name='assetValueIN']").getValue());
+                //if (curVal != ""){
+                  //  alert(curVal, InputName);
+                   // $("input[name='assetValueOUT']").setValue(curVal);
+                    
+                var form = document.forms['mainDummy'];
 
- if (iInput > -1 || iSelect > -1){
- if (iInput > -1 ) {
- s = iInput;
- } else {
- s = iSelect;
+                for(var i = 0, n = form.length; i < n; ++i) {
+                    var elem = form.elements[i];
+
+                    if(elem.id != '' && elem.name != '' && elem.style && 'hidden' != elem.style.visibility) {
+                         alert( $(elem.parentNode).id + ' ---- ' +  elem.name);
+                    }
+               }
  }
- e = myObj.innerHTML.indexOf(">",s+1);
- var InputTag = myObj.innerHTML.substr(s,e-s+1);
- if (InputTag){
- s = InputTag .indexOf("name=");
- e = InputTag.indexOf("\"",s+6);
- var InputName = InputTag.substr(s+6,e-s-6);
- var thisField = document.getElementById(InputName);
- if (thisField){
- if (thisField.style.display == 'block'){ // is visible, is to be queried
- var curVal = gv4ks($("input[name='assetValueIN']").getValue());
- if (curVal != ""){
- alert(curVal, InputName);
- $("input[name='assetValueOUT']").setValue(curVal);
+                                           
  //$("select[name='assetValueOUT']").setValue(curVal);
- }
- }
- }
 
- }
- }
- */
+
 function populateFields(){
 
     var aName = document.forms[0].assetNameIN.value;

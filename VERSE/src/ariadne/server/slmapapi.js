@@ -1,4 +1,6 @@
 //
+//  Map of how SL map relates to the Google map:
+//
 //  ( 0, 0) Google map pixels
 //  (90, 0) lat, long
 //  (0, slGridEdgeSizeInRegions) grid_x, grid_y
@@ -732,7 +734,8 @@ SLMap.prototype.CreateMapDiv = function(mainDiv)
 	};
 	
 	// Create a div to be the main map container as a child of the main div
-	var mapDiv = document.createElement("div");
+	//mainDiv = document.getElementById("mainDiv");
+	//mapDiv = document.getElementById("map");
 	
 	// Match parent height
 	mapDiv.style.height = "100%";

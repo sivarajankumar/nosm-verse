@@ -2,16 +2,12 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
     <title>Asset Detail</title>
-    
     <script type="text/javascript" src="jquery-1.3.2.js"></script>
-
     <script type="text/javascript" src="jquery.field.js"></script>
-
-
+    <script type="text/javascript" src="jquery.getUrlParam.js"></script>
     <script type="text/javascript" src="readXMLEdit.js"></script>
     <script type="text/javascript" src="jgcharts/namespace.js"></script>
     <script src="jgcharts/Utils.txt" type="text/javascript"></script>
-
     <script type="text/javascript" src="http://maps.google.com/maps?file=api&amp;v=2&amp;sensor=false&amp;key=ABQIAAAAwz5ST2VlEF9GI_ehSurO-xR-jg49YJ_zgRquJ1rr3fz7TwNTlBRxpHi7TNi0Jp4oPpYd2EXgniWvjg"></script>
     <!--
     // will work on our server??
@@ -20,8 +16,31 @@
     <script src="http://slurl.com/_scripts/slmapapi.js" type="text/javascript"></script>
     <link rel="stylesheet" type="text/css" href="http://slurl.com/_styles/MAIN.css" />
 
-   <script type="text/javascript" src="googlemaps.js"></script>
 
+<style type="text/css">
+  /* Override SL CSS */
+  
+html {
+	height: 100%;
+	max-height: 100%;
+	padding: 0 5px;
+	margin: 0;
+	border: 0;
+	background: #fff;
+}
+
+body {
+	height: 100%;
+	max-height: 100%;
+	padding: 0;
+	margin: 0;
+	border: 0;
+	overflow: scroll;
+}
+
+    
+    </style>
+   <script type="text/javascript" src="googlemaps.js"></script>
     <script src="jgcharts/chartmaker.js" type="text/javascript"></script>
     
     
@@ -29,7 +48,7 @@
 var mapInstance;
 function loadmap() {
   // creates the map
-  mapInstance = new SLMap(document.getElementById('map-container'), 
+  mapInstance = new SLMap(document.getElementById('type_slamazonmapimage'), 
                           {hasZoomControls: false, hasPanningControls: false});
   mapInstance.centerAndZoomAtSLCoord(new XYPoint(997, 1002), 2);
   
@@ -660,7 +679,7 @@ function removeSvgChildren(svgNode){
         <h2>
             Chat options:</h2>
         <br />
-        <p>
+
             Chats, messages and commands can be sent on the following channels:
             <select name="cc" onchange="showonlyone(this.options[this.selectedIndex].text, 'channelType')">
                 <option value="0">Public</option>
@@ -669,39 +688,64 @@ function removeSvgChildren(svgNode){
                 <option value="687686">Main_Parcel_Game Controller</option>
                 <option value="-63342">Controller_Media_Relay</option>
                 <option value="687687">NOSM_Bracelet_Multicast</option>
+                <option value="-3857343">Sloodle_Object</option>
+                <option value="1001">Sloodle_Player_Multicast</option>
+                <option value="687687">NOSM_Bracelet_Multicast</option>
+                <option value="7051674">vpmannequin</option>
                 <option value="">Other</option>
             </select><br />
-        </p>
-        <div id="channelType_Other" class="hidden">
-            <p>
-                Channel:
-                <input name="chatChannelValue" size="12" type="text" /></p>
-            <p>
+
                 Message to be chatted :
                 <input name="chatChannelMsg" type="text" size="50" /><br />
-            </p>
-        </div>
-        <div id="channelType_Public">
-            Message to be chatted on public channel (channel '0') :
-            <input name="chatValue0" size="50" type="text" /></div>
-        <div id="channelType_Registration_Booth" class="hidden">
-            API Command for NOSM Registration Booth:
-            <input name="chatValue-8787" size="50" type="text" /></div>
-        <div id="channelType_NOSM_Bracelet_Multicast" class="hidden">
-            API Command for all NOSM Staff &amp; Bracelets in range:
-            <input name="chatValue687687" size="50" type="text" /></div>
-        <div id="channelType_Controller_Media_Relay" class="hidden">
-            Parcel URL:
-            <input name="chatValue-63342" size="50" type="text" /></div>
+                
+           <div id="channelType_Other" class="hidden">
+<br />
+                Channel:
+                <input name="chatChannelValue" size="12" type="text" />
+        </div> 
+        <div id="channelType_vpmannequin" class="hidden">
+            PIVOTE Mannequin Commands:
+            <select name="mannequin_cmds">
+<option value="ask: can you hear me" >Ask the patient Can You Hear Me</option>
+<option value="ask: history full" >Ask the patient their history, as detailed as possible</option>
+<option value="ask: history brief previous" >Ask the patient their history, in brief</option>
+<option value="ask: pain score" >Ask the patient about their pain</option>
+<option value="ask: pain where" >Ask the patient where it hurts</option>
+<option value="ask: pain describe" >Ask the patient to describe the pain</option>
+<option value="ask: pain duration" >Ask the patient how long the pain lasts</option>
+<option value="ask: pain change" >Ask the patient if the pain has changed</option>
+<option value="ask: walk to the ambulance" >Ask the patient if they can walk to the ambulance</option>
+<option value="ask: how are you" >Ask the patient how they are</option>
+<option value="ask: happened" >Ask the patient what happened</option>
+<option value="ask: medication" >Ask the patient if they have taken medication</option>
+<option value="ask: allergy" >Ask the patient if they have allergies</option>
+<option value="ask: name" >Ask the patient their name</option>
+<option value="ask: age" >Ask the patient their age</option>
+<option value="ask: stand" >Ask the patient to stand</option>
+<option value="ask: move" >Ask the patient to move</option>
+<option value="show attach" >Show attachment points on the mannequin</option>
+<option value="hide attach" >Hide attachment points on the mannequin</option>
+<option value="show touch" >Show touch points on the mannequin</option>
+<option value="hide touch" >Hide touch points on the mannequin</option>
+<option value="show anchor" >Show mannequin anchor prim</option>
+<option value="hide anchor" >Hide mannequin anchor prim</option>
+<option value="show all" >Show attachment and touch points on the mannequin</option>
+<option value="attach show" >Show attachment points on the mannequin</option>
+<option value="touch show" >Show touch points on the mannequin</option>
+<option value="hide all" >Hide all attachment and touch points on the mannequin</option>
+<option value="tidy" >Reset the mannequin</option>
+<option value="give paramedic box">Rez MVP Paramedic Box beside mannequin</option>
+            </select></div> 
+                 
         <div id="channelType_Horizons_Holodeck-viewer_area_edition" class="hidden">
             Holodeck commands:
             <select name="Holodeck_chat_cmds" onchange="showonlyone(this.options[this.selectedIndex].value.replace(/\s+/g,'').substring(0,4), 'HH_sname')">
                 <option value="list scenes">Lists available scenes on public chat channel</option>
                 <option value="clear">Clears the current scene</option>
-                <option value="end scene">Clears this scene:</option>
-                <option value="run scene">Runs this scene:</option>
+                <option value="end scene">Clears this scene: </option>
+                <option value="run scene">Runs this scene: </option>
                 <option value="list shells">Lists available shells</option>
-                <option value="run shell">Loads this shell:</option>
+                <option value="run shell">Loads this shell: </option>
                 <option value="end shell">Clears the current shell</option>
                 <option value="list staff">Lists authorized staff (set in your notecard)</option>
                 <option value="list guests">Lists authorized guests (set in your notecard)</option>
@@ -715,20 +759,24 @@ function removeSvgChildren(svgNode){
             </select></div>
         <div id="HH_sname_runs" class="hidden">
             <br />
-            <p>
+           
                 Scene/Shell to run:
                 <select name="sname">
                     <option value=""></option>
-                </select></p>
+                </select>
         </div>
+        
         <div id="HH_sname_ends" class="hidden">
             Scene/Shell to clear:
             <select name="sename">
                 <option value=""></option>
-            </select></div>
+            </select>
+            </div>
+            
+            
         <div id="channelType_Main_Parcel_Game Controller" class="hidden">
             Controller Commands:
-            <select name="controller_cmds" onchange="showonlyone(this.options[this.selectedIndex].value.replace(/\s+/g,'').substring(0,4), 'HH_sname')">
+            <select name="controller_cmds">
                 <option value="start">Start the Labyrinth</option>
                 <option value="reset">Reset the Controller</option>
                 <option value="options">Show Options on viewer</option>
@@ -761,7 +809,7 @@ function removeSvgChildren(svgNode){
             <input name="csm" value="whisper" type="radio" />
             <i>(can only be heard within 10 meters of the speaker)</i><br />
             say it normally:
-            <input name="csm" value="say" type="radio" />
+            <input name="csm" checked="checked" value="say" type="radio" />
             <i>(can only be heard within 20 meters of the speaker)</i><br />
             shout it:
             <input name="csm" value="shout" type="radio" />
@@ -843,11 +891,9 @@ function removeSvgChildren(svgNode){
         <br />
         <p>
             <select name="lmn">
-                <!-- **ASP** -->
                 <option value="nossum island">nossum island</option>
                 <option value="St Georges">St Georges</option>
                 <option value="Free Dove">Free Dove</option>
-                <!-- **/ASP** -->
             </select><br />
         </p>
     </div>
@@ -873,10 +919,8 @@ function removeSvgChildren(svgNode){
         <br />
         <p>
             <select name="ncn">
-                <!-- **ASP** -->
                 <option value="pivotecfg">pivotecfg</option>
                 <option value="test">test</option>
-                <!-- **//ASP** -->
             </select></p>
     </div>
     <div id="type_slobject" class="hidden">
@@ -1240,7 +1284,7 @@ function removeSvgChildren(svgNode){
         <table width="826" border="0">
             <tr>
                 <td>
-                    Content Type ('application/dicom' MIME is not supported on Second life parcel viewers):
+                    Note: Content Type ('application/dicom' MIME is not supported on Second life parcel viewers):
                 </td>
                 <td>
                     &nbsp;
@@ -1266,6 +1310,16 @@ function removeSvgChildren(svgNode){
                     <em>Image Data Parameters:</em>
                 </td>
             </tr>
+            
+            <tr>
+                <td>
+                    &nbsp;
+                </td>
+                <td>
+                    &nbsp;
+                </td>
+            </tr>
+            
             <tr>
                 <td>
                     FrameNumber: Specifies that the single frame with that number within a multi-frame
@@ -1275,6 +1329,16 @@ function removeSvgChildren(svgNode){
                     <input name="frameNumber" type="text" id="Text3" />integer
                 </td>
             </tr>
+            
+            <tr>
+                <td>
+                    &nbsp;
+                </td>
+                <td>
+                    &nbsp;
+                </td>
+            </tr>
+            
             <tr>
                 <td>
                     Annotate patient data from a DICOM object retrieved
@@ -1285,10 +1349,27 @@ function removeSvgChildren(svgNode){
             </tr>
             <tr>
                 <td>
+                    &nbsp;
+                </td>
+                <td>
+                    &nbsp;
+                </td>
+            </tr>
+            
+            <tr>
+                <td>
                     Annotate technique data from a DICOM object retrieved
                 </td>
                 <td>
                     <input name="annotation" type="checkbox" id="Checkbox2" value="annotateTech" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    &nbsp;
+                </td>
+                <td>
+                    &nbsp;
                 </td>
             </tr>
             <tr>
@@ -1301,8 +1382,24 @@ function removeSvgChildren(svgNode){
                 </td>
             </tr>
             <tr>
+                <td>
+                    &nbsp;
+                </td>
+                <td>
+                    &nbsp;
+                </td>
+            </tr>
+            <tr>
                 <td colspan="2">
                     <em>Presentation:</em>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    &nbsp;
+                </td>
+                <td>
+                    &nbsp;
                 </td>
             </tr>
             <tr>
@@ -1312,6 +1409,14 @@ function removeSvgChildren(svgNode){
                 </td>
                 <td>
                     <input name="imageQuality" type="text" id="Text4" />1-100
+                </td>
+            </tr>
+                        <tr>
+                <td>
+                    &nbsp;
+                </td>
+                <td>
+                    &nbsp;
                 </td>
             </tr>
             <tr>
@@ -1342,8 +1447,24 @@ function removeSvgChildren(svgNode){
                 </td>
             </tr>
             <tr>
+                <td>
+                    &nbsp;
+                </td>
+                <td>
+                    &nbsp;
+                </td>
+            </tr>
+            <tr>
                 <td colspan="2">
                     <em>Region:</em>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    &nbsp;
+                </td>
+                <td>
+                    &nbsp;
                 </td>
             </tr>
             <tr>
@@ -1366,6 +1487,14 @@ function removeSvgChildren(svgNode){
             </tr>
             <tr>
                 <td>
+                    &nbsp;
+                </td>
+                <td>
+                    &nbsp;
+                </td>
+            </tr>
+            <tr>
+                <td>
                     BottomRightX: double : the x position of the bottom right hand extent of the region,
                     1.0 corresponding to the last column of the image matrix, 0.0 being forbidden.
                 </td>
@@ -1384,10 +1513,26 @@ function removeSvgChildren(svgNode){
             </tr>
             <tr>
                 <td>
+                    &nbsp;
+                </td>
+                <td>
+                    &nbsp;
+                </td>
+            </tr>
+            <tr>
+                <td>
                     Contrast: Controls the contrast of the image double
                 </td>
                 <td>
                     <input name="windowWidth" type="text" id="Text11" />double
+                </td>
+            </tr>
+                        <tr>
+                <td>
+                    &nbsp;
+                </td>
+                <td>
+                    &nbsp;
                 </td>
             </tr>
             <tr>
@@ -1399,8 +1544,24 @@ function removeSvgChildren(svgNode){
                 </td>
             </tr>
             <tr>
+                <td>
+                    &nbsp;
+                </td>
+                <td>
+                    &nbsp;
+                </td>
+            </tr>
+            <tr>
                 <td colspan="2">
                     <em>Presentation State Storage IDs:</em>
+                </td>
+            </tr>
+                        <tr>
+                <td>
+                    &nbsp;
+                </td>
+                <td>
+                    &nbsp;
                 </td>
             </tr>
             <tr>
@@ -1410,6 +1571,14 @@ function removeSvgChildren(svgNode){
                 </td>
                 <td>
                     <input name="presentationSeriesUID" type="text" id="Text14" />
+                </td>
+            </tr>
+                        <tr>
+                <td>
+                    &nbsp;
+                </td>
+                <td>
+                    &nbsp;
                 </td>
             </tr>
             <tr>
@@ -1432,6 +1601,14 @@ function removeSvgChildren(svgNode){
             <tr>
                 <td>
                     Content Type ('application/dicom' MIME is not supported on Second life parcel viewers):
+                </td>
+                <td>
+                    &nbsp;
+                </td>
+            </tr>
+                        <tr>
+                <td>
+                    &nbsp;
                 </td>
                 <td>
                     &nbsp;
@@ -1474,6 +1651,14 @@ function removeSvgChildren(svgNode){
                         &nbsp;
                     </td>
                 </tr>
+            <tr>
+                <td>
+                    &nbsp;
+                </td>
+                <td>
+                    &nbsp;
+                </td>
+            </tr>
                 <tr>
                     <td>
                         <br />
@@ -1487,6 +1672,14 @@ function removeSvgChildren(svgNode){
                         </select>
                     </td>
                 </tr>
+            <tr>
+                <td>
+                    &nbsp;
+                </td>
+                <td>
+                    &nbsp;
+                </td>
+            </tr>
                 <tr>
                     <td>
                         Character set with which the returned object is to be encoded
@@ -1504,12 +1697,22 @@ function removeSvgChildren(svgNode){
     <div id="vpd_vpd" class="hidden">
         <table summary="" width="826" border="0">
             <tr>
+                <td>
+                    WADO-DICOM Object Configuration:
+                </td>
+                <td>
+                    &nbsp;
+                </td>
+            </tr>
+            <tr>
                 <td width="458">
-                    Server: A system managing DICOM Persistent Objects and able to transmit them on
-                    request to the Web Client System.
+                    WADO Service: A server system managing DICOM Persistent Objects and able to transmit them on
+                    request to the parcel viewer.
                 </td>
                 <td width="352">
-                    <select name="serverImplType" id="Select1">
+                <script type="text/javascript"> function shwref(){if(document.getElementById("serverImplType").options[document.getElementById("serverImplType").selectedIndex].value == "dcm4che"){document.getElementById("wadolnk").innerHTML = "<a href='http://localhost:8080/dcm4chee-web/aeedit.m?aet=DCM4CHEE'>Administer local server</a>";document.getElementById("panellnk").innerHTML = "<a href='http://localhost:8080/dcm4chee-web/foldersubmit.m?filter=true'>Open Panel</a>";}else{document.getElementById("wadolnk").innerHTML = "";document.getElementById("panellnk").innerHTML = "";}}</script>
+                   
+                    <select name="serverImplType" id="serverImplType" onchange="shwref()">
                         <option value=""></option>
                         <option value="cherrywado">cherrywado</option>
                         <option value="o3-dpacs">O3-dpacs server</option>
@@ -1519,11 +1722,28 @@ function removeSvgChildren(svgNode){
                         <option value="dicomcs">local dicomCS (experimental)</option>
                         <option value="other">Other</option>
                     </select>
+                     <br/><input value="http://localhost:11112" type="text" /> <div id="wadolnk"></div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    &nbsp;
+                </td>
+                <td>
+                    &nbsp;
                 </td>
             </tr>
             <tr>
                 <td colspan="2">
                     <em>Required DICOM Object Instance IDs:</em>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    &nbsp;
+                </td>
+                <td>
+                <div id="panellnk"></div>
                 </td>
             </tr>
             <tr>
@@ -1536,6 +1756,14 @@ function removeSvgChildren(svgNode){
             </tr>
             <tr>
                 <td>
+                    &nbsp;
+                </td>
+                <td>
+                    &nbsp;
+                </td>
+            </tr>
+            <tr>
+                <td>
                     Series UID (Series Instance Unique identifier)
                 </td>
                 <td>
@@ -1544,10 +1772,26 @@ function removeSvgChildren(svgNode){
             </tr>
             <tr>
                 <td>
+                    &nbsp;
+                </td>
+                <td>
+                    &nbsp;
+                </td>
+            </tr>
+            <tr>
+                <td>
                     DICOM Object UID (SOP Instance UID of the requested object)
                 </td>
                 <td>
                     <input name="objectUID" type="text" id="Text2" size="50" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    &nbsp;
+                </td>
+                <td>
+                    &nbsp;
                 </td>
             </tr>
             <tr>
@@ -2009,14 +2253,10 @@ function removeSvgChildren(svgNode){
         <option value="8">8</option>
         </select>
         <br/>
-        <a href="javascript:void(0);" onclick="document.getElementById('mainDiv').style.display = 'block';load();">Update Map</a>
+        <a href="javascript:void(0);" onclick="document.getElementById('type_slamazonmapimage').style.display = 'block';load();">Update Map</a>
         <br/>
-        <div id="mainDiv" class="mainDiv" >&nbsp;</div>
+        <div id="zoom_level"></div>
     </div>
-    
-    
-    
-    
     </form>
     <script type="text/javascript">  
     function updateGMap( )
@@ -2026,5 +2266,6 @@ function removeSvgChildren(svgNode){
     }
     
     </script>
+    
 </body>
 </html>
