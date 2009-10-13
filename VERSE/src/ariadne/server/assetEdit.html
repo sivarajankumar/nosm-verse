@@ -1,318 +1,30 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
+    <meta name="generator" content="HTML Tidy, see www.w3.org" />
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <!--meta http-equiv="Content-Type" content="text/html; charset=utf-8"/-->
     <title>Asset Detail</title>
-    <script type="text/javascript" src="jquery-1.3.2.js"></script>
-    <script type="text/javascript" src="jquery.field.js"></script>
-    <script type="text/javascript" src="jquery.getUrlParam.js"></script>
-    <script type="text/javascript" src="readXMLEdit.js"></script>
-    <script type="text/javascript" src="jgcharts/namespace.js"></script>
-    <script src="jgcharts/Utils.txt" type="text/javascript"></script>
-    <script type="text/javascript" src="http://maps.google.com/maps?file=api&amp;v=2&amp;sensor=false&amp;key=ABQIAAAAwz5ST2VlEF9GI_ehSurO-xR-jg49YJ_zgRquJ1rr3fz7TwNTlBRxpHi7TNi0Jp4oPpYd2EXgniWvjg"></script>
-    <!--
-    // will work on our server??
-    <script src="http://maps.google.com/maps?file=api&v=2&key=ABQIAAAAKtBwpoUmQp880AOn2bPHchQ1drgaxzUFtAJfmampr5QfiaN69xRL0AQ4Z06eJuoei2G6roE3X9VNIw"
-        type="text/javascript"></script-->
-    <script src="http://slurl.com/_scripts/slmapapi.js" type="text/javascript"></script>
     <link rel="stylesheet" type="text/css" href="http://slurl.com/_styles/MAIN.css" />
-
-
-<style type="text/css">
-  /* Override SL CSS */
-  
-html {
-	height: 100%;
-	max-height: 100%;
-	padding: 0 5px;
-	margin: 0;
-	border: 0;
-	background: #fff;
-}
-
-body {
-	height: 100%;
-	max-height: 100%;
-	padding: 0;
-	margin: 0;
-	border: 0;
-	overflow: scroll;
-}
-
-    
-    </style>
-   <script type="text/javascript" src="googlemaps.js"></script>
-    <script src="jgcharts/chartmaker.js" type="text/javascript"></script>
-    
-    
-<script type="text/javascript">
-var mapInstance;
-function loadmap() {
-  // creates the map
-  mapInstance = new SLMap(document.getElementById('type_slamazonmapimage'), 
-                          {hasZoomControls: false, hasPanningControls: false});
-  mapInstance.centerAndZoomAtSLCoord(new XYPoint(997, 1002), 2);
-  
-  (document.getElementById('zoom_level')).innerHTML = mapInstance.getCurrentZoomLevel();
-}
-
-function setZoom(level) {
-  mapInstance.setCurrentZoomLevel(level);
-  (document.getElementById('zoom_level')).innerHTML = mapInstance.getCurrentZoomLevel();
-}
-
-function zoomIn() {
-  mapInstance.zoomIn();
-  (document.getElementById('zoom_level')).innerHTML = mapInstance.getCurrentZoomLevel();
-}
-
-function zoomOut() {
-  mapInstance.zoomOut();
-  (document.getElementById('zoom_level')).innerHTML = mapInstance.getCurrentZoomLevel();
-}
-var regionName = 'nossum';
-
-var xmlhttp;
-
-function loadXMLDoc(url)
-{
-xmlhttp=GetXmlHttpObject();
-if (xmlhttp==null)
-  {
-  alert ("Your browser does not support XMLHTTP!");
-  return;
-  }
-xmlhttp.onreadystatechange=stateChanged;
-xmlhttp.open("GET",url,true);
-xmlhttp.send(null);
-}
-
-function GetXmlHttpObject()
-{
-if (window.XMLHttpRequest)
-  {
-  // code for IE7+, Firefox, Chrome, Opera, Safari
-  return new XMLHttpRequest();
-  }
-if (window.ActiveXObject)
-  {
-  // code for IE6, IE5
-  return new ActiveXObject("Microsoft.XMLHTTP");
-  }
-return null;
-}
-
-function stateChanged()
-{
-if (xmlhttp.readyState==4)
-  {
-  if (xmlhttp.status==200)
-    {
-    alert(xmlhttp.responseXML);
-    }
-  else
-    {
-    alert("Problem retrieving XML data:" + xmlhttp.statusText);
-    }
-  }
-}
-
-
-function SLPoint(params, callback)
-{
-	var s = params[0].innerHTML.split("/"); //first element of params must be this format: region/x/y/z
-	var regionName = s[0];
-	var localX = s[1];
-	var localY = s[2];
-	var varName = "slRegionPos_result";
-	var scriptURL = "https://cap.secondlife.com/cap/0/d661249b-2b5a-4436-966a-3d3b8d7a574f?var=" + varName + "&sim_name=" + encodeURIComponent(regionName);
-	var onLoadHandler = function () 
-	{
-		if (slRegionPos_result.error)
-		{
-			//alert("The region name '" + regionName + "' was not recognised.");
-		}
-		else
-		{
-			callback(params, regionName, slRegionPos_result.x + (localX/slTileSize), slRegionPos_result.y + (localY/slTileSize));
-		}
-	};
-	slAddDynamicScript(scriptURL, onLoadHandler);
-}
-
-//loadXMLDoc('https://cap.secondlife.com/cap/0/d661249b-2b5a-4436-966a-3d3b8d7a574f?var=foo&sim_name="+regionName+"')
-
-var foo = {'x' : 1148, 'y' : 1164 };
-zoomInt = "1";
-"http://map.secondlife.com/map-"+zoomInt+"-"+foo[0]+"-"+foo[1]+"-objects.jpg"
-
-//global variables
-_mSvgEnabled = true;
-_mSvgForced = true;
-var map, projection;
-var diagrams=[];
-var svgNS = "http://www.w3.org/2000/svg";
-var initLat = 47;
-var initLng = 8.5;
-var prevViewBoxX, prevViewBoxY; // = 33915 for 47, 8.5 and 22751 for 47, 8.5;
-var prevZoom = 8;
-var top = 0;
-var left = 0;
-
-function load() {
-
-if (GBrowserIsCompatible()) {
-	
-	//load map
-	map = new GMap2(document.getElementById("map"), G_NORMAL_MAP);
-	
-	//add control and set map center
-	map.addControl(new GLargeMapControl());
-	map.setCenter(new GLatLng(initLat, initLng), prevZoom, G_NORMAL_MAP);
-	projection = map.getCurrentMapType().getProjection();
-	
-	prevViewBoxX = getSWBoundsInPixel().x;
-	prevViewBoxY = getNEBoundsInPixel().y;
-	
-	//create new div node for the svg root element
-	var svgDiv = document.createElement("div");
-	svgDiv.setAttribute("id","svgDivison");
-	map.getPane(G_MAP_MAP_PANE).appendChild(svgDiv);
-	
-	//create new svg root element and set attributes
-	var svgRoot = document.createElementNS(svgNS, "svg");
-	svgRoot.setAttribute("id", "customSvgRoot");
-	svgRoot.setAttribute("style", "position:absolute; top:0px; left:0px");
-	svgRoot.setAttribute("viewBox", "0 0 800 600");
-	svgRoot.setAttribute("width", "800");
-	svgRoot.setAttribute("height", "600");
-	svgDiv.appendChild(svgRoot);
-	
-	//read the svg file
-	readData(svgRoot);
-	
-	//add all event listener
-	//event listener which place the diagrams after zoom or move
-	GEvent.addListener(map, "moveend", function(){
-		removeSvgChildren(svgRoot);
-		for(var i=0; i < diagrams.length; i++){
-			replaceSvgNode(svgRoot, diagrams[i].cloneNode(true),
-			parseFloat(diagrams[i].getAttribute("lat")),
-			parseFloat(diagrams[i].getAttribute("lng")),
-			map.getZoom());
-		}
-		
-		var sw = getSWBoundsInPixel();
-		var ne = getNEBoundsInPixel();
-		
-		var zoom = map.getZoom();
-		if(zoom != prevZoom) prevZoom = zoom;
-		else {
-			left += (sw.x - prevViewBoxX);
-			top += (ne.y - prevViewBoxY);
-			svgRoot.setAttributeNS(null, "style", "position:absolute; top:" + top +
-				"px; left:" + left + "px");
-		}
-		prevViewBoxX = sw.x;
-		prevViewBoxY = ne.y;
-	});
-	
-	//event listeners which shows the coordinates
-	GEvent.addListener(map, "mousemove", function(latlng){
-		var latStr = "Lat: " + (Math.round(latlng.lat()*100)/100);
-		var lngStr = "Lng: " + (Math.round(latlng.lng()*100)/100);
-		document.getElementById("lat").firstChild.nodeValue = latStr;
-		document.getElementById("lng").firstChild.nodeValue = lngStr;
-	});
-	
-	GEvent.addListener(map, "mouseout", function(latlng){
-		document.getElementById("lat").firstChild.nodeValue = "";
-		document.getElementById("lng").firstChild.nodeValue = "";
-	});
-	
-}
-	
-// display a warning if the browser was not compatible
-else {
-	alert("Sorry, the Google Maps API is not compatible with this browser");
-}
-}
-
-function replaceSvgNode(svgNode, node, lat, lng, zoom){
-	var sw = getSWBoundsInPixel();
-	var ne = getNEBoundsInPixel();
-	
-	svgNode.setAttribute("viewBox", sw.x + " " + ne.y + " 800 600");
-	
-	var curr = projection.fromLatLngToPixel(new GLatLng(lat, lng), zoom);
-	
-	//var newScale = 0.0011 * Math.pow(2, zoom);
-	var newScale = 0.2;
-	var transformStr = "translate(" + curr.x + ", " + curr.y
-		+ ") scale(" + newScale + ")";
-	node.setAttribute("transform", transformStr);
-	
-	svgNode.appendChild(node);
-	
-	//add dom event listeners to the diagrams
-	//on click show info window
-	GEvent.addDomListener(node, "click", function(evt){
-		var htmlStr = "Stadt: " + node.getAttribute("id") + 
-			"<br/>L&auml;nge: " + node.getAttribute("lat") +
-			"<br/>Breite: " + node.getAttribute("lng");
-		map.openInfoWindowHtml(new GLatLng(node.getAttribute("lat"),
-			node.getAttribute("lng")), htmlStr);
-	});
-	//on mouse over show coordinates and higlight diagram
-	GEvent.addDomListener(node, "mouseover", function(evt){
-		var currentOpacity = parseFloat(node.getAttributeNS(null,
-			"fill-opacity"));
-		node.setAttributeNS(null, "fill-opacity", currentOpacity*2);
-		document.getElementById("text").firstChild.nodeValue =
-			node.getAttribute("id");
-	});
-	GEvent.addDomListener(node, "mouseout", function(evt){
-		var currentOpacity = parseFloat(node.getAttributeNS(null,
-			"fill-opacity"));
-		node.setAttributeNS(null, "fill-opacity", currentOpacity/2);
-		document.getElementById("text").firstChild.nodeValue = "";
-	});
-}
-
-function readData(svgNode){
-	GDownloadUrl("symbol.svg", function(data, responseCode) {
-		var xml = GXml.parse(data);
-		diagrams = xml.documentElement.getElementsByTagName("g");
-		for (var i = 0; i < diagrams.length; i++){
-			replaceSvgNode(svgNode, diagrams[i].cloneNode(true),
-			parseFloat(diagrams[i].getAttribute("lat")),
-			parseFloat(diagrams[i].getAttribute("lng")),
-			map.getZoom());
-		}
-	});
-}
-
-function getSWBoundsInPixel(){
-	var currentBounds = map.getBounds();
-	var sw = currentBounds.getSouthWest();
-	return projection.fromLatLngToPixel(new GLatLng(sw.lat(), sw.lng()), map.getZoom());
-}
-
-function getNEBoundsInPixel(){
-	var currentBounds = map.getBounds();
-	var ne = currentBounds.getNorthEast();
-	return projection.fromLatLngToPixel(new GLatLng(ne.lat(), ne.lng()), map.getZoom());
-}
-
-function removeSvgChildren(svgNode){
-	while(svgNode.lastChild != null){
-		svgNode.removeChild(svgNode.lastChild);
-	}
-}
-
-
-
-</script>  
     <style type="text/css">
+        /* Override SL CSS */html
+        {
+            height: 100%;
+            max-height: 100%;
+            padding: 0 5px;
+            margin: 0;
+            border: 0;
+            background: #fff;
+        }
+        body
+        {
+            height: 100%;
+            max-height: 100%;
+            padding: 0;
+            margin: 0;
+            border: 0;
+            overflow: scroll;
+        }
         .colorPicker
         {
             width: 16px;
@@ -328,64 +40,96 @@ function removeSvgChildren(svgNode){
             display: block;
         }
     </style>
+    <script type="text/javascript" src="jquery-1.3.2.js"></script>
+    <script type="text/javascript" src="jquery.field.js"></script>
+    <script type="text/javascript" src="jquery.getUrlParam.js"></script>
+    <script type="text/javascript" src="jgcharts/namespace.js"></script>
+    <script src="jgcharts/Utils.txt" type="text/javascript"></script>
+    <script type="text/javascript" src="http://maps.google.com/maps?file=api&amp;v=2&amp;sensor=false&amp;key=ABQIAAAAwz5ST2VlEF9GI_ehSurO-xR-jg49YJ_zgRquJ1rr3fz7TwNTlBRxpHi7TNi0Jp4oPpYd2EXgniWvjg"></script>
+    <!-- <script src="http://maps.google.com/maps?file=api&v=2&key=ABQIAAAAKtBwpoUmQp880AOn2bPHchQ1drgaxzUFtAJfmampr5QfiaN69xRL0AQ4Z06eJuoei2G6roE3X9VNIw" type="text/javascript"></script-->
+    <script src="http://www.google.com/jsapi" type="text/javascript"></script> 
+    <script src="http://slurl.com/_scripts/slmapapi.js" type="text/javascript"></script>
+    <script type="text/javascript" src="slmap.js"></script>
+    <script type="text/javascript" src="gyoutube.js"></script>
+    <script type="text/javascript" src="gmapsvg.js"></script>
+    <script type="text/javascript" src="googlemaps.js"></script>
+    <script src="jgcharts/chartmaker.js" type="text/javascript"></script>
+    <script src="jquery.query.js" type="text/javascript"></script>
+    <script src="gvis.js" type="text/javascript"></script>
+     <script src="particle.js" type="text/javascript"></script>
+    <script type="text/javascript" src="readXMLEdit.js"></script>
+    <script type="text/javascript">
+        google.load("swfobject", "2.1");
+        google.load('visualization', '1', {
+            'packages': ['table']
+        });
+        google.setOnLoadCallback(_run);
+    </script>
 </head>
-<body onload="loadmap()" onunload="GUnload()">
-    <form name="hidden dummy" action="/dummyaction">
-    <input type="hidden" name="assetTargetIN" />
-    <input type="hidden" name="assetValueIN" />
-    <input type="hidden" name="assetNameIN" />
-    <input type="hidden" name="assetTypeIN" />
-    <input type="hidden" name="assetTargetOUT" />
-    <input type="hidden" name="assetValueOUT" />
-    <input type="hidden" name="assetNameOUT" />
-    <input type="hidden" name="assetTypeOUT" />
-    <input type="hidden" name="currentUIpairs" />
+<body>
+    <form name="hidden_dummy" method="post" action="/ariadne3.aspx">
+    <input type="hidden" id="Hidden1" name="assetTargetIN" />
+    <input type="hidden" disabled="" id="mode" name="mode" value="admin" />
+    <input type="hidden" id="assetValueIN" name="assetValueIN" />
+    <input type="hidden" id="assetNameIN" name="assetNameIN" />
+    <input type="hidden" id="assetTypeIN" name="assetTypeIN" />
+    <input type="hidden" disabled="" name="assetMapNodeID" />
+    <!--input type="hidden" name="assetMapNodeID"/-->
+    <input type="hidden" id="assetTargetOUT" name="assetTargetOUT" />
+    <input type="hidden" id="assetValueOUT" name="assetValueOUT" />
+    <input type="hidden" id="assetNameOUT" name="assetNameOUT" />
+    <input type="hidden" id="assetTypeOUT" name="assetTypeOUT" />
+    <input type="hidden" id="currentUIpairs" name="currentUIpairs" />
     </form>
     <br />
     <h1>
         Asset Details</h1>
     <br />
     <form name="mainDummy" action="javascript:void(0);">
-   
-        Asset Name:
-        <input type="text" name="assetName" size="30" />
-        Asset Type:
-        <select name="selector" id="selector" onchange="selectorSwitch(this)">
-            <option value="slanimation">Animate the avatar(s)</option>
-            <option value="slbodypart">Give avatar(s) a body part</option>
-            <option value="slchat">Use a chat channel (talk to in-world objects)</option>
-            <option value="slhud">Give avatar(s) a HUD</option>
-            <option value="slim">Send an Instant Message (IM)</option>
-            <option value="slinnergame">Trigger an external game</option>
-            <option value="sllandmark">Give avatar(s) a landmark</option>
-            <option value="slmove">Move avatar(s)</option>
-            <option value="slnotecard">Give avatar(s) a notecard</option>
-            <option value="slobject">Give avatar(s) an object</option>
-            <option value="slpackage">Give avatar(s) a package (crate)</option>
-            <option value="slparticlesystem">Trigger a particle manifestation</option>
-            <option value="slpoint">Avatar(s) make pointing gesture</option>
-            <option value="slsound">Play a sound</option>
-            <option value="sltexture">Give avatar(s) a texture</option>
-            <option value="vpdimage">Show an external image on parcel viewer(s)</option>
-            <option value="vpdmedia">Show an external movie on parcel viewer(s)</option>
-            <option value="vpdtext">Show text on parcel viewer(s)</option>
-            <option value="slgoogleapiimage">Show a dynamic chart on parcel viewer(s)</option>
-            <option value="slgoogleapihtml">Show an address with Google Maps on parcel viewer(s)</option>
-            <option value="slamazonmapimage">Show a Second Life region on parcel viewer(s)</option>
-        </select>
-        <a href="javascript:void(0);" onclick='saveChanges()'>Save changes</a>
-        
+    Asset Name:<input type="text" name="assetName" size="30" />
+    * no spaces<br />
+    <br />
+    Asset Type:
+    <select name="selector" id="selector" onchange="selectorSwitch(this)">
+        <option disabled="" value="separator">-- Avatar Actions --</option>
+        <option value="slanimation">Animate the avatar(s)</option>
+        <option value="slmove">Move avatar(s)</option>
+        <option value="slpoint">Avatar(s) make pointing gesture</option>
+        <option disabled="" value="separator">-- Special Effects --</option>
+        <option value="slinnergame">Trigger an external game</option>
+        <option value="slparticlesystem">Trigger a particle manifestation</option>
+        <option value="slsound">Play a sound</option>
+        <option disabled="" value="separator">-- Give avatar(s)/Rez --</option>
+        <option value="slbodypart"> a body part</option>
+        <option value="slhud"> a HUD</option>
+        <option value="sllandmark"> a landmark</option>
+        <option value="slnotecard"> a notecard</option>
+        <option value="slobject"> an object</option>
+        <option value="slpackage"> a package (crate)</option>
+        <option value="sltexture"> a texture</option>
+        <option disabled="" value="separator">-- Communication -- </option>
+        <option value="slchat">Use a chat channel (talk to in-world objects)</option>
+        <option value="slim">Send an Instant Message (IM)</option>
+        <option disabled="" value="separator">-- Parcel Feeds --</option>
+        <option value="slaudio">Stream radio or sound into parcel</option>
+        <option value="vpdimage">Show an external image on parcel viewer(s)</option>
+        <option value="vpdmedia">Show an external movie on parcel viewer(s)</option>
+        <option value="vpdtext">Show text on parcel viewer(s)</option>
+        <option value="slgoogleapiimage">Show a dynamic chart on parcel viewer(s)</option>
+        <option value="slgoogleapihtml">Show an address with Google Maps on parcel viewer(s)</option>
+        <option value="slamazonmapimage">Show a Second Life region on parcel viewer(s)</option>
+    </select>
+    <a href="javascript:void(0);" onclick='saveChanges()'>Save changes</a>
     <div id="type_slanimation" class="hidden">
         <br />
         <h2>
             Animation options:</h2>
         <br />
-        <p>
-            Use Canned SL Animations
-            <input type="radio" id="canned" value="canned" name="atc" onclick="showonlyone($('input[name= \'atc\' ] ').getValue(), 'animType');" />
-            or Use VERSE Custom Animations
-            <input type="radio" id="custom" value="custom" name="atc" onclick="showonlyone($('input[name= \'atc\' ] ').getValue(), 'animType');" /><br />
-        </p>
+        Use Canned SL Animations
+        <input type="radio" id="canned" value="canned" name="atc" onclick="showonlyone(''+ eval('if(this.checked){\'canned\'}else{\'custom\';}'), 'animType');" />or
+        Use VERSE Custom Animations<input type="radio" id="custom" value="custom" name="atc"
+            onclick="showonlyone(''+ eval('if(this.checked){\'custom\'}else{\'canned\';}'), 'animType');" />
+        <br /><br/>
         <div id="animType_canned" class="hidden">
             Built-in Second Life Animations:
             <select name="isla">
@@ -524,7 +268,8 @@ function removeSvgChildren(svgNode){
                 <option value="yes_happy">yes_happy</option>
                 <option value="yes_head">yes_head</option>
                 <option value="yoga_float">yoga_float</option>
-            </select></div>
+            </select>
+        </div>
         <div id="animType_custom" class="hidden">
             custom Animations:
             <select name="csla">
@@ -643,106 +388,134 @@ function removeSvgChildren(svgNode){
                 <option value="walkslip1">walkslip1</option>
                 <option value="wall">wall</option>
                 <option value="whoaholdon">whoaholdon</option>
-            </select></div>
-        <p>
-            Duration:
-            <input name="al" size="3" value="1" type="text" />
-            <i>(in seconds)</i></p>
-        <p>
-            Should it loop?
-            <input name="ail" type="checkbox" value="true" />
-            How many times?
-            <input name="alc" size="2" value="1" type="text" /></p>
+            </select>
+        </div>
+        Duration:<input name="al" size="3" value="1" type="text" /><i>(in seconds)</i>
+        <br />
+
+        <br />
+        Should it loop?<input name="ail" id="loop" type="radio" value="loop" onclick="showonlyone(''+eval('if(this.checked){\'loop\'}else{\'ctrls\';}'), 'anim');"/><br />
+         <div id="anim_loop"><br/>
+        <br />How many times?<input name="alc" size="2" value="1" type="text" /></div>
+        <br />
+        
+        
+        or<br/>
+        
+        <input name="ail" id="ctrls" type="radio" value="ctrls" onclick="showonlyone(''+eval('if(this.checked){\'ctrls\'}else{\'loop\';}'), 'anim');"/><br />
+        <div id="anim_ctrls"><br/>
+         triggered bt user controls:<br/>
+        <select multiple="multiple" name="ao_ctrls" id="ao_ctrls" >
+        <option value="Sitting on Ground" >Sitting on Ground</option>
+        <option value="Sitting" > Sitting </option>
+        <option value="Striding" > Striding </option>
+        <option value="Crouching" > Crouching </option>
+        <option value="CrouchWalking" > CrouchWalking </option>
+        <option value="Soft Landing" > Soft Landing </option>
+        <option value="Standing Up" > Standing Up </option>
+        <option value="Falling Down" > Falling Down </option>
+        <option value="Hovering Down" > Hovering Down </option>
+        <option value="Hovering Up" > Hovering Up </option>
+        <option value="FlyingSlow" > FlyingSlow </option>
+        <option value="Flying" > Flying </option>
+        <option value="Hovering" > Hovering </option>
+        <option value="Jumping" > Jumping </option>
+        <option value="PreJumping" > PreJumping </option>
+        <option value="Running" > Running </option>
+        <option value="Turning Right" >Turning Right </option>
+        <option value="Turning Left" >Turning Left </option>
+        <option value="Walking" > Walking </option>
+        <option value="Landing" > Landing </option>
+        <option value="Standing" > Standing </option>
+        </select>
+        </div>
     </div>
     <div id="type_slbodypart" class="hidden">
         <br />
         <h2>
             Bodypart options:</h2>
         <br />
-        <p>
             Type:
             <select name="bpt">
                 <option value="Skin">Skin</option>
                 <option value="Shape">Shape</option>
                 <option value="Eyes">Eyes</option>
                 <option value="Hair">Hair</option>
-            </select></p>
-        <p>
+            </select>
+<br /><br />
             Name:
             <select name="bpn">
                 <option value="Hair">hair01</option>
                 <option value="Hair">eyes02</option>
-            </select></p>
+            </select>
+        
     </div>
     <div id="type_slchat" class="hidden">
         <br />
         <h2>
             Chat options:</h2>
         <br />
-
-            Chats, messages and commands can be sent on the following channels:
-            <select name="cc" onchange="showonlyone(this.options[this.selectedIndex].text, 'channelType')">
-                <option value="0">Public</option>
-                <option value="9993">Horizons_Holodeck-viewer_area_edition</option>
-                <option value="-8787">Registration_Booth</option>
-                <option value="687686">Main_Parcel_Game Controller</option>
-                <option value="-63342">Controller_Media_Relay</option>
-                <option value="687687">NOSM_Bracelet_Multicast</option>
-                <option value="-3857343">Sloodle_Object</option>
-                <option value="1001">Sloodle_Player_Multicast</option>
-                <option value="687687">NOSM_Bracelet_Multicast</option>
-                <option value="7051674">vpmannequin</option>
-                <option value="">Other</option>
-            </select><br />
-
-                Message to be chatted :
-                <input name="chatChannelMsg" type="text" size="50" /><br />
-                
-           <div id="channelType_Other" class="hidden">
-<br />
-                Channel:
-                <input name="chatChannelValue" size="12" type="text" />
-        </div> 
-        <div id="channelType_vpmannequin" class="hidden">
+        Chats, messages and commands can be sent on the following channels:<br/>
+        <select name="chatchannel" onchange="showonlyone(this.options[this.selectedIndex].text, 'channelType')">
+            <option value="0">Public</option>
+            <option value="9993">Horizons_Holodeck-viewer_area_edition</option>
+            <option value="-8787">Registration_Booth</option>
+            <option value="687686">Main_Parcel_Game Controller</option>
+            <option value="-63342">Controller_Media_Relay</option>
+            <option value="687687">NOSM_Bracelet_Multicast</option>
+            <option value="-3857343">Sloodle_Object</option>
+            <option value="1001">Sloodle_Player_Multicast</option>
+            <option value="687687">NOSM_Bracelet_Multicast</option>
+            <option value="7051674">PIVOTE_Mannequin</option>
+            <option value="">Other</option>
+        </select>
+        <br />
+        Message to be chatted :<input name="chatChannelMsg" type="text" size="50" />
+        <br />
+        <div id="channelType_Other" class="hidden">
+            <br />
+            Channel:<input name="chatChannelValue" size="12" type="text" />
+        </div>
+        <div id="channelType_PIVOTE_Mannequin" class="hidden">
             PIVOTE Mannequin Commands:
             <select name="mannequin_cmds">
-<option value="ask: can you hear me" >Ask the patient Can You Hear Me</option>
-<option value="ask: history full" >Ask the patient their history, as detailed as possible</option>
-<option value="ask: history brief previous" >Ask the patient their history, in brief</option>
-<option value="ask: pain score" >Ask the patient about their pain</option>
-<option value="ask: pain where" >Ask the patient where it hurts</option>
-<option value="ask: pain describe" >Ask the patient to describe the pain</option>
-<option value="ask: pain duration" >Ask the patient how long the pain lasts</option>
-<option value="ask: pain change" >Ask the patient if the pain has changed</option>
-<option value="ask: walk to the ambulance" >Ask the patient if they can walk to the ambulance</option>
-<option value="ask: how are you" >Ask the patient how they are</option>
-<option value="ask: happened" >Ask the patient what happened</option>
-<option value="ask: medication" >Ask the patient if they have taken medication</option>
-<option value="ask: allergy" >Ask the patient if they have allergies</option>
-<option value="ask: name" >Ask the patient their name</option>
-<option value="ask: age" >Ask the patient their age</option>
-<option value="ask: stand" >Ask the patient to stand</option>
-<option value="ask: move" >Ask the patient to move</option>
-<option value="show attach" >Show attachment points on the mannequin</option>
-<option value="hide attach" >Hide attachment points on the mannequin</option>
-<option value="show touch" >Show touch points on the mannequin</option>
-<option value="hide touch" >Hide touch points on the mannequin</option>
-<option value="show anchor" >Show mannequin anchor prim</option>
-<option value="hide anchor" >Hide mannequin anchor prim</option>
-<option value="show all" >Show attachment and touch points on the mannequin</option>
-<option value="attach show" >Show attachment points on the mannequin</option>
-<option value="touch show" >Show touch points on the mannequin</option>
-<option value="hide all" >Hide all attachment and touch points on the mannequin</option>
-<option value="tidy" >Reset the mannequin</option>
-<option value="give paramedic box">Rez MVP Paramedic Box beside mannequin</option>
-            </select></div> 
-                 
+                <option value="ask: can you hear me">Ask the patient Can You Hear Me</option>
+                <option value="ask: history full">Ask the patient their history, as detailed as possible</option>
+                <option value="ask: history brief previous">Ask the patient their history, in brief</option>
+                <option value="ask: pain score">Ask the patient about their pain</option>
+                <option value="ask: pain where">Ask the patient where it hurts</option>
+                <option value="ask: pain describe">Ask the patient to describe the pain</option>
+                <option value="ask: pain duration">Ask the patient how long the pain lasts</option>
+                <option value="ask: pain change">Ask the patient if the pain has changed</option>
+                <option value="ask: walk to the ambulance">Ask the patient if they can walk to the ambulance</option>
+                <option value="ask: how are you">Ask the patient how they are</option>
+                <option value="ask: happened">Ask the patient what happened</option>
+                <option value="ask: medication">Ask the patient if they have taken medication</option>
+                <option value="ask: allergy">Ask the patient if they have allergies</option>
+                <option value="ask: name">Ask the patient their name</option>
+                <option value="ask: age">Ask the patient their age</option>
+                <option value="ask: stand">Ask the patient to stand</option>
+                <option value="ask: move">Ask the patient to move</option>
+                <option value="show attach">Show attachment points on the mannequin</option>
+                <option value="hide attach">Hide attachment points on the mannequin</option>
+                <option value="show touch">Show touch points on the mannequin</option>
+                <option value="hide touch">Hide touch points on the mannequin</option>
+                <option value="show anchor">Show mannequin anchor prim</option>
+                <option value="hide anchor">Hide mannequin anchor prim</option>
+                <option value="show all">Show attachment and touch points on the mannequin</option>
+                <option value="attach show">Show attachment points on the mannequin</option>
+                <option value="touch show">Show touch points on the mannequin</option>
+                <option value="hide all">Hide all attachment and touch points on the mannequin</option>
+                <option value="tidy">Reset the mannequin</option>
+                <option value="give paramedic box">Rez MVP Paramedic Box beside mannequin</option>
+            </select>
+        </div>
         <div id="channelType_Horizons_Holodeck-viewer_area_edition" class="hidden">
             Holodeck commands:
             <select name="Holodeck_chat_cmds" onchange="showonlyone(this.options[this.selectedIndex].value.replace(/\s+/g,'').substring(0,4), 'HH_sname')">
                 <option value="list scenes">Lists available scenes on public chat channel</option>
                 <option value="clear">Clears the current scene</option>
-                <option value="end scene">Clears this scene: </option>
+                <option value="end scene">Clears this scene:</option>
                 <option value="run scene">Runs this scene: </option>
                 <option value="list shells">Lists available shells</option>
                 <option value="run shell">Loads this shell: </option>
@@ -756,24 +529,21 @@ function removeSvgChildren(svgNode){
                 <option value="show shell">Makes the shell visible</option>
                 <option value="show floor">Makes the shell floor visible (in supported shells)</option>
                 <option value="exit">Rez a holodeck arch for easy access to the control panel</option>
-            </select></div>
+            </select>
+        </div>
         <div id="HH_sname_runs" class="hidden">
             <br />
-           
-                Scene/Shell to run:
-                <select name="sname">
-                    <option value=""></option>
-                </select>
+            Scene/Shell to run:
+            <select name="sname">
+                <option value=""></option>
+            </select>
         </div>
-        
         <div id="HH_sname_ends" class="hidden">
             Scene/Shell to clear:
             <select name="sename">
                 <option value=""></option>
             </select>
-            </div>
-            
-            
+        </div>
         <div id="channelType_Main_Parcel_Game Controller" class="hidden">
             Controller Commands:
             <select name="controller_cmds">
@@ -787,36 +557,38 @@ function removeSvgChildren(svgNode){
                 <option value="menu">Show Main Menu (supported?)</option>
                 <option value="help">Show Help Text</option>
                 <option value="hardreset">Reset scripts for controller (if crashes)</option>
-            </select></div>
+            </select>
+        </div>
         <div id="linkopt_option" class="hidden">
             <br />
-            <p>
-                Select the equivalent button number (ie link), as listed on the in-world controller
-                board:
-                <select name="controller_opt">
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                    <option value="6">6</option>
-                </select></p>
+            <br />
+            Select the equivalent button number (ie link), as listed on the in-world controller
+            board:
+            <select name="controller_opt">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+            </select>
         </div>
         <br />
         <p>
-            Loudness/Range:<br />
-            whisper:
-            <input name="csm" value="whisper" type="radio" />
-            <i>(can only be heard within 10 meters of the speaker)</i><br />
-            say it normally:
-            <input name="csm" checked="checked" value="say" type="radio" />
-            <i>(can only be heard within 20 meters of the speaker)</i><br />
-            shout it:
-            <input name="csm" value="shout" type="radio" />
-            <i>(can only be heard within 100 meters of the speaker)</i><br />
-            region-wide:
-            <input name="csm" value="region" type="radio" />
-            <i>(can be heard within the entire region)</i><br />
+            Loudness/Range:
+            <br />
+            whisper:<input name="csm" value="whisper" type="radio" /><i>(can only be heard within
+                10 meters of the speaker)</i>
+            <br />
+            say it normally:<input name="csm" checked="checked" value="say" type="radio" /><i>(can
+                only be heard within 20 meters of the speaker)</i>
+            <br />
+            shout it:<input name="csm" value="shout" type="radio" /><i>(can only be heard within
+                100 meters of the speaker)</i>
+            <br />
+            region-wide:<input name="csm" value="region" type="radio" /><i>(can be heard within
+                the entire region)</i>
+            <br />
         </p>
     </div>
     <div id="type_slhud" class="hidden">
@@ -830,16 +602,15 @@ function removeSvgChildren(svgNode){
                 <option value="nosm HUD">nosm HUD</option>
                 <option value="LCK HUD">LCK HUD</option>
                 <option value="PIVOTE HUD">PIVOTE HUD</option>
-            </select></p>
+            </select>
+        </p>
         <br />
-        Give to Inventory
-        <input name="hioc" type="radio" onclick="showonlyone(this.value, 'hud')" value="inv" />
-        or Rez the Object
-        <input name="hioc" type="radio" onclick="showonlyone(this.value, 'hud')" value="rez" /><br />
+        Give to Inventory<input name="hioc" type="radio" onclick="showonlyone(this.value, 'hud')"
+            value="inv" />or Rez the Object <input name="hioc" type="radio" onclick="showonlyone(this.value, 'hud')"
+                value="rez" />
+        <br />
         <div id="hud_rez" class="hidden">
-            The new object should appear
-            <input name="hm" size="3" value=".5" type="text" />
-            meters
+            The new object should appear <input name="hm" size="3" value=".5" type="text" />meters
             <select name="hw">
                 <option value="above">above</option>
                 <option value="below">below</option>
@@ -851,9 +622,9 @@ function removeSvgChildren(svgNode){
             the player.
         </div>
         <br />
-        <p>
-            Prompt user to attach this HUD?</p>
-        <p>
+<br/>
+            Prompt user to attach this HUD?
+<br />
             Where:
             <select name="hap">
                 <option value="ATTACH_HUD_CENTER_1">Centre</option>
@@ -864,64 +635,68 @@ function removeSvgChildren(svgNode){
                 <option value="ATTACH_HUD_BOTTOM_LEFT">Bottom Left</option>
                 <option value="ATTACH_HUD_BOTTOM">Bottom</option>
                 <option value="ATTACH_HUD_BOTTOM_RIGHT">Bottom Right</option>
-            </select></p>
+            </select>
+       
     </div>
     <div id="type_slim" class="hidden">
         <br />
         <h2>
             Instant Message (IM) options:</h2>
         <br />
-        <p>
-            Player Name:
-            <input name="imv" size="50" value="" type="text" /></p>
+        
+            Player Name:<input name="imv" size="50" type="text" />
+        <br />
+         IM text: <input name="imt" size="80" type="text" />
     </div>
     <div id="type_slinnergame" class="hidden">
         <br />
         <h2>
             Inner Game options:</h2>
         <br />
-        <p>
-            Game URL:
-            <input name="igu" size="50" value="http://" type="text" /></p>
+         <br />
+            Game URL: <input name="igu" size="50" value="http://" type="text" />
+          <br />
     </div>
     <div id="type_sllandmark" class="hidden">
         <br />
         <h2>
             Landmark options:</h2>
         <br />
-        <p>
+          <br />
             <select name="lmn">
                 <option value="nossum island">nossum island</option>
                 <option value="St Georges">St Georges</option>
                 <option value="Free Dove">Free Dove</option>
-            </select><br />
-        </p>
+            </select>
+            <br />
+         <br />
     </div>
     <div id="type_slmove" class="hidden">
         <br />
         <h2>
             Move options:</h2>
         <br />
-        <p>
+          <br />
             <select name="mt">
                 <option value="vector">Vector</option>
                 <option value="object">Object</option>
                 <option value="Person">Person</option>
-            </select></p>
-        <p>
-            Value:
-            <input name="mv" size="40" value="" type="text" /></p>
+            </select>
+  <br />  <br />
+            Value:<input name="mv" size="40" value="" type="text" />
+          <br />
     </div>
     <div id="type_slnotecard" class="hidden">
         <br />
         <h2>
             Notecard options:</h2>
         <br />
-        <p>
+         <br />  <br />
             <select name="ncn">
                 <option value="pivotecfg">pivotecfg</option>
                 <option value="test">test</option>
-            </select></p>
+            </select>
+         <br />
     </div>
     <div id="type_slobject" class="hidden">
         <br />
@@ -929,13 +704,12 @@ function removeSvgChildren(svgNode){
             POSLO (plain old SL object) options:</h2>
         <br />
         Give to Inventory
-        <input name="oioc" type="radio" onclick="showonlyone(this.value, 'obj')" value="inv" />
-        or Rez the Object
-        <input name="oioc" type="radio" onclick="showonlyone(this.value, 'obj')" value="rez" /><br />
+        <input name="oioc" type="radio" onclick="showonlyone(this.value, 'obj')" value="inv" />or
+        Rez the Object
+        <input name="oioc" type="radio" onclick="showonlyone(this.value, 'obj')" value="rez" />
+        <br />
         <div id="obj_rez" class="hidden">
-            The new object should appear
-            <input name="om" size="3" value=".5" type="text" />
-            meters
+            The new object should appear<input name="om" size="3" value=".5" type="text" />meters
             <select name="ow">
                 <option value="above">above</option>
                 <option value="below">below</option>
@@ -946,106 +720,327 @@ function removeSvgChildren(svgNode){
             </select>
             the player.
         </div>
-        <p>
-            VERSE/PIVOTE Objects:</p>
-        <p>
-            MVP Paramedic Equipment Box 1.12
-            <select name="omvp">
-                <option value="MVP Bandage">Bandage</option>
-                <option value="MVP Blanket">Blanket</option>
-                <option value="MVP Blood Glucose Machine">Blood Glucose Machine</option>
-                <option value="MVP Blood Pressure Cuff">Blood Pressure Cuff</option>
-                <option value="MVP Box Splint">Box Splint</option>
-                <option value="MVP Burns Dressing">Burns Dressing</option>
-                <option value="MVP Carry Chair">Carry Chair</option>
-                <option value="MVP Cervical Collar">Cervical Collar</option>
-                <option value="MVP Chest Needle 1.0.2">Chest Needle</option>
-                <option value="MVP ECG 1.0.2">ECG</option>
-                <option value="MVP ET Airway">ET Airway</option>
-                <option value="MVP Handheld Radio 1.0.2">Handheld Radio</option>
-                <option value="MVP IM Hypodermic 1.0.2">IM Hypodermic</option>
-                <option value="MVP IV Cannular">IV Cannular</option>
-                <option value="MVP LMA Airway 1.0.6">LMA Airway</option>
-                <option value="MVP Nasal Cannula 1.0.2">Nasal Cannula</option>
-                <option value="MVP Nebuliser Mask 1.0.2">Nebuliser Mask</option>
-                <option value="MVP NP Airway 1.0.2">NP Airway</option>
-                <option value="MVP OP Airway 1.0.2">OP Airway</option>
-                <option value="MVP Orthopedic Stretcher 1.0.2">Orthopedic Stretcher</option>
-                <option value="MVP Oxygen Mask 1.0.2">Oxygen Mask</option>
-                <option value="MVP Peak Flow">Peak Flow</option>
-                <option value="MVP Pill Bottle">Pill Bottle</option>
-                <option value="MVP Pulse Oximeter 1.0.2">Pulse Oximeter</option>
-                <option value="MVP Rectal Diazepam Tube 1.0.2">Rectal Diazepam Tube</option>
-                <option value="MVP Rescue Board 1.0.2">Rescue Board</option>
-                <option value="MVP Shears 1.0.2">Shears</option>
-                <option value="MVP Suction Unit 1.0.6">Suction Unit</option>
-                <option value="MVP Traction Splint 1.0.2">Traction Splint</option>
-                <option value="MVP Trolley Bed 1.0.3">Trolley Bed</option>
-                <option value="MVP Tympanic Thermometer 1.0.2">Tympanic Thermometer</option>
+        <br />
+        <br />
+        VERSE/PIVOTE Objects:
+        <br />
+        <br />
+        MVP Paramedic Equipment Box 1.12<br />
+        <br />
+        <select name="omvp">
+            <option value="MVP Bandage">Bandage</option>
+            <option value="MVP Blanket">Blanket</option>
+            <option value="MVP Blood Glucose Machine">Blood Glucose Machine</option>
+            <option value="MVP Blood Pressure Cuff">Blood Pressure Cuff</option>
+            <option value="MVP Box Splint">Box Splint</option>
+            <option value="MVP Burns Dressing">Burns Dressing</option>
+            <option value="MVP Carry Chair">Carry Chair</option>
+            <option value="MVP Cervical Collar">Cervical Collar</option>
+            <option value="MVP Chest Needle 1.0.2">Chest Needle</option>
+            <option value="MVP ECG 1.0.2">ECG</option>
+            <option value="MVP ET Airway">ET Airway</option>
+            <option value="MVP Handheld Radio 1.0.2">Handheld Radio</option>
+            <option value="MVP IM Hypodermic 1.0.2">IM Hypodermic</option>
+            <option value="MVP IV Cannular">IV Cannular</option>
+            <option value="MVP LMA Airway 1.0.6">LMA Airway</option>
+            <option value="MVP Nasal Cannula 1.0.2">Nasal Cannula</option>
+            <option value="MVP Nebuliser Mask 1.0.2">Nebuliser Mask</option>
+            <option value="MVP NP Airway 1.0.2">NP Airway</option>
+            <option value="MVP OP Airway 1.0.2">OP Airway</option>
+            <option value="MVP Orthopedic Stretcher 1.0.2">Orthopedic Stretcher</option>
+            <option value="MVP Oxygen Mask 1.0.2">Oxygen Mask</option>
+            <option value="MVP Peak Flow">Peak Flow</option>
+            <option value="MVP Pill Bottle">Pill Bottle</option>
+            <option value="MVP Pulse Oximeter 1.0.2">Pulse Oximeter</option>
+            <option value="MVP Rectal Diazepam Tube 1.0.2">Rectal Diazepam Tube</option>
+            <option value="MVP Rescue Board 1.0.2">Rescue Board</option>
+            <option value="MVP Shears 1.0.2">Shears</option>
+            <option value="MVP Suction Unit 1.0.6">Suction Unit</option>
+            <option value="MVP Traction Splint 1.0.2">Traction Splint</option>
+            <option value="MVP Trolley Bed 1.0.3">Trolley Bed</option>
+            <option value="MVP Tympanic Thermometer 1.0.2">Tympanic Thermometer</option>
+        </select>
+        <br />
+        <br />
+        <br />
+        Other objects:<br />
+        <br />
+        <select name="on" onchange="showonlyone(this.options[this.selectedIndex].value ,'objs')">
+            <option value="cicp">slcicp client</option>
+            <option value="name2key">name2key client prim</option>
+            <option value="w-hat.com">w-hat/httpdb client prim</option>
+            <option value="">Google Data client prim (NYI)</option>
+            <option value="openCollar">Bracelet 2.0 </option>
+            <option value="gtranslate">Google Translate Chat Listener prim</option>
+            <option value="chatbot">ALICE-powered chatbot</option>
+            <option value="gcalendar">Google Calendar Viewer</option>
+        </select>
+        <br />
+        <br />
+        <div id="objs_cicp" class="hidden">
+            CICP Data Object (for use with slcicp, greenphosphor), etc: current available slcicp
+            instances:
+            <br />
+            <br />
+            <select name="cicp_objs">
+                <option value="slcicp1">slcicp nossum</option>
+                <option value="slcicp2">slcicp viewer area</option>
             </select>
             <br />
-            Other objects
-            <select name="on">
-                <option value="mo wax Poseball">mo wax poseball</option>
-                <option value="Object">Object</option>
+            <br />
+            A valid url of your hub on the your server: <input type="text" name="cicp_url" id="cicp_url" size="70" value="http://glasshouse.greenphosphor.com:8180/CICPManager?
+"/>
+            <br />
+            <br />
+            how many cicp prims should be rezzed (check for parcel limitations): <input type="text" name="cicp_sheep_prims" id="cicp_sheep_prims" size="5" value="130"/>
+            <br />
+            <br />
+            sets a minimum offset from 0 for the channels of cicp prim communication: <input type="text" name="cicp_prim_channel_offset" id="cicp_prim_channel_offset"
+                value="0" size="5" />
+            <br />
+            <br />
+            offset from 0 for channel used by entire graphs to communicate: <input type="text" name="cicp_graph_channel_offset" id="cicp_graph_channel_offset"
+                value="0" size="5" />
+            
+            <br />
+            <br />
+            <input type="text" name="cicp_cicp_hub_name" id="cicp_cicp_hub_name" size="50" />
+            title or name of the cicp hub (an aesthetic variable that does not influence functionality)
+            <br />
+            <br />
+            <br />
+        </div>
+        <div id="objs_name2key" class="hidden">
+            <br />
+            <br />
+            Service URL: <input type="text" name="name2key_url" id="name2key_url" size="50" value="name2key.appspot.com"/>
+            <br />
+            <br />
+        </div>
+        <div id="objs_w-hat.com" class="hidden">    
+            <br />
+            <br />
+           Service URL: <input type="text" name="objs_w-hat.com_url" id="objs_w-hat.com_url" size="50" value="w-hat.com/httpdb" />
+            <br />
+            <br />
+            Operation: <input type="text" name="objs_w-hat.com_operation" id="objs_w-hat.com_operation" size="30" />
+            <br />
+            <br />
+        </div>
+        <div id="objs_opencollar" class="hidden">
+            <br />
+            <br />
+        </div>
+        <div id="objs_gcalendar" class="hidden">
+            <br />
+            <br />
+        </div>
+        <div id="objs_chatbot" class="hidden">
+            <br />
+            <br />
+            Current nossium bot: "sanchobot"
+            <br />
+            Provider URL:<input type="text" name="boturl" id="boturl" size="50" value="www.pandorabots.com/pandora/talk" /><br />
+            Bot ID:<input type="text" name="botid" id="botid" size="30" value="8b3a9e926e345e5b" /><br />
+            Channel on which to chat:
+            <input type="text" name="botchannel" id="botchannel" size="5" value="0" /><br/>
+            Prefix to invoke translate bot:
+            <input type="text" name="gtprefix" id="Text4" size="30" value="trans:" />
+        </div>
+        <div id="objs_gtranslate" class="hidden">
+            <br />
+            <br />
+            (using Google translate)
+            <br />
+            source language:<br />
+            <select tabindex="0" id="old_sl" name="sl">
+                <option value="en">English</option>
+                <option value="es">Spanish</option>
+                <option value="fr">French</option>
+                <option disabled="" value="separator"> -- </option>
+                <option value="auto">Detect language</option>
+                <option disabled="" value="separator"> -- </option>
+                <option value="af">Afrikaans</option>
+                <option value="sq">Albanian</option>
+                <option value="ar">Arabic</option>
+                <option value="be">Belarusian</option>
+                <option value="bg">Bulgarian</option>
+                <option value="ca">Catalan</option>
+                <option value="zh-CN">Chinese</option>
+                <option value="hr">Croatian</option>
+                <option value="cs">Czech</option>
+                <option value="da">Danish</option>
+                <option value="nl">Dutch</option>
+                <option value="en">English</option>
+                <option value="et">Estonian</option>
+                <option value="tl">Filipino</option>
+                <option value="fi">Finnish</option>
+                <option value="fr">French</option>
+                <option value="gl">Galician</option>
+                <option value="de">German</option>
+                <option value="el">Greek</option>
+                <option value="iw">Hebrew</option>
+                <option value="hi">Hindi</option>
+                <option value="hu">Hungarian</option>
+                <option value="is">Icelandic</option>
+                <option value="id">Indonesian</option>
+                <option value="ga">Irish</option>
+                <option value="it">Italian</option>
+                <option value="ja">Japanese</option>
+                <option value="ko">Korean</option>
+                <option value="lv">Latvian</option>
+                <option value="lt">Lithuanian</option>
+                <option value="mk">Macedonian</option>
+                <option value="ms">Malay</option>
+                <option value="mt">Maltese</option>
+                <option value="no">Norwegian</option>
+                <option value="fa">Persian</option>
+                <option value="pl">Polish</option>
+                <option value="pt">Portuguese</option>
+                <option value="ro">Romanian</option>
+                <option value="ru">Russian</option>
+                <option value="sr">Serbian</option>
+                <option value="sk">Slovak</option>
+                <option value="sl">Slovenian</option>
+                <option value="es">Spanish</option>
+                <option value="sw">Swahili</option>
+                <option value="sv">Swedish</option>
+                <option value="th">Thai</option>
+                <option value="tr">Turkish</option>
+                <option value="uk">Ukrainian</option>
+                <option value="vi">Vietnamese</option>
+                <option value="cy">Welsh</option>
+                <option value="yi">Yiddish</option>
             </select>
-        </p>
-        <p>
-            Prompt user to attach this object?</p>
-        <p>
-            Where:
-            <select name="oap">
-                <option value="ATTACH_CHEST">chest</option>
-                <option value="ATTACH_HEAD">head</option>
-                <option value="ATTACH_LSHOULDER">left shoulder</option>
-                <option value="ATTACH_RSHOULDER">right shoulder</option>
-                <option value="ATTACH_LHAND">left hand</option>
-                <option value="ATTACH_RHAND">right hand</option>
-                <option value="ATTACH_LFOOT">left foot</option>
-                <option value="ATTACH_RFOOT">right foot</option>
-                <option value="ATTACH_BACK ">back</option>
-                <option value="ATTACH_PELVIS">pelvis</option>
-                <option value="ATTACH_MOUTH">mouth</option>
-                <option value="ATTACH_CHIN">chin</option>
-                <option value="ATTACH_LEAR">left ear</option>
-                <option value="ATTACH_REAR">right ear</option>
-                <option value="ATTACH_LEYE">left eye</option>
-                <option value="ATTACH_REYE">right eye</option>
-                <option value="ATTACH_NOSE">nose</option>
-                <option value="ATTACH_RUARM">right upper arm</option>
-                <option value="ATTACH_RLARM">right lower arm</option>
-                <option value="ATTACH_LUARM">left upper arm</option>
-                <option value="ATTACH_LLARM">left lower arm</option>
-                <option value="ATTACH_RHIP">right hip</option>
-                <option value="ATTACH_LHIP">left hip</option>
-                <option value="ATTACH_RULEG">right upper leg</option>
-                <option value="ATTACH_RLLEG">right lower leg</option>
-                <option value="ATTACH_LULEG">left upper leg</option>
-                <option value="ATTACH_LLLEG">left lower leg</option>
-                <option value="ATTACH_BELLY">belly/stomach/tummy</option>
-                <option value="ATTACH_RPEC">right pectoral</option>
-                <option value="ATTACH_LPEC">left pectoral</option>
-            </select><br />
-        </p>
+            <br />
+            to
+            <br />
+            destination language:
+            <br />
+            <select tabindex="0" id="old_tl" name="tl">
+                <option value="es">Spanish</option>
+                <option value="en">English</option>
+                <option value="fr" selected="">French</option>
+                <option disabled="" value="separator"> -- </option>
+                <option value="af">Afrikaans</option>
+                <option value="sq">Albanian</option>
+                <option value="ar">Arabic</option>
+                <option value="be">Belarusian</option>
+                <option value="bg">Bulgarian</option>
+                <option value="ca">Catalan</option>
+                <option value="zh-CN">Chinese (Simplified)</option>
+                <option value="zh-TW">Chinese (Traditional)</option>
+                <option value="hr">Croatian</option>
+                <option value="cs">Czech</option>
+                <option value="da">Danish</option>
+                <option value="nl">Dutch</option>
+                <option value="en">English</option>
+                <option value="et">Estonian</option>
+                <option value="tl">Filipino</option>
+                <option value="fi">Finnish</option>
+                <option value="fr">French</option>
+                <option value="gl">Galician</option>
+                <option value="de">German</option>
+                <option value="el">Greek</option>
+                <option value="iw">Hebrew</option>
+                <option value="hi">Hindi</option>
+                <option value="hu">Hungarian</option>
+                <option value="is">Icelandic</option>
+                <option value="id">Indonesian</option>
+                <option value="ga">Irish</option>
+                <option value="it">Italian</option>
+                <option value="ja">Japanese</option>
+                <option value="ko">Korean</option>
+                <option value="lv">Latvian</option>
+                <option value="lt">Lithuanian</option>
+                <option value="mk">Macedonian</option>
+                <option value="ms">Malay</option>
+                <option value="mt">Maltese</option>
+                <option value="no">Norwegian</option>
+                <option value="fa">Persian</option>
+                <option value="pl">Polish</option>
+                <option value="pt">Portuguese</option>
+                <option value="ro">Romanian</option>
+                <option value="ru">Russian</option>
+                <option value="sr">Serbian</option>
+                <option value="sk">Slovak</option>
+                <option value="sl">Slovenian</option>
+                <option value="es">Spanish</option>
+                <option value="sw">Swahili</option>
+                <option value="sv">Swedish</option>
+                <option value="th">Thai</option>
+                <option value="tr">Turkish</option>
+                <option value="uk">Ukrainian</option>
+                <option value="vi">Vietnamese</option>
+                <option value="cy">Welsh</option>
+                <option value="yi">Yiddish</option>
+            </select>
+            <br />
+            <br />
+            Channel on which to send/receive translations:
+            <input type="text" name="gtchannel" id="gtchannel" size="50" value="0" />
+            <br />
+            <br />
+            Prefix to invoke translate bot:
+            <br />
+            <br />
+            <input type="text" name="gtprefix" id="gtprefix" size="10" value="chatbot:" />
+        </div>
+        <br />
+        Prompt user to attach this object?
+        <br />
+        <br />
+        Where:
+        <select name="oap">
+            <option value="ATTACH_CHEST">chest</option>
+            <option value="ATTACH_HEAD">head</option>
+            <option value="ATTACH_LSHOULDER">left shoulder</option>
+            <option value="ATTACH_RSHOULDER">right shoulder</option>
+            <option value="ATTACH_LHAND">left hand</option>
+            <option value="ATTACH_RHAND">right hand</option>
+            <option value="ATTACH_LFOOT">left foot</option>
+            <option value="ATTACH_RFOOT">right foot</option>
+            <option value="ATTACH_BACK ">back</option>
+            <option value="ATTACH_PELVIS">pelvis</option>
+            <option value="ATTACH_MOUTH">mouth</option>
+            <option value="ATTACH_CHIN">chin</option>
+            <option value="ATTACH_LEAR">left ear</option>
+            <option value="ATTACH_REAR">right ear</option>
+            <option value="ATTACH_LEYE">left eye</option>
+            <option value="ATTACH_REYE">right eye</option>
+            <option value="ATTACH_NOSE">nose</option>
+            <option value="ATTACH_RUARM">right upper arm</option>
+            <option value="ATTACH_RLARM">right lower arm</option>
+            <option value="ATTACH_LUARM">left upper arm</option>
+            <option value="ATTACH_LLARM">left lower arm</option>
+            <option value="ATTACH_RHIP">right hip</option>
+            <option value="ATTACH_LHIP">left hip</option>
+            <option value="ATTACH_RULEG">right upper leg</option>
+            <option value="ATTACH_RLLEG">right lower leg</option>
+            <option value="ATTACH_LULEG">left upper leg</option>
+            <option value="ATTACH_LLLEG">left lower leg</option>
+            <option value="ATTACH_BELLY">belly/stomach/tummy</option>
+            <option value="ATTACH_RPEC">right pectoral</option>
+            <option value="ATTACH_LPEC">left pectoral</option>
+        </select>
+        <br />
     </div>
     <div id="type_slpackage" class="hidden">
         <br />
         <h2>
             Package (crate, gift, installer, etc) options:</h2>
         <br />
-        <p>
-            <select name="pn">
-                <option value="holodeck scene crate">holodeck scene crate</option>
-                <option value="Mo Wax Poseballs (boxed)">Mo Wax Poseballs (boxed)</option>
-            </select></p>
+        <select name="pn">
+            <option value="holodeck scene crate">holodeck scene crate</option>
+            <option value="Mo Wax Poseballs (boxed)">Mo Wax Poseballs (boxed)</option>
+        </select>
         Give to Inventory
-        <input name="pioc" type="radio" onclick="showonlyone(this.value, 'crate')" value="inv" />
-        or Rez the Object
-        <input name="pioc" type="radio" onclick="showonlyone(this.value, 'crate')" value="rez" /><br />
+        <input name="pioc" type="radio" onclick="showonlyone(this.value, 'crate')" value="inv" />or
+        Rez the Object<input name="pioc" type="radio" onclick="showonlyone(this.value, 'crate')"
+            value="rez" />
+        <br />
         <div id="crate_rez">
-            The new object should appear
-            <input name="pm" size="3" value=".5" type="text" />
-            meters
+            The new object should appear<input name="pm" size="3" value=".5" type="text" />meters
             <select name="pw">
                 <option value="above">above</option>
                 <option value="below">below</option>
@@ -1053,8 +1048,7 @@ function removeSvgChildren(svgNode){
                 <option value="right">right</option>
                 <option value="infront">in front of</option>
                 <option value="behind">behind</option>
-            </select>
-            the player.
+            </select> the player.
         </div>
     </div>
     <div id="type_slparticlesystem" class="hidden">
@@ -1062,69 +1056,72 @@ function removeSvgChildren(svgNode){
         <h2>
             Particle System options:</h2>
         <br />
-        <p>
-            <input name="psfn" value="MyParticle" type="hidden" />
-            <b>Texture:</b>
+<br/>
+            <input name="psfn" value="MyParticle" type="hidden" /><b>Texture:</b>
             <select name="pstn">
                 <option value="text1">texture1</option>
                 <option value="text2">texture2</option>
                 <option value="text3">texture3</option>
-            </select></p>
-        <p>
-            <input name="psem" type="checkbox" />
-            <b>Glowing.</b> <i>(Particles will glow in the dark, otherwise will reflect the ambiant
-                light)</i></p>
-        <p>
-            &nbsp;</p>
-        <p>
+            </select>
+<br/><br/>
+            <input name="psem" type="checkbox" /><b>Glowing.</b> <i>(Particles will glow in the
+                dark, otherwise will reflect the ambiant light)</i>
+<br/><br/>
+            &nbsp;
+<br/><br/>
             <b>Particle Life Time:</b>
-            <input name="age" size="5" value="1" type="text" />
-            <i>(How many seconds each particle lives for: 0.1 to 60.0 seconds.)</i><br />
+            <input name="age" size="5" value="1" type="text" /><i>(How many seconds each particle
+                lives for: 0.1 to 60.0 seconds.)</i>
             <br />
-            <input name="psic" type="checkbox" />
-            <b>Interpolate Color.</b> <i>(Turns on or off interpolating color.)</i><br />
-            <b>Start color:</b><br />
-            <input name="psscr" size="3" value="1" onchange="valide_start_color();" type="text" />
-            ,
-            <input name="psscg" size="3" value="1" onchange="valide_start_color();" type="text" />
-            ,
-            <input name="psscb" size="3" value="1" onchange="valide_start_color();" type="text" />
-            <i>(Initial color value, RGB (values between 0.0 to 1.0)</i><br />
             <br />
-            <b>End color:</b><br />
-            <input name="psecr" size="3" value="1" onchange="valide_end_color();" type="text" />
-            ,
-            <input name="psecg" size="3" value="1" onchange="valide_end_color();" type="text" />
-            ,
-            <input name="psecb" size="3" value="1" onchange="valide_end_color();" type="text" />
-            <i>(Final color value, RGB (values between 0.0 to 1.0))</i><br />
-            <input name="pssa" size="3" value="1" type="text" />
-            <i>(Initial transparency value. Range: 0.0 to 1.0)</i><br />
+            <input name="psic" type="checkbox" /><b>Interpolate Color.</b> <i>(Turns on or off interpolating
+                color.)</i>
+            <br />
+            <b>Start color:</b>
+            <br />
+            <input name="psscr" size="3" value="1" onchange="valide_color('start');" type="text" />,<input
+                name="psscg" size="3" value="1" onchange="valide_color('start');" type="text" />,<input
+                    name="psscb" size="3" value="1" onchange="valide_color('start');" type="text" /><i>(Initial
+                        color value, RGB (values between 0.0 to 1.0)</i>
+            <br />
+            <br />
+            <b>End color:</b>
+            <br />
+            <input name="psecr" size="3" value="1" onchange="valide_color('end');" type="text" />,<input
+                name="psecg" size="3" value="1" onchange="valide_color('end');" type="text" />,<input
+                    name="psecb" size="3" value="1" onchange="valide_color('end');" type="text" /><i>(Final
+                        color value, RGB (values between 0.0 to 1.0))</i>
+            <br />
+            <input name="pssa" size="3" value="1" type="text" /><i>(Initial transparency value.
+                Range: 0.0 to 1.0)</i>
+            <br />
             <b>End Apha:</b>
-            <input name="psea" size="3" value="1" type="text" />
-            <i>(final transparency value. Range: 0.0 to 1.0)</i></p>
-        <p>
-            <input name="psis" type="checkbox" />
-            <b>Interpolate Scale.</b><i>(Turns on or off interpolating scale.)</i><br />
-            <b>Start Scale:</b><br />
-            X:
-            <input name="psssx" size="5" value="0.04" type="text" />
-            m<br />
-            Y:
-            <input name="psssy" size="5" value="0.04" type="text" />
-            m <i>(Initial scale value. Range (0.04m to 4m))</i><br />
-            <b>End Scale:</b><br />
-            X:
-            <input name="psesx" size="5" value="0.04" type="text" />
-            m Y:
-            <input name="psesy" size="5" value="0.04" type="text" />
-            m <i>(final scale value. Range (0.04m to 4m))</i><br />
-        </p>
+            <input name="psea" size="3" value="1" type="text" /><i>(final transparency value. Range:
+                0.0 to 1.0)</i>
+            <br />
+            <br />
+            <input name="psis" type="checkbox" /><b>Interpolate Scale.</b> <i>(Turns on or off interpolating
+                scale.)</i>
+            <br />
+            <b>Start Scale:</b>
+            <br />
+            X:<input name="psssx" size="5" value="0.04" type="text" />m
+            <br />
+            Y:<input name="psssy" size="5" value="0.04" type="text" />m <i>(Initial scale value.
+                Range (0.04m to 4m))</i>
+            <br />
+            <b>End Scale:</b>
+            <br />
+            X:<input name="psesx" size="5" value="0.04" type="text" />m Y:<input name="psesy"
+                size="5" value="0.04" type="text" />m <i>(final scale value. Range (0.04m to 4m))</i>
+            <br />
+<br/><br/>
         <h3>
             <b>Particle Behavior:</b></h3>
         <br />
-        <p>
-            <b>Pattern:</b><i>(type of emission)</i><br />
+<br/><br/>
+            <b>Pattern:</b> <i>(type of emission)</i>
+            <br />
             <select name="pspp">
                 <option value="PSYS_SRC_PATTERN_EXPLODE">EXPLODE (Sends particles in all directions.)</option>
                 <option value="PSYS_SRC_PATTERN_DROP">DROP (Droping effects.)</option>
@@ -1133,12 +1130,14 @@ function removeSvgChildren(svgNode){
                 <option value="PSYS_SRC_PATTERN_ANGLE_CONE_EMPTY">ANGLE CONE EMPTY (Sends particles
                     excepts in the defined ring or cone.)</option>
                 <option value="PSYS_SRC_PATTERN_ANGLE">ANGLE (Uses Angle to make flat wedges.)</option>
-            </select><br />
+            </select>
+            <br />
             <br />
             <b>Initial Position Distance Radius:</b>
-            <input name="pspr" size="5" value="0" type="text" />
-            m <i>(Distance between emitter and each new particle, 0.0 to 64.)</i><br />
-        </p>
+            <input name="pspr" size="5" value="0" type="text" />m <i>(Distance between emitter and
+                each new particle, 0.0 to 64.)</i>
+            <br />
+<br/><br/>
         <table summary="" border="0">
             <tbody>
                 <tr valign="middle">
@@ -1147,101 +1146,103 @@ function removeSvgChildren(svgNode){
                     </td>
                     <td>
                         <b>Begin Angle:</b>
-                        <input name="psban" size="5" value="0" type="text" />
-                        &iexcl;<br />
-                        <i>(Emission Cone begin angle (0 to 180 degrees))</i><br />
+                        <input name="psban" size="5" value="0" type="text" />&iexcl;
+                        <br />
+                        <i>(Emission Cone begin angle (0 to 180 degrees))</i>
+                        <br />
                         <br />
                         <b>End Angle:</b>
-                        <input name="psean" size="5" value="180" type="text" />
-                        &iexcl;<br />
+                        <input name="psean" size="5" value="180" type="text" />&iexcl;
+                        <br />
                         <i>(Emission Cone end angle (0 to 180 degrees))</i>
                     </td>
                 </tr>
             </tbody>
         </table>
-        <p>
+<br/><br/>
             <b>Minimum Speed:</b>
-            <input name="psmns" size="5" value="1" type="text" />
-            m <i>(Slowest speed of new particles. 0.01 to ? (Speed is ignored when in DROP Pattern
-                mode.))</i><br />
+            <input name="psmns" size="5" value="1" type="text" />m <i>(Slowest speed of new particles.
+                0.01 to ? (Speed is ignored when in DROP Pattern mode.))</i>
+            <br />
             <b>Maximum Speed:</b>
-            <input name="psmxs" size="5" value="1" type="text" />
-            m <i>(Fastest speed of new particles. 0.01 to ? (Speed is ignored when in DROP Pattern
-                mode.))</i><br />
+            <input name="psmxs" size="5" value="1" type="text" />m <i>(Fastest speed of new particles.
+                0.01 to ? (Speed is ignored when in DROP Pattern mode.))</i>
             <br />
-            <b>Acceleration vector:</b><br />
-            X:
-            <input name="psax" size="3" value="0" type="text" />
-            , Y:
-            <input name="psay" size="3" value="0" type="text" />
-            , Z:
-            <input name="psaz" size="3" value="0" type="text" />
-            <i>(A continous force pushed on particles. Use small settings for long lived particles.)</i><br />
             <br />
-            <b>Rotation (Omega):</b> &lt; X:
-            <input name="psmox" size="3" value="0" type="text" />
-            , Y:
-            <input name="psmoy" size="3" value="0" type="text" />
-            , Z:
-            <input name="psmoz" size="3" value="0" type="text" /><br />
-            <i>(How much to rotate the emitter around the X, Y &amp; Z axes after each burst.)</i><br />
+            <b>Acceleration vector:</b>
             <br />
-            <input name="psfs" type="checkbox" />
-            <b>Follow Source.</b> <i>(Moves particles when emitter moves. Disables Radius.)</i><br />
-            <input name="psfv" type="checkbox" />
-            <b>Follow Velocity.</b><i>(Particles rotate towards their heading.)</i><br />
-            <input name="psw" type="checkbox" />
-            <b>Wind.</b> <i>(Sim's wind will push particles.)</i><br />
-            <input name="psb" type="checkbox" />
-            <b>Bounce.</b><i>(Make particles bounce above the Z altitude of emitter.)</i><br />
-            <input name="pstr" type="checkbox" />
-            <b>Target.</b><i>(Turns on or off targeting of particles.)</i> <b>Target Key:</b></p>
-        <p>
-            <input name="pstrk" value="object" type="hidden" />
-            <b>Generation setup:</b></p>
-        <p>
-            <b>Particle Burst:</b></p>
-        <p>
+            X:<input name="psax" size="3" value="0" type="text" />, Y:<input name="psay" size="3"
+                value="0" type="text" />, Z:<input name="psaz" size="3" value="0" type="text" /><i>(A
+                    continous force pushed on particles. Use small settings for long lived particles.)</i>
+            <br />
+            <br />
+            <b>Rotation (Omega):</b> &lt; X:<input name="psmox" size="3" value="0" type="text" />,
+            Y:<input name="psmoy" size="3" value="0" type="text" />, Z:<input name="psmoz" size="3"
+                value="0" type="text" />
+            <br />
+            <i>(How much to rotate the emitter around the X, Y &amp; Z axes after each burst.)</i>
+            <br />
+            <br />
+            <input name="psfs" type="checkbox" /><b>Follow Source.</b> <i>(Moves particles when
+                emitter moves. Disables Radius.)</i>
+            <br />
+            <input name="psfv" type="checkbox" /><b>Follow Velocity.</b> <i>(Particles rotate towards
+                their heading.)</i>
+            <br />
+            <input name="psw" type="checkbox" /><b>Wind.</b> <i>(Sim's wind will push particles.)</i>
+            <br />
+            <input name="psb" type="checkbox" /><b>Bounce.</b> <i>(Make particles bounce above the
+                Z altitude of emitter.)</i>
+            <br />
+            <input name="pstr" type="checkbox" /><b>Target.</b> <i>(Turns on or off targeting of
+                particles.)</i> <b>Target Key:</b>
+<br/><br/>
+            <input name="pstrk" value="object" type="hidden" /><b>Generation setup:</b>
+<br/><br/>
+            <b>Particle Burst:</b>
+<br/><br/>
             <b>Rate:</b>
-            <input name="psr" size="5" value="1" type="text" />
-            <i>(Seconds between particle bursts, 0.0 to 60.)</i></p>
-        <p>
+            <input name="psr" size="5" value="1" type="text" /><i>(Seconds between particle bursts,
+                0.0 to 60.)</i>
+<br/><br/>
             <b>Number of Particles per Burst:</b>
-            <input name="psc" size="5" value="50" type="text" />
-            <i>(Number of particles per burst, 1 to 4096.)</i><br />
+            <input name="psc" size="5" value="50" type="text" /><i>(Number of particles per burst,
+                1 to 4096.)</i>
+            <br />
             <br />
             <b>Emission Duration:</b>
-            <input name="psl" size="5" value="0" type="text" />
-            <i>(Number of seconds to wait before shutting off, 0.1 to 60. (0.0 never stops.))</i><br />
-        </p>
+            <input name="psl" size="5" value="0" type="text" /><i>(Number of seconds to wait before
+                shutting off, 0.1 to 60. (0.0 never stops.))</i>
+            <br />
+<br/><br/>
     </div>
     <div id="type_slpoint" class="hidden">
         <br />
         <h2>
             Point motion options:</h2>
         <br />
-        <p>
+<br/><br/>
             Point to:
             <select name="pt">
                 <option value="vector">Vector</option>
                 <option value="object">Object</option>
                 <option value="Person">Person</option>
-            </select></p>
-        <p>
-            Value:
-            <input name="pv" size="50" value="" type="text" /></p>
+            </select>
+<br/><br/>
+            Value:<input name="pv" size="50" value="" type="text" />
+<br/><br/>
     </div>
     <div id="type_slsound" class="hidden">
         <br />
         <h2>
             Sound options:</h2>
         <br />
-        <p>
+<br/><br/>
             <select name="sn">
                 <option value="damnit.wav">damnit.wav</option>
                 <option value="cheer.wav">cheer.wav</option>
-            </select></p>
-        <p>
+            </select>
+<br/><br/>
             Volume:
             <select name="sv">
                 <option value="1">1</option>
@@ -1253,38 +1254,64 @@ function removeSvgChildren(svgNode){
                 <option value="7">7</option>
                 <option value="8">8</option>
                 <option value="9">9</option>
-            </select></p>
-        <p>
-            Loop
-            <input name="sl" value="true" type="checkbox" />
-            <i>The sound should play repeatedly</i><br />
-        </p>
-        <p>
-            Duration
-            <input name="sd" size="2" value="" type="text" />
-            <i>in seconds</i></p>
+            </select>
+<br/>
+            Loop<input name="sl" value="true" type="checkbox" /><i>The sound should play repeatedly</i>
+            <br />
+<br/>
+            Duration<input name="sd" size="2" value="" type="text" /><i>in seconds</i>
+<br/>
+<br />
+or<br/>
+        
+ triggered bt user controls:<br/>
+<select multiple="multiple" name="snd_ao_ctrls" id="snd_ao_ctrls" >
+<option value="Sitting on Ground" >Sitting on Ground</option>
+<option value="Sitting" > Sitting </option>
+<option value="Striding" > Striding </option>
+<option value="Crouching" > Crouching </option>
+<option value="CrouchWalking" > CrouchWalking </option>
+<option value="Soft Landing" > Soft Landing </option>
+<option value="Standing Up" > Standing Up </option>
+<option value="Falling Down" > Falling Down </option>
+<option value="Hovering Down" > Hovering Down </option>
+<option value="Hovering Up" > Hovering Up </option>
+<option value="FlyingSlow" > FlyingSlow </option>
+<option value="Flying" > Flying </option>
+<option value="Hovering" > Hovering </option>
+<option value="Jumping" > Jumping </option>
+<option value="PreJumping" > PreJumping </option>
+<option value="Running" > Running </option>
+<option value="Turning Right" >Turning Right </option>
+<option value="Turning Left" >Turning Left </option>
+<option value="Walking" > Walking </option>
+<option value="Landing" > Landing </option>
+<option value="Standing" > Standing </option>
+</select>
     </div>
     <div id="type_sltexture" class="hidden">
         <br />
         <h2>
             Texture options:</h2>
         <br />
-        <p>
+<br/>
             <select name="tn">
                 <option value="brick.png">brick.png</option>
                 <option value="steel_grey.jpg">steel_grey.jpg</option>
-            </select></p>
+            </select>
+<br />
         <br />
     </div>
     <div id="type_vpdimage" class="hidden">
         <br />
         <h2>
-            Virtual Patient Image options:</h2>
+            Virtual Patient Image over WADO-DICOM options:</h2>
         <br />
         <table width="826" border="0">
             <tr>
                 <td>
-                    Note: Content Type ('application/dicom' MIME is not supported on Second life parcel viewers):
+                    Note: Content Type ('application/dicom' MIME is not supported on Second life parcel
+                    viewers):
                 </td>
                 <td>
                     &nbsp;
@@ -1292,10 +1319,11 @@ function removeSvgChildren(svgNode){
             </tr>
             <tr>
                 <td>
-                    VPDImage: image MIME type(s) desired
+                    MIME
                 </td>
                 <td>
-                    <select multiple="multiple" name="VPDImageContentType" id="Select13">
+                    Request document with the specified type(s)
+                    <select multiple="multiple" id="wado_VPDImageContentType" name="wado_VPDImageContentType">
                         <option value="image/jpeg">JPEG image</option>
                         <option value="image/gif">GIF (still)</option>
                         <option value="image/png">PNG</option>
@@ -1310,7 +1338,6 @@ function removeSvgChildren(svgNode){
                     <em>Image Data Parameters:</em>
                 </td>
             </tr>
-            
             <tr>
                 <td>
                     &nbsp;
@@ -1319,49 +1346,13 @@ function removeSvgChildren(svgNode){
                     &nbsp;
                 </td>
             </tr>
-            
             <tr>
                 <td>
                     FrameNumber: Specifies that the single frame with that number within a multi-frame
                     image object that shall be returned
                 </td>
                 <td>
-                    <input name="frameNumber" type="text" id="Text3" />integer
-                </td>
-            </tr>
-            
-            <tr>
-                <td>
-                    &nbsp;
-                </td>
-                <td>
-                    &nbsp;
-                </td>
-            </tr>
-            
-            <tr>
-                <td>
-                    Annotate patient data from a DICOM object retrieved
-                </td>
-                <td>
-                    <input name="annotation2" type="checkbox" id="Checkbox1" value="annotatePat" />
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    &nbsp;
-                </td>
-                <td>
-                    &nbsp;
-                </td>
-            </tr>
-            
-            <tr>
-                <td>
-                    Annotate technique data from a DICOM object retrieved
-                </td>
-                <td>
-                    <input name="annotation" type="checkbox" id="Checkbox2" value="annotateTech" />
+                    <input name="wado_frameNumber" type="text" id="wado_frameNumber" />integer
                 </td>
             </tr>
             <tr>
@@ -1374,11 +1365,43 @@ function removeSvgChildren(svgNode){
             </tr>
             <tr>
                 <td>
-                    Anonymize data (recommended): Sets the removal of all patient identification information
+                    Annotate (ie. burn in) patient data in returned DICOM pixel data
+                </td>
+                <td>
+                    <input name="wado_annotation2" type="checkbox" id="wado_annotation2" value="annotatePat" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    &nbsp;
+                </td>
+                <td>
+                    &nbsp;
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Annotate (ie. burn in) technique data in returned DICOM pixel data
+                </td>
+                <td>
+                    <input name="wado_annotation" type="checkbox" id="wado_annotation" value="annotateTech" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    &nbsp;
+                </td>
+                <td>
+                    &nbsp;
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Anonymize data (recommended): Remove all patient identification and information
                     from within the DICOM object, if not already done
                 </td>
                 <td>
-                    <input name="anonymize" type="checkbox" id="Checkbox3" value="yes" checked="checked" />
+                    <input name="wado_anonymize" type="checkbox" id="wado_anon_yes" value="yes" checked="checked" />
                 </td>
             </tr>
             <tr>
@@ -1404,14 +1427,14 @@ function removeSvgChildren(svgNode){
             </tr>
             <tr>
                 <td>
-                    ImageQuality:If the requested MIME type is for a lossy compressed image, set the
-                    quality
+                    ImageQuality:If the requested MIME type is for a lossy compressed image, the quality
+                    of the image to be returned (within the range 1 to 100, 100 being the best quality)
                 </td>
                 <td>
-                    <input name="imageQuality" type="text" id="Text4" />1-100
+                    <input name="wado_imageQuality" type="text" id="wado_imageQuality" />1-100
                 </td>
             </tr>
-                        <tr>
+            <tr>
                 <td>
                     &nbsp;
                 </td>
@@ -1421,18 +1444,26 @@ function removeSvgChildren(svgNode){
             </tr>
             <tr>
                 <td>
-                    Height: the image height to be returned
+                    Height: the maximum image height to be returned
                 </td>
                 <td>
-                    <input name="rows" type="text" id="Text5" />pixels
+                    <input name="wado_rows" type="text" id="wado_rows" />pixels
                 </td>
             </tr>
             <tr>
                 <td>
-                    Width: the image width to be returned
+                    Width: the maximum image width to be returned
                 </td>
                 <td>
-                    <input name="columns" type="text" id="Text6" />pixels
+                    <input name="wado_columns" type="text" id="wado_columns" />pixels
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    &nbsp;
+                </td>
+                <td>
+                    &nbsp;
                 </td>
             </tr>
             <tr>
@@ -1473,7 +1504,7 @@ function removeSvgChildren(svgNode){
                     retrieved, 0.0 corresponding to the first column of the image matrix
                 </td>
                 <td>
-                    <input name="region-tlx" type="text" id="Text7" />double
+                    <input name="wado_region-tlx" type="text" id="wado_region-tlx" />double
                 </td>
             </tr>
             <tr>
@@ -1482,7 +1513,7 @@ function removeSvgChildren(svgNode){
                     retrieved, 0.0 corresponding to the top row of the image matrix
                 </td>
                 <td>
-                    <input name="region-tly" type="text" id="Text8" />double
+                    <input name="wado_region-tly" type="text" id="wado_region-tly" />double
                 </td>
             </tr>
             <tr>
@@ -1499,7 +1530,7 @@ function removeSvgChildren(svgNode){
                     1.0 corresponding to the last column of the image matrix, 0.0 being forbidden.
                 </td>
                 <td>
-                    <input name="region-brx" type="text" id="Text9" />double
+                    <input name="wado_region-brx" type="text" id="wado_region-brx" />double
                 </td>
             </tr>
             <tr>
@@ -1508,7 +1539,7 @@ function removeSvgChildren(svgNode){
                     1.0 corresponding to the last row of the image matrix, 0.0 being forbidden.
                 </td>
                 <td>
-                    <input name="region-bry" type="text" id="Text10" />double
+                    <input name="wado_region-bry" type="text" id="wado_region-bry" />double
                 </td>
             </tr>
             <tr>
@@ -1524,10 +1555,10 @@ function removeSvgChildren(svgNode){
                     Contrast: Controls the contrast of the image double
                 </td>
                 <td>
-                    <input name="windowWidth" type="text" id="Text11" />double
+                    <input name="wado_windowWidth" type="text" id="wado_windowWidth" />double
                 </td>
             </tr>
-                        <tr>
+            <tr>
                 <td>
                     &nbsp;
                 </td>
@@ -1540,7 +1571,7 @@ function removeSvgChildren(svgNode){
                     Luminosity: Controls the luminosity of the image
                 </td>
                 <td>
-                    <input name="windowCenter" type="text" id="Text12" />double
+                    <input name="wado_windowCenter" type="text" id="wado_windowCenter" />double
                 </td>
             </tr>
             <tr>
@@ -1556,7 +1587,7 @@ function removeSvgChildren(svgNode){
                     <em>Presentation State Storage IDs:</em>
                 </td>
             </tr>
-                        <tr>
+            <tr>
                 <td>
                     &nbsp;
                 </td>
@@ -1570,10 +1601,10 @@ function removeSvgChildren(svgNode){
                     presentation state storage object to be applied on the image.
                 </td>
                 <td>
-                    <input name="presentationSeriesUID" type="text" id="Text14" />
+                    <input name="wado_presentationSeriesUID" type="text" id="wado_presentationSeriesUID" />
                 </td>
             </tr>
-                        <tr>
+            <tr>
                 <td>
                     &nbsp;
                 </td>
@@ -1587,15 +1618,40 @@ function removeSvgChildren(svgNode){
                     applied to the image.
                 </td>
                 <td>
-                    <input name="presentationUID" type="text" id="Text15" />
+                    <input name="wado_presentationUID" type="text" id="wado_presentationUID" />
                 </td>
             </tr>
         </table>
+
     </div>
     <div id="type_vpdmedia" class="hidden">
+
+        <script type="text/javascript">
+
+            function showYT() {
+                /*
+                * Simple player embed
+                */
+                // The video to load.
+                var videoID = "ylLzyHk54Z0"
+                // Lets Flash from another domain call JavaScript
+                var params = {
+                    allowScriptAccess: "always"
+                };
+                // The element id of the Flash embed
+                var atts = {
+                    id: "ytPlayer"
+                };
+                // All of the magic handled by SWFObject (http://code.google.com/p/swfobject/)
+                swfobject.embedSWF("http://www.youtube.com/v/" + videoID + "&enablejsapi=1&playerapiid=player1",
+                        "videoDiv", "480", "295", "8", null, null, params, atts);
+            }
+            showYT();
+        </script>
+
         <br />
         <h2>
-            Virtual Patient Media options:</h2>
+            Virtual Patient Video Media over WADO-DICOM options:</h2>
         <br />
         <table width="826" border="0">
             <tr>
@@ -1606,7 +1662,7 @@ function removeSvgChildren(svgNode){
                     &nbsp;
                 </td>
             </tr>
-                        <tr>
+            <tr>
                 <td>
                     &nbsp;
                 </td>
@@ -1616,10 +1672,10 @@ function removeSvgChildren(svgNode){
             </tr>
             <tr>
                 <td>
-                    VPDMedia: media MIME type(s) desired
+                    media MIME type(s) desired:
                 </td>
                 <td>
-                    <select multiple="multiple" name="VPDMediaContentType" id="VPDMediaContentType">
+                    <select multiple="multiple" name="wado_VPDMediaContentType" id="VPDMediaContentType">
                         <option value="image/gif">GIF (animated)</option>
                         <option value="video/mpeg">MPEG-4 movie</option>
                     </select>
@@ -1627,67 +1683,94 @@ function removeSvgChildren(svgNode){
             </tr>
         </table>
         Other:
-        <p>
-            URL of movie:<input name="vmu" size="50" value="http://" type="text" /></p>
+        <br />
+        URL/ID of movie:<input name="wado_vmu" size="50" value="http://" type="text" />
     </div>
     <div id="type_vpdtext" class="hidden">
         <br />
         <h2>
-            Virtual Patient Data Text options:</h2>
+            Virtual Patient Text over WADO-DICOM: options:</h2>
         <br />
         <p>
-            none (inherited from current node's title)</p>
+            none (inherited from current node's title)
+        </p>
         <br />
         or
         <br />
-        <input type="checkbox" name="useExtText" onclick="if(this.checked == true){document.getElementById('vpd_vpd').style.display = 'block';document.getElementById('vpdtext_params').style.display = 'block';}else{document.getElementById('vpd_vpd').style.display = 'none';document.getElementById('vpdtext_params').style.display = 'none'}" />
+        <input type="checkbox" value="wado_useVPD" name="useExtText" />
         <div id="vpdtext_params" class="hidden">
             <table width="826" border="0">
                 <tr>
                     <td>
-                        Content Type ('application/dicom' MIME is not supported on Second life parcel viewers):
+                        Virtual Patient Data  (text only) over WADO-DICOM :<br/>Note: cuurently does not retrieve CDA Level 1 documents, and MIME Type 'application/dicom'
+                        is not supported on Second life parcel viewers
                     </td>
                     <td>
                         &nbsp;
                     </td>
                 </tr>
-            <tr>
-                <td>
-                    &nbsp;
-                </td>
-                <td>
-                    &nbsp;
-                </td>
-            </tr>
+                <tr>
+                    <td>
+                        &nbsp;
+                    </td>
+                    <td>
+                        &nbsp;
+                    </td>
+                </tr>
                 <tr>
                     <td>
                         <br />
-                        VPDText : text MIME type(s) desired
+                         text MIME type(s) desired
                     </td>
                     <td>
-                        <select multiple="multiple" name="VPDTextContentType" id="Select7">
+                        <select multiple="multiple" name="wado_VPDTextContentType" id="wado_VPDTextContentType">
                             <option value="text/plain">non-PDF plain text data</option>
                             <option value="text/xml">XML, HTML, AND DICOM meta-data</option>
                             <option value="text/html">HTML and DICOM meta-data</option>
                         </select>
                     </td>
                 </tr>
-            <tr>
-                <td>
-                    &nbsp;
-                </td>
-                <td>
-                    &nbsp;
-                </td>
-            </tr>
+                <tr>
+                    <td>
+                        &nbsp;
+                    </td>
+                    <td>
+                        &nbsp;
+                    </td>
+                </tr>
                 <tr>
                     <td>
                         Character set with which the returned object is to be encoded
                     </td>
                     <td>
-                        <select multiple="multiple" name="charset" id="Select8">
-                            <option value="?">Arial</option>
-                            <option value="?">Time New Roman</option>
+                        <select multiple="multiple" name="wado_charset" id="wado_charset">
+                            <option value="ISO 8859-1" selected="selected">ISO Western Europe </option>
+                            <option value="ISO 8859-2">ISO Western and Central Europe </option>
+                            <option value="ISO 8859-3">ISO Western Europe, South Euro, Esperanto </option>
+                            <option value="ISO 8859-4">ISO Western Europe, Baltic </option>
+                            <option value="ISO 8859-5">ISO Cyrillic alphabet </option>
+                            <option value="ISO 8859-6">ISO Arabic </option>
+                            <option value="ISO 8859-7">ISO Greek </option>
+                            <option value="ISO 8859-8">ISO Hebrew </option>
+                            <option value="ISO 8859-9">ISO Western Europe, with amended Turkish </option>
+                            <option value="ISO 8859-10">ISO Western Europe with Nordic, Icelandic </option>
+                            <option value="ISO 8859-11">ISO Thai </option>
+                            <option value="ISO 8859-13">ISO Baltic languages plus Polish </option>
+                            <option value="ISO 8859-14">ISO Celtic languages, Gaelic, Scottish, Welsh </option>
+                            <option value="ISO 8859-15">ISO Added the Euro sign and other rationalisations to Western
+                                Europe </option>
+                            <option value="ISO 8859-16">ISO Central European, Pol, Cze, Slov, Hung, Alb, Rom, Ger,
+                                Ital </option>
+                            <option value="Windows-1250">Windows for Central European, Latin script, Pol, Cze, Slov,
+                                Hung, Alb, Rom, Ger, Ital, Serb, Cro </option>
+                            <option value="Windows-1251">Windows for Cyrillic alphabets </option>
+                            <option value="Windows-1252" selected="selected">Windows for Western languages </option>
+                            <option value="Windows-1253">Windows for Greek </option>
+                            <option value="Windows-1254">Windows for Turkish </option>
+                            <option value="Windows-1255">Windows for Hebrew </option>
+                            <option value="Windows-1256">Windows for Arabic </option>
+                            <option value="Windows-1257">Windows for Baltic languages </option>
+                            <option value="Windows-1258">Windows-1258 for Vietnamese </option>
                         </select>
                     </td>
                 </tr>
@@ -1706,13 +1789,25 @@ function removeSvgChildren(svgNode){
             </tr>
             <tr>
                 <td width="458">
-                    WADO Service: A server system managing DICOM Persistent Objects and able to transmit them on
-                    request to the parcel viewer.
+                    WADO Service: A server system managing DICOM Persistent Objects and able to transmit
+                    them on request to the parcel viewer.
                 </td>
                 <td width="352">
-                <script type="text/javascript"> function shwref(){if(document.getElementById("serverImplType").options[document.getElementById("serverImplType").selectedIndex].value == "dcm4che"){document.getElementById("wadolnk").innerHTML = "<a href='http://localhost:8080/dcm4chee-web/aeedit.m?aet=DCM4CHEE'>Administer local server</a>";document.getElementById("panellnk").innerHTML = "<a href='http://localhost:8080/dcm4chee-web/foldersubmit.m?filter=true'>Open Panel</a>";}else{document.getElementById("wadolnk").innerHTML = "";document.getElementById("panellnk").innerHTML = "";}}</script>
-                   
-                    <select name="serverImplType" id="serverImplType" onchange="shwref()">
+
+                    <script type="text/javascript">
+                        function shwref() {
+                            if (document.getElementById("wado_serverImplType").options[document.getElementById("wado_serverImplType").selectedIndex].value == "dcm4che") {
+                                document.getElementById("wadolnk").innerHTML = "<a href='http://localhost:8080/dcm4chee-web/aeedit.m?aet=DCM4CHEE'>Administer local server<\/a>";
+                                document.getElementById("panellnk").innerHTML = "<a href='http://localhost:8080/dcm4chee-web/foldersubmit.m?filter=true'>Open Panel<\/a>";
+                            }
+                            else {
+                                document.getElementById("wadolnk").innerHTML = "";
+                                document.getElementById("panellnk").innerHTML = "";
+                            }
+                        }
+                    </script>
+
+                    <select name="wado_serverImplType" id="wado_serverImplType" onchange="shwref()">
                         <option value=""></option>
                         <option value="cherrywado">cherrywado</option>
                         <option value="o3-dpacs">O3-dpacs server</option>
@@ -1722,7 +1817,10 @@ function removeSvgChildren(svgNode){
                         <option value="dicomcs">local dicomCS (experimental)</option>
                         <option value="other">Other</option>
                     </select>
-                     <br/><input value="http://localhost:11112" type="text" /> <div id="wadolnk"></div>
+                    <br />
+                    <input name="wado_serverImplTypeURL" type="text" />
+                    <div id="wadolnk">
+                    </div>
                 </td>
             </tr>
             <tr>
@@ -1743,7 +1841,8 @@ function removeSvgChildren(svgNode){
                     &nbsp;
                 </td>
                 <td>
-                <div id="panellnk"></div>
+                    <div id="panellnk">
+                    </div>
                 </td>
             </tr>
             <tr>
@@ -1751,7 +1850,7 @@ function removeSvgChildren(svgNode){
                     Study UID (Study Instance Identifier)
                 </td>
                 <td>
-                    <input name="studyUID" type="text" size="50" />
+                    <input name="wado_studyUID" type="text" size="50" />
                 </td>
             </tr>
             <tr>
@@ -1767,7 +1866,7 @@ function removeSvgChildren(svgNode){
                     Series UID (Series Instance Unique identifier)
                 </td>
                 <td>
-                    <input name="seriesUID" type="text" id="Text1" size="50" />
+                    <input name="wado_seriesUID" type="text" id="Text1" size="50" />
                 </td>
             </tr>
             <tr>
@@ -1783,7 +1882,7 @@ function removeSvgChildren(svgNode){
                     DICOM Object UID (SOP Instance UID of the requested object)
                 </td>
                 <td>
-                    <input name="objectUID" type="text" id="Text2" size="50" />
+                    <input name="wado_objectUID" type="text" id="Text2" size="50" />
                 </td>
             </tr>
             <tr>
@@ -1799,15 +1898,17 @@ function removeSvgChildren(svgNode){
                     Sets the Transfer Syntax ID to be used within the DICOM image object
                 </td>
                 <td>
-                    <input name="transferSyntax" type="text" id="Text13" />
+                    <input name="wado_transferSyntax" type="text" id="Text13" />
                 </td>
             </tr>
         </table>
-        <input name="requestType" type="hidden" id="Hidden1" value="WADO" />
+        <input name="wado_requestType" type="hidden" id="requestType" value="WADO" />
     </div>
+    </form>
+   
     <div id="type_slgoogleapiimage" class="hidden">
         <br />
-        Google Chart Google Map SLUrl Map
+        Google Chart
         <table border="0">
             <tbody>
                 <tr>
@@ -1817,8 +1918,7 @@ function removeSvgChildren(svgNode){
                             <tbody>
                                 <tr>
                                     <td colspan="3">
-                                        Title:
-                                        <input value="Sample" id="title" title="chart's title text" size="33" type="text" />
+                                        Title:<input value="Sample" id="title" title="chart's title text" size="33" type="text" />
                                     </td>
                                 </tr>
                                 <tr>
@@ -1857,14 +1957,12 @@ function removeSvgChildren(svgNode){
                                 </tr>
                                 <tr>
                                     <td>
-                                        Width:
-                                        <input value="400" id="width" title="width of the chart" size="3" type="text" />
+                                        Width:<input value="400" id="width" title="width of the chart" size="3" type="text" />
                                     </td>
                                     <td>
                                     </td>
                                     <td align="right">
-                                        Height:
-                                        <input value="300" id="height" title="height of the chart" size="3" type="text" />
+                                        Height:<input value="300" id="height" title="height of the chart" size="3" type="text" />
                                     </td>
                                 </tr>
                                 <tr>
@@ -1897,7 +1995,7 @@ function removeSvgChildren(svgNode){
                                                 <option selected="selected" value="both">+</option>
                                             </select>
                                         </span><span id="marksContainer" title="mark data points" style="display: none;">
-                                            <input checked="checked" id="marks" type="checkbox" />Marks </span>
+                                            <input checked="checked" id="marks" type="checkbox" />Marks</span>
                                     </td>
                                 </tr>
                                 <tr id="data1Container1">
@@ -2192,16 +2290,14 @@ function removeSvgChildren(svgNode){
                                 </tr>
                                 <tr>
                                     <td>
-                                        URL:
-                                        <input value="http://chart.apis.google.com/chart?chtt=Sample&amp;cht=bvs&amp;chs=400x300&amp;chf=bg,s,ffffff|c,s,ffffcc&amp;chdl=x%5E2|2%5Ex&amp;chco=ff0000,00ff00&amp;chxt=x,y&amp;chxr=0,0,7|1,0,200&amp;chxp=0,0,2,4,6|1,0,50,100,150,200&amp;chg=100,25,1,0&amp;chd=t:0,0.5,2,4.5,8,12.5,18,24.5|0.5,1,2,4,8,16,32,64"
+                                        URL:<input value="http://chart.apis.google.com/chart?chtt=Sample&amp;cht=bvs&amp;chs=400x300&amp;chf=bg,s,ffffff|c,s,ffffcc&amp;chdl=x%5E2|2%5Ex&amp;chco=ff0000,00ff00&amp;chxt=x,y&amp;chxr=0,0,7|1,0,200&amp;chxp=0,0,2,4,6|1,0,50,100,150,200&amp;chg=100,25,1,0&amp;chd=t:0,0.5,2,4.5,8,12.5,18,24.5|0.5,1,2,4,8,16,32,64"
                                             id="url" title="URL for the chart" readonly="readonly" size="60" style="background-color: rgb(221, 221, 221);"
                                             type="text" />
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>
-                                        TinyURL:
-                                        <input value="http://tinyurl.com/2dsaoa" id="tinyurl" title="TinyURL for the chart"
+                                        TinyURL:<input value="http://tinyurl.com/2dsaoa" id="tinyurl" title="TinyURL for the chart"
                                             readonly="readonly" size="56" style="background-color: rgb(221, 221, 221);" type="text" />
                                     </td>
                                 </tr>
@@ -2209,63 +2305,654 @@ function removeSvgChildren(svgNode){
                         </table>
                     </td>
                 </tr>
-
             </tbody>
         </table>
-    </div>
-
-    <div id="type_slgoogleapihtml" class="hidden">
+        <form action="/dummy/action" onsubmit="return false;">
+        <br />
+        Use Google spreadsheets as external data (then you can configure sheets <a href='http://docs.google.com/support/bin/answer.py?hl=en&topic=11318&answer=75507'>
+            to use external xml</a> feeds!)
+        <br />
+        <br />
+        <input type="checkbox" name="useGSheets" onclick="if(this.checked){document.getElementById('gchartsviz').style.display = 'block';}else{ document.getElementById('gchartsviz').style.display = 'none';}" />
+        <div id="gchartsviz">
+        </div>
+        Google spreadsheet key (e.g. <em>rvWgEEGK9xuUQBR1EFcxHWA</em> ) or spreadsheet URL<input
+            type="text" size="30" id='gsKey' />Sheet number* (optional):<input type="text" size="3"
+                id='gsSheet' /><input type="button" value="Preview table headings" onclick="preview()" />
+        <br />
+        <p>
+            * The number of the first sheet in a spreadsheet (which is used by default) is 0.
+            To select thesecond sheet, add: 1; for the third sheet, add 2, and so on.
+        </p>
+        <br />
+        <hr />
+        <div id="headings">
+        </div>
+        <br />
+        <div>
+            Now it's time to write your own query in two parts - the columns you want to select,
+            and the conditions you want each returned result to satisfy. So for example, the
+            following table show possible queries over the Guardian Datastore MPs' Expenses
+            spreadsheet (key: <em>rvWgEEGK9xuUQBR1EFcxHWA</em>)
+        </div>
+        <table border="1">
+            <tr>
+                <th>
+                    <tt>select </tt>input
+                </th>
+                <th>
+                    <tt>where </tt>input
+                </th>
+                <th>
+                    Comments
+                </th>
+            </tr>
+            <tr>
+                <td>
+                    *
+                </td>
+                <td>
+                    &nbsp;
+                </td>
+                <td>
+                    Display everything
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    B,C,I
+                </td>
+                <td>
+                    &nbsp;
+                </td>
+                <td>
+                    Display columns B, C and I
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    B,C,I
+                </td>
+                <td>
+                    I=23083
+                </td>
+                <td>
+                    Display columns B, C and I for MPs claiming exactly 23083 in column 83
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    count(I)
+                </td>
+                <td>
+                    I=23083
+                </td>
+                <td>
+                    Count how many people claimed exactly 23083 in column I
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    B,C,I
+                </td>
+                <td>
+                    I!=23083 order by I
+                </td>
+                <td>
+                    display the people who did not claim exactly 23083 in column I and display them
+                    in increasing order of column I values
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    B,C,I
+                </td>
+                <td>
+                    I!=23083 order by I desc
+                </td>
+                <td>
+                    display the people who did not claim exactly 23083 in column I and display them
+                    in decreasing order of column I values
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    B,C,D,E
+                </td>
+                <td>
+                    (C contains 'Joan' or C matches 'John')
+                </td>
+                <td>
+                    Select by name (case sensitive); 'matches' must match exactly, 'contains' is a free
+                    text search
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    *
+                </td>
+                <td>
+                    F&lt;100000
+                </td>
+                <td>
+                    full details of everyone who claimed less than 100000 in column F
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    sum(I)
+                </td>
+                <td>
+                    &nbsp;
+                </td>
+                <td>
+                    Total claimed within column I
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    count(I)
+                </td>
+                <td>
+                    &nbsp;
+                </td>
+                <td>
+                    number of rows where there's a value in column I
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    count(I)
+                </td>
+                <td>
+                    where I&gt;=0
+                </td>
+                <td>
+                    make sure we only count 'valid' rows.
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    sum(I)/count(I)
+                </td>
+                <td>
+                    &nbsp;
+                </td>
+                <td>
+                    Calculate the average amount claimed in column I
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    D,sum(I)
+                </td>
+                <td>
+                    I&gt;=0 group by D
+                </td>
+                <td>
+                    Find out how much has been claimed by each party named in column D
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    D,sum(I)/count(I)
+                </td>
+                <td>
+                    I&gt;=0 group by D
+                </td>
+                <td>
+                    for the total claimed by each party (column D), how much on average does each member
+                    of that party claim
+                </td>
+            </tr>
+        </table>
         
-      
-    <input id="gmapaddr" name="gmapaddr" type="text" value="935 Ramsey Lake Road, Sudbury, Ontario, Canada" size="70"  /><br/>
-     
-      <select id="gmapzoom" title="zoom">
-        <option value="1">1</option>
-        <option value="2">2</option>
-        <option value="3">3</option>
-        <option selected="selected" value="4">4</option>
-        <option value="5">5</option>
-        <option value="6">6</option>
-        <option value="7">7</option>
-        <option value="8">8</option>
-        </select>
-        <br/>
-        <a href="javascript:void(0);" onclick="updateGMap();">Update Map</a>
-        <br/>
-        <div id="google-map" class="google-map" >&nbsp;</div>
-    </div>
-    
-    
-    
-   <div id="type_slamazonmapimage" class="hidden">
+        <br />
+        <p>
+            Try out some visualisation queries here...
+        </p>
+        <table id='colLookup' border='1'>
+        </table>
+        <br />
+        <p>
+            Select the columns from the list box (ctrl+click for multiple selections in IE,
+            command+click on a Mac) or type the elements directly into the appropriate text
+            box.
+        </p>
+        <br />
+        <div>
+            <tt>select </tt><span id='boxes'></span>
+            <input type="text" id="gqc" size="20" value='' />
+            <br />
+            <br />
+            <tt>where </tt><span id='boxes2'></span>
+            <input type="text" id="gqw" size="30" value='' />
+            <br />
+            <br />
+            <tt>order by </tt><span id='boxes3'></span>
+            <input type="text" id="gqo" size="30" value='' />
+            <select name="gqad">
+                <option value='asc' selected='selected'>asc</option>
+                <option value='desc'>desc</option>
+            </select>
+            <input type="button" value='Attempt this query' onclick="drawViz()" />
+        </div>
+        <div>
+            The query being asked: <em id='gqpreview'></em>
+        </div>
+        <div>
+            Here is the URL for that query: <span id='htmlout'></span>, <span id='csvout'></span>
+            <div id="preview">
+            </div>
+        </div>
         
-      
-    <input id="slmapregion" name="slmapregion" type="text" value="nossum" size="70"  /><br/>
-     
-      <select id="slmapzoom" title="zoom">
-        <option value="1">1</option>
-        <option value="2">2</option>
-        <option value="3">3</option>
-        <option selected="selected" value="4">4</option>
-        <option value="5">5</option>
-        <option value="6">6</option>
-        <option value="7">7</option>
-        <option value="8">8</option>
-        </select>
-        <br/>
-        <a href="javascript:void(0);" onclick="document.getElementById('type_slamazonmapimage').style.display = 'block';load();">Update Map</a>
-        <br/>
-        <div id="zoom_level"></div>
+        <div id="type_slgoogleapihtml" class="hidden">
+            <input id="gmapaddr" name="gmapaddr" type="text" value="935 Ramsey Lake Road, Sudbury, Ontario, Canada"
+                size="70" />
+            <br />
+            <br />
+            Marker Type:
+            <select name="gmapclicktype" id="gmapclicktype">
+                <option selected="selected" value="Points">Points</option>
+                <option value="Lines">Lines</option>
+                <option value="Circles">Circles</option>
+                <option value="GPolygon">Filled Polygons</option>
+            </select>
+            <br />
+            Click marker / segment:
+            <select name="gmarkerclicktype" id="gmarkerclicktype">
+                <option selected="selected" value="Remove">Remove</option>
+                <option value="Edit Info">Edit Info</option>
+            </select>
+            <br />
+            Marker:
+            <select name="gmarkerclickselect" id="gmarkerclickselect">
+                <option selected="selected" value="big blue">Big Blue</option>
+                <option value="big red">Big Red</option>
+                <option value="treasure">X marks the spot</option>
+                <option value="blue">Blue</option>
+                <option value="gray">Gray</option>
+                <option value="green">Green</option>
+                <option value="lblue">Light Blue</option>
+                <option value="orange">Orange</option>
+                <option value="pink">Pink</option>
+                <option value="purple">Purple</option>
+                <option value="white">White</option>
+                <option value="yellow">Yellow</option>
+                <option value="letters">Letters</option>
+                <option value="blank">Blank</option>
+                <option value="cluster">Cluster</option>
+                <option value="vertex">Line Vertex</option>
+                <option value="numbers">Numbers</option>
+                <option value="route">Route</option>
+                <option value="small blue">Small Blue</option>
+                <option value="small red">Small Red</option>
+            </select>
+            <br />
+            <input name="glinestyle" value="1" id="glinestyle" type="checkbox" />Use for new
+            and changed lines
+            <br />
+            Stroke color: #<input maxlength="6" name="glinestrokecolor" id="glinestrokecolor"
+                size="6" value="0000ff" type="text" />
+            <br />
+            Stroke weight:<input maxlength="3" name="glinestrokeweight" id="glinestrokeweight"
+                size="3" value="5" type="text" />px Thickness of line, in pixels.
+            <br />
+            Stroke opacity:<input maxlength="3" name="glinestrokeopacity" id="glinestrokeopacity"
+                size="3" value="45" type="text" />%
+            <br />
+            Fill color: #<input maxlength="6" name="glinecolor" id="glinecolor" size="6" disabled="disabled"
+                type="text" />Hex color value for fill color. Example: #<em>00AA33</em>
+            <br />
+            Fill opacity:<input maxlength="3" name="glinefillopacity" id="glinefillopacity" size="3"
+                disabled="disabled" type="text" />% Opacity of fill, from 0 to 100%.
+            <br />
+            <br />
+            Polygon style<input name="gpolystyle" value="1" id="gpolystyle" type="checkbox" />Use
+            for new and changed polygons
+            <br />
+            Stroke color: #<input maxlength="6" name="gpolystrokecolor" id="gpolystrokecolor"
+                size="6" value="000000" type="text" />Stroke weight:<input maxlength="3" name="gpolystrokeweight"
+                    id="gpolystrokeweight" size="3" value="3" type="text" />px Thickness of
+            line, in pixels.
+            <br />
+            Stroke opacity:<input maxlength="3" name="gpolystrokeopacity" id="gpolystrokeopacity"
+                size="3" value="25" type="text" />%
+            <br />
+            Fill color: #<input maxlength="6" name="gpolycolor" id="gpolycolor" size="6" value="ff0000"
+                type="text" />Hex color value for fill color. Example: #<em>00AA33</em>
+            <br />
+            Fill opacity:<input maxlength="3" name="gpolyfillopacity" id="gpolyfillopacity" size="3"
+                value="45" type="text" />% Opacity of fill, from 0 to 100%.
+            <br />
+            <br />
+            Map id attribute:<input value="map-container.field" name="mapid" id="mapid0" type="hidden" />
+            <br />
+            Map type:
+            <select name="maptype" id="maptype">
+                <optgroup label="Google">
+                    <option value="Map" selected="selected">Map: Standard street map.</option>
+                    <option value="Satellite">Satellite: Standard satellite map.</option>
+                    <option value="Hybrid">Hybrid: Hybrid satellite map.</option>
+                    <option value="Physical">Terrain: Physical feature map.</option>
+                </optgroup>
+            </select>
+            <br />
+            Controls:
+            <select name="controltype" id="controltype">
+                <option value="None">None</option>
+                <option value="Small" selected="selected">Small</option>
+                <option value="Large">Large</option>
+            </select>
+            <br />
+            Address:<input maxlength="" name="" id="address0" type="text" />
+            <br />
+            The Latitude and Longitude of the centre of the map:<input maxlength="" name="latlong"
+                size="50" value="44.715513732021336,-40.60546875" id="latlon0" type="text" />
+            <br />
+            Map width:<input maxlength="25" name="width" size="25" value="600px" id="width0"
+                type="text" />The map width, as a CSS length or percentage.
+            <br />
+            Examples: <em>50px</em>, <em>5em</em>, <em>2.5in</em>, <em>95%</em>
+            <br />
+            Map height:<input maxlength="25" name="height" size="25" value="400px" id="height0"
+                type="text" />The map height, as a CSS length or percentage.
+            <br />
+            Examples: <em>50px</em>, <em>5em</em>, <em>2.5in</em>, <em>95%</em>
+            <br />
+            Alignment:
+            <select name="alignment" id="align0">
+                <option selected="selected" value="None">None</option>
+                <option value="Right">Right</option>
+                <option value="Left">Left</option>
+                <option value="Center">Center</option>
+            </select>
+            <br />
+            The current magnification of the map:
+            <select name="gmapzoom" title="zoom" id="zoom">
+                <option value="0">0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3" selected="selected">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+                <option value="11">11</option>
+                <option value="12">12</option>
+                <option value="13">13</option>
+                <option value="14">14</option>
+                <option value="15">15</option>
+                <option value="16">16</option>
+                <option value="17">17</option>
+            </select>
+            <br />
+            <a href="javascript:void(0);" onclick="updateGMap();">Update Map</a>
+            <br />
+        </div>
+        <div id="type_slamazonmapimage" class="hidden">
+            <input id="slmapregion" name="slmapregion" type="text" value="nossum" size="70" />
+            <br />
+            <select id="slmapzoom" title="zoom">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option selected="selected" value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+            </select>
+            <br />
+            <a href="javascript:void(0);" onclick="document.getElementById('type_slamazonmapimage').style.display = 'block';load();">
+                Update Map</a>
+            <br />
+            <div id="zoom_level">
+            </div>
+        </div>
+        <div id="type_slaudio" class="hidden">
+            Streaming Radio Channel:
+            <select name="parcelradio" id="parcelradio" onchange="document.getElementById('parcelAudioMediaURL') = 'http://' + this.options[this.options.selected].value">
+                <option value=""></option>
+                <option value="87.98.250.247:8426">WREZ Radio</option>
+                <option value="WREZRadio.net">Radio for SL</option>
+                <option value="81.169.149.182:8016">IndieSpectrum Radio</option>
+                <option value="129.173.67.99:8000">WeFunk</option>
+                <option value="89.248.167.22:4060">1.AB SoulfulClassicJazz</option>
+                <option value="64.62.252.130:8030">1.FM Blues</option>
+                <option value="64.62.252.130:8070">1.FM Channel X</option>
+                <option value="64.71.145.133:8010">1.FM Chillout Lounge</option>
+                <option value="64.71.145.130:8055">1.FM Jamz</option>
+                <option value="64.62.194.11:8020">1.FM Country</option>
+                <option value="216.66.69.100:6210">1.FM Flashback</option>
+                <option value="64.5.130.50:8000">1920s Radio Network</option>
+                <option value="213.251.186.167:8000">RaDioNIMBOODA.com</option>
+                <option value="67.15.180.35:8020">2Believe Spanish</option>
+                <option value="66.250.45.52:7575">3WK Classic Underground</option>
+                <option value="66.250.45.52:7800">3WK Classic Undergroundradio</option>
+                <option value="88.191.24.102:1755">80s Hotmix</option>
+                <option value="64.202.98.51:808">808 Live Reggaecast</option>
+                <option value="81.169.182.149:808">808 Live Reggaecast</option>
+                <option value="205.234.168.52:80">90.7 KWMUFM</option>
+                <option value="205.188.215.229:8004">977 80s</option>
+                <option value="66.0.192.157:8000">ABS Bluescast</option>
+                <option value="66.199.227.218:8000">Absolute Technoise Radio</option>
+                <option value="209.9.238.4:9298">Always Country</option>
+                <option value="205.188.215.226:8018">Angel Fire Radio WDDT Rock and Roll</option>
+                <option value="205.188.215.226:8012">Bassdrive</option>
+                <option value="38.99.68.230:9010">Bay Smooth Jazz</option>
+                <option value="207.200.96.232:8006">BeatBlender</option>
+                <option value="83.133.119.93:80">Beatles Radio Fab Four and More</option>
+                <option value="64.62.252.134:5100">Belly Up 4 Blues</option>
+                <option value="69.22.167.174:8000">BIGUPRADIO.COM Slamming Dancehall Reggae</option>
+                <option value="88.191.17.219:80">Black Dog Radio</option>
+                <option value="62.75.202.238:13000">BlackBeats.FM</option>
+                <option value="85.214.55.100:8000">BlackJam-Radio.de</option>
+                <option value="220.85.13.109:7700">BlueClassic</option>
+                <option value="210.109.97.69:8000">Blues On Air</option>
+                <option value="38.96.148.26:7890">Blues Radio UK</option>
+                <option value="87.98.150.1:8000">Bollywood Music Radio</option>
+                <option value="87.98.150.2:9200">Bollywood.mu</option>
+                <option value="207.200.96.232:8014">Boot Liquor</option>
+                <option value="205.188.215.225:8002">Breaks</option>
+                <option value="213.251.176.192:3015">Canal creole</option>
+                <option value="205.188.215.225:8010">ChroniX Aggression</option>
+                <option value="205.188.215.225:8004">Classic Electronica</option>
+                <option value="130.166.72.1:8006">Classic Heartland</option>
+                <option value="213.73.255.244:2026">Classic Soul Network</option>
+                <option value="205.234.179.203:80">Classical Minnesota</option>
+                <option value="64.71.145.106:8004">Classical WGBH 89.7 HD2</option>
+                <option value="89.248.167.7:13000">COCORADIO.COM</option>
+                <option value="130.166.72.1:8006">Country-Heartland PUBRadio</option>
+                <option value="205.188.215.232:8028">Cowboy Cultural</option>
+                <option value="64.202.98.133:9130">CRC Hard Rocking 80s</option>
+                <option value="207.200.96.225:8022">Cryosleep</option>
+                <option value="81.26.214.146:6312">DanceRadio FreestyleFM</option>
+                <option value="85.21.79.5:8040">Deep Mix Moscow Radio</option>
+                <option value="85.12.7.2:8000">DEFJAY HIP-HOP AND RandB</option>
+                <option value="129.16.159.166:8000">DigitalGunfire-Hard Hitting</option>
+                <option value="205.188.215.228:8006">DIGITALLY IMPORTED</option>
+                <option value="64.92.199.69:8240">Dinner Jazz Excursion</option>
+                <option value="88.191.16.70:10780">Diva Radio</option>
+                <option value="207.200.96.229:8030">Drum and Bass</option>
+                <option value="stream3.ebm-radio.com:8200">EBM Industrial Electro</option>
+                <option value="69.5.81.72:7550">ELVISMEN-SALSA</option>
+                <option value="205.188.215.228:8016">FLARESOUND</option>
+                <option value="194.158.114.68:8000">FREQUENCE3 Paris France</option>
+                <option value="88.191.18.198:8220">Fun Radio - Soul and Dance</option>
+                <option value="62.250.7.133:8000">Funk HiQ</option>
+                <option value="195.234.45.50:8000">GothVille Radio</option>
+                <option value="207.200.96.228:8076">Groove Salad</option>
+                <option value="222.122.131.95:8000">HAPPYDAY</option>
+                <option value="217.64.173.227:19720">HBR1-Dream Factory</option>
+                <option value="38.96.148.38:8755">Hiphop Philosophy</option>
+                <option value="205.188.215.228:8018">HOUSEMUSIQUE</option>
+                <option value="213.251.129.50:8080">idobi Radio-Alternative</option>
+                <option value="140.142.8.222:8000">KEXP Live</option>
+                <option value="66.90.118.85:10014">KGRL</option>
+                <option value="207.44.222.47:8080">Khaha.com</option>
+                <option value="81.173.3.20:80">kinkfm.com</option>
+                <option value="207.218.248.42:8000">KOQX Blues Radio</option>
+                <option value="red.neostreams.info:8000">Landfall Radio Island Music</option>
+                <option value="213.251.133.49:9320">La Radio de La Mer</option>
+                <option value="213.251.129.22:8000">Led Jam Radio</option>
+                <option value="205.188.215.225:8018">Limbik Frequencies</option>
+                <option value="64.62.161.77:8000">LiveHardRock.com</option>
+                <option value="88.191.28.74:8090">LOUNGE RADIO</option>
+                <option value="195.56.146.186:8220">M3MUSIC Classical</option>
+                <option value="218.189.210.17:4800">MAGNATUNE.COM</option>
+                <option value="205.188.215.228:8012">Megarock Radio</option>
+                <option value="69.12.217.101:8000">Memories 89 One KCEA-FM</option>
+                <option value="213.186.41.214:80">MIZIKRADIO</option>
+                <option value="213.251.173.211:9446">MKM RADIO</option>
+                <option value="69.13.65.118:8002">Mountain Apple Company</option>
+                <option value="38.118.158.78:8070">MPEGRadio.Com</option>
+                <option value="194.97.52.210:8700">mth.Alternative</option>
+                <option value="208.53.158.16:100">Music Massage</option>
+                <option value="129.241.205.150:8080">Music One</option>
+                <option value="radiosolution.info:8700">Music World Radio</option>
+                <option value="89.248.163.114:5502">Nashville FM</option>
+                <option value="145.58.33.32:8022">NPS Output Webradio</option>
+                <option value="84.244.180.46:8034">OLDIES45.NL 50s 60s 70s 80s</option>
+                <option value="209.51.162.163:8070">One Dot FM</option>
+                <option value="211.43.215.166:8136">ORSRADIO Best Latin Hits!</option>
+                <option value="64.62.253.223:9030">Ottos Baroque Musick</option>
+                <option value="64.72.117.112:8000">Pegajosa</option>
+                <option value="66.90.118.85:9502">Pirate Cat Radio</option>
+                <option value="213.73.255.244:10500">Prolocation IranianRadio</option>
+                <option value="194.158.114.67:5000">PulsRadio</option>
+                <option value="64.27.19.195:8668">Puro Reggaeton</option>
+                <option value="145.58.33.32:8048">Radio Netherlands</option>
+                <option value="207.200.96.226:8056">Radio Paradise</option>
+                <option value="88.191.11.123:8767">Radio Rivendel</option>
+                <option value="205.188.215.231:8004">radio wazee</option>
+                <option value="82.149.227.170:11600">Radio700-Schlager und Oldies</option>
+                <option value="207.200.96.227:8060">RadioDarvish Persian</option>
+                <option value="66.98.164.56:12614">RadioJackie London</option>
+                <option value="208.53.131.181:8000">Radiophile</option>
+                <option value="64.72.117.112:8000">RadioReggaeton</option>
+                <option value="217.118.212.74:8500">Radioseven</option>
+                <option value="88.191.27.15:8128">RaDioTEENTAAL</option>
+                <option value="205.234.220.66:7970">RAGGAKINGS</option>
+                <option value="66.254.105.246:8000">Random Loveline-Talk</option>
+                <option value="72.36.247.66:9000">Reggaetoneando-Peru</option>
+                <option value="211.43.215.169:8376">ROMANTICA FM</option>
+                <option value="72.236.125.114:8050">ROOSTER CLASSIC COUNTRY</option>
+                <option value="212.72.165.24:9012">rootsrockreggae</option>
+                <option value="205.188.215.231:8010">SALSASTREAM Best Salsa</option>
+                <option value="207.200.96.225:8010">Secret Agent Downtempo</option>
+                <option value="205.188.215.227:8008">SKY.FM - Modern Jazz</option>
+                <option value="82.96.64.7:8080">SKY.FM COUNTRY</option>
+                <option value="66.250.45.118:7694">SKY.FM Classic Rap and HipHop</option>
+                <option value="205.188.215.225:8000">SKY.FM Roots Reggae</option>
+                <option value="205.188.215.232:8014">SKY Class and Flamenco Guitar</option>
+                <option value="216.179.194.131:8978">Smoothbeats.com</option>
+                <option value="207.200.96.226:8052">SMOOTHJAZZ.COM</option>
+                <option value="66.232.110.34:8000">SmoothLounge</option>
+                <option value="212.72.186.18:8180">Soft N Easy Net Radio</option>
+                <option value="205.188.215.228:8000">Spirit of KJAZ San Fran</option>
+                <option value="69.9.183.97:9224">Star104</option>
+                <option value="38.96.148.19:8300">Steel Radio</option>
+                <option value="69.28.128.148:80">stream radioio country free hi Radio Country</option>
+                <option value="82.197.165.137:80">Swiss Inet Radio Classical</option>
+                <option value="82.197.165.139:80">Swiss Inet Radio Opera</option>
+                <option value="82.197.167.138:80">Swiss Inet Radio swing</option>
+                <option value="80.237.158.27:8000">Techno4ever Radio</option>
+                <option value="80.154.37.109:80">TechnoBase.FM</option>
+                <option value="38.96.148.19:9950">TELLSTREAM DANCEHALL UK</option>
+                <option value="38.96.148.26:8155">The AfriRythms</option>
+                <option value="67.159.5.135:8010">The Classic Soul Network</option>
+                <option value="205.234.179.4:80">The Current</option>
+                <option value="67.43.161.248:6005">The EDGE ROCKS</option>
+                <option value="212.48.126.146:8230">This Is Corrosion</option>
+                <option value="66.197.250.37:15068">TOSSM RADIO</option>
+                <option value="stream.transmissionfm.com:8000/breaks-high.mp3">TransmissionFM.com -
+                    Breaks</option>
+                <option value="stream.transmissionfm.com:8000/dnb-high.mp3">TransmissionFM.com - Drum
+                    and Bass</option>
+                <option value="stream.transmissionfm.com:8000/hip-hop-high.mp3">TransmissionFM.com -
+                    Hip Hop</option>
+                <option value="stream.transmissionfm.com:8000/house-high.mp3">TransmissionFM.com - House</option>
+                <option value="stream.transmissionfm.com:8000/techno-high.mp3">TransmissionFM.com -
+                    Techno</option>
+                <option value="stream.transmissionfm.com:8000/trance-high.mp3">TransmissionFM.com -
+                    Trance</option>
+                <option value="66.111.198.196:6256">UrbanSoulNation</option>
+                <option value="220.95.210.103:8000">We Met In Classics</option>
+                <option value="64.62.252.134:2680">Whole Wheat Radio</option>
+                <option value="66.225.205.8:8030">WKSU Classical Channel</option>
+                <option value="66.225.205.109:80">WNYC2 Classical</option>
+                <option value="xltrax.com:8000">XLTRAX.COM</option>
+                <option value="63.241.4.18:8069">XTC.RADIO.LONDON</option>
+                <option value="delta.secondlifestream.com:10558">Soderstrom Sounds 50s 60s rockabilly</option>
+                <option value="81.169.149.182:8016">IndieSpectrum Radio</option>
+                <option value="scfire-nyk-aa03.stream.aol.com:80/stream/1014">80s BEST HITS</option>
+                <option value="scfire-chi-aa04.stream.aol.com:80/stream/1013">80s BEST HITS2</option>
+                <option value="music.radioriel.org">CLASSICAL MUSIC</option>
+                <option value="scfire-chi-aa02.stream.aol.com:80/stream/1010">SMOOTH JAZZ</option>
+                <option value="205.134.236.59:8050">CLASSICAL GUITAR</option>
+                <option value="scfire-chi-aa01.stream.aol.com:80/stream/1013">BEST OF THE 80s</option>
+                <option value="scfire-nyk-aa03.stream.aol.com:80/stream/1014">TOP HITS</option>
+                <option value="208.53.158.16:8080">OLDIES - THE 50s</option>
+                <option value="205.188.215.231:8010">SALSA</option>
+                <option value="scfire-ntc-aa03.stream.aol.com:80/stream/1019">COUNTRY</option>
+                <option value="scfire-ntc-aa03.stream.aol.com:80/stream/1006">CLASSIC and OPERA</option>
+                <option value="82.197.165.138:80">JAZZ OLD MUSIC</option>
+                <option value="205.188.215.228:8006">AMBIENT</option>
+                <option value="208.122.59.30:7814">PIANO JAZZ</option>
+                <option value="160.79.128.61:7824">BEATLES</option>
+                <option value="205.188.215.227:8008">FREE JAZZ</option>
+                <option value="88.191.13.57:7002/">LOVE MUSIC</option>
+                <option value="208.122.59.30:7804">BOSSA NOVA</option>
+                <option value="208.122.59.30:7734">CLASSIC ROCK</option>
+                <option value="scfire-ntc-aa03.stream.aol.com:80/stream/1076">HITS 70s</option>
+                <option value="208.122.59.30:7704">URBAN JAMZ</option>
+                <option value="208.122.59.30:7794">SOLO PIANO</option>
+                <option value="208.122.59.30:7284">FUNKY HOUSE</option>
+                <option value="208.122.59.30:7754">ALT ROCK</option>
+                <option value="64.34.178.168:8000">CLASSIC RAP</option>
+                <option value="160.79.128.61:7724">INDIE ROCK</option>
+                <option value="208.122.59.30:7774">SOUND TRACKS</option>
+                <option value="208.122.59.30:7784">CHRISTIAN</option>
+                <option value="scfire-nyk-aa01.stream.aol.com:80/stream/1017">ROOTS RAGGAE</option>
+                <option value="82.149.227.171:8000">UPTEMPO SMOOTH JAZZ</option>
+                <option value="208.122.59.30:7674">WORLD MUSIC</option>
+                <option value="88.191.13.57:7000">DA TEMPO LOUNGE</option>
+                <option value="205.188.215.226:8006">GABBER</option>
+                <option value="208.122.59.30:7234">FUTURE SYNTHPOP</option>
+                <option value="205.188.215.225:8002">BREAKS</option>
+                <option value="205.188.215.225:8004">CLASSIC TECHNO</option>
+                <option value="207.200.96.229:8030">DRUM AND BASS</option>
+                <option value="scfire-ntc-aa03.stream.aol.com:80/stream/1009">LOUNGE</option>
+                <option value="scfire-ntc-aa04.stream.aol.com:80/stream/1004">HARD CORE</option>
+                <option value="72.51.40.90:8000">HARDSTYLE</option>
+                <option value="scfire-ntc-aa03.stream.aol.com:80/stream/1008">GOA-PSY TRANCE</option>
+                <option value="scfire-ntc-aa03.stream.aol.com:80/stream/1026">PROGRESSIVE</option>
+                <option value="208.122.59.30:7204">TECHNO</option>
+                <option value="66.135.35.144:8000">MINIMAL</option>
+                <option value="209.247.146.98:8000">HARD DANCE</option>
+                <option value="di-fm-01.quintex.com:8882">TRIBAL HOUSE</option>
+                <option value="di-fm-01.quintex.com:8880">SOULFUL HOUSE</option>
+                <option value="scfire-nyk-aa03.stream.aol.com:80/stream/1007">HOUSE</option>
+                <option value="scfire-chi-aa02.stream.aol.com:80/stream/1009">EURO DANCE</option>
+                <option value="scfire-ntc-aa01.stream.aol.com:80/stream/1035">CHILLOUT</option>
+                <option value="scfire-ntc-aa03.stream.aol.com:80/stream/1025">ELECTRO HOUSE</option>
+                <option value="scfire-ntc-aa03.stream.aol.com:80/stream/1065">VOCAL TRANCE</option>
+                <option value="scfire-ntc-aa02.stream.aol.com:80/stream/1003">TRANCE</option>
+                <option value="scfire-ntc-aa03.stream.aol.com:80/stream/1024">DANCE</option>
+            </select>
+            <!--script type='text/javascript' src='u3embed_module.js'></script><div style="width:350px;hidden" id='sc_embed_module'></div-->
+            <!--script language='JavaScript' type='text/javascript'>scEU3EmbedModule('MOST_POPULAR', '', 0);</script-->
+            Streaming Audio URL:
+            <br />
+            <br />
+            <input name="parcelAudioMediaURL" type="text" id="parcelAudioMediaURL" size="65" />
+        </div>
+         </form>
     </div>
-    </form>
-    <script type="text/javascript">  
-    function updateGMap( )
-    {
-      document.getElementById('google-map').style.display = 'block';
-    $(".google-map").googlemap({addresses: [document.getElementById('gmapaddr').value]});
-    }
-    
-    </script>
-    
+   
 </body>
 </html>

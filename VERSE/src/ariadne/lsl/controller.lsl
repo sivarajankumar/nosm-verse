@@ -240,6 +240,8 @@ string tempGetNodeID(string p) {
 
 key getKeyforPlayerName(string target){
 
+// do we need llhttprequest to: http://name2key.appspot.com/?name=firstname%20lastname
+
     key response = NULL_KEY;
     integer nPlayers = llGetListLength(gPlayerList);
     integer j;

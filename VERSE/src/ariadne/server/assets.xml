@@ -5,14 +5,18 @@
 	<Node id="8336" label="Start" />
 	<Assets>
 		<Asset type="SLChat" name="clearShell" targettype="9993"
-			value="clear shell" ></Asset>
+			value="clear shell" uipairs="chatchannel=9993&amp;Holodeck_chat_cmds=end shell" id=""> 
+    </Asset>
 		<Asset type="SLChat" name="shapechoice" targettype="9993"
-			value="load scene shapechoice" ></Asset>
-		<Asset type="SLInnerSequence" name="seq1shapechoice"
-			targettype="0" value="clearShell=0&amp;shapechoice=0" ></Asset>
+			value="load scene shapechoice" uipairs="chatchannel=9993&amp;Holodeck_chat_cmds=" id="">    
+    </Asset>
+		<Asset type="SLInnerSequence" name="master-8336"
+			targettype="0" value="clearShell=0&amp;shapechoice=0" uipairs="" id="">
+    </Asset>
 		<Asset type="VPDText" name="nodenm" targettype="PIVOTE"
-			value="ID=[2]]]] - start  there is an open space present a sphere and" ></Asset>
-	
+			value="ID=[2]]]] - start  there is an open space present a sphere and"
+         uipairs="VPDTextContentType=9993&amp;useExtText=useVPD&amp;charset=9993&amp;serverImplType=dcm4che&amp;serverImplTypeURL=localhost:11112&amp;" id="">
+    </Asset>
   </Assets>
 	<Links>
 		<Link label="White Room" ref="8337" ></Link>

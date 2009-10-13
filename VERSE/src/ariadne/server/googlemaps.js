@@ -21,7 +21,7 @@
  * });
  * 
  **/
-  
+ 
 (function($) {
     
     // fireEvent(opts, fn, self, arg)
@@ -292,3 +292,9 @@
     
 })(jQuery);
 
+function updateGMap() {
+    //document.getElementById('google-map').style.display = 'block';
+    $(".type_slgoogleapihtml").googlemap({
+        addresses: [document.getElementById('gmapaddr').value]
+    });
+}

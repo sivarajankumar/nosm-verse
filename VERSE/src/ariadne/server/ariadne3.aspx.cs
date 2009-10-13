@@ -43,7 +43,7 @@ public partial class ariadne3 : System.Web.UI.Page
                 sessID = (string)Request.QueryString["sessID"];
             if (Request.QueryString["mnodeID"] != null)
                 mnodeID = (string)Request.QueryString["mnodeID"];
-
+            
             if (Request.QueryString["mode"] != null)
                 aMode = (string)Request.QueryString["mode"];
 
@@ -76,14 +76,14 @@ public partial class ariadne3 : System.Web.UI.Page
                             else
                                 Session["ol-sessid"] = sessID;
 
-                            
                             string strMNodeTitle = HttpUtility.UrlDecode(extractNode("//labyrinth/mnodetitle", OLResults));
                             string thisNodeID = extractNode("//labyrinth/mnodeid", OLResults);
                             int intMNodeID = Convert.ToInt32(thisNodeID);
                             //always add vpdtext
                             outboundXMLText = outboundXMLText + "<Asset type=\"VPDText\" name=\"nodenm\" targettype=\"PIVOTE\" value=\"" + strMNodeTitle + "\" ></Asset>";
 
-                            DataTable aT = (DataTable)this.ExecuteQuery("SELECT Lower(AssetTypeName) as AssetTypeName, NodeAssetName,NodeAssetTarget, NodeAssetValue, AssetTypeDesc, MNodeID, AssetTypeUIPairs FROM AssetMapNode mapped, AssetType types where mapped.AssetTypeID = types.AssetTypeID and mapped.MNodeID = @param", thisNodeID, true);
+                            DataTable aT = (DataTable)this.ExecuteQuery("SELECT Lower(AssetTypeName) as AssetTypeName, NodeAssetName,NodeAssetTarget, NodeAssetValue "
+                                +"FROM AssetMapNode mapped, AssetType types where mapped.AssetTypeID = types.AssetTypeID and mapped.MNodeID = @param", thisNodeID, true);
 
                             foreach (DataRow row in aT.Rows)
                             {
@@ -92,12 +92,50 @@ public partial class ariadne3 : System.Web.UI.Page
 
                    
                             //links
-                            outboundXMLText = outboundXMLText + getLinkSetXML(extractNode("//labyrinth/linker", OLResults));
+                            outboundXMLText = outboundXMLText + getLinkSetXML(extractNode("//labyrinth/linker/@value", OLResults));
                         }
                         break;
 
                     case "admin":
                         /*
+                     // if method is post, 
+                     if(Request.HttpMethod.ToLower() == "post"){
+
+                        (string)Request.QueryString["assetTargetIN"];
+                        (string)Request.QueryString["assetValueIN"];
+                        (string)Request.QueryString["assetNameIN"];
+                        (string)Request.QueryString["assetTypeIN"];
+                                     
+                        //if select * from mapassetnode where mnodeID = @mnodeID
+                        // if any results assets exist for this node
+
+                        if (Request.QueryString["assetMapNodeID"] != null )
+                                // is this an update     
+
+                       
+                        
+UPDATE table
+SET field = value,
+ field = value,
+ field = value
+WHERE conditions;
+                            //or a delete, 
+                         //DELETE FROM AssetMapNode WHERE AssetMapNodeID = 3
+
+                        // is this an insert
+                        
+INSERT INTO AssetMapNode
+(MNodeID,AssetTypeID,NodeAssetValue,NodeAssetTarget,NodeAssetName,AssetTypeUIPairs)VALUES(
+            mnodeID
+           ,(string)Request.QueryString["assetTypeIN"]
+           ,(string)Request.QueryString["assetValueIN"]
+           ,(string)Request.QueryString["assetTargetIN"]
+           ,"public" + ((string)Request.QueryString["assetValueIN"]).substring(0,4).trim()
+           ,(string)Request.QueryString["currentUIpairs"])
+
+                        
+
+                                     * TODO ***
                             admin session? disable OL session tracking?
                             build extended XML
                             xml = getnodexml from OL
@@ -111,7 +149,7 @@ public partial class ariadne3 : System.Web.UI.Page
 
                             string OLResults = getOLXml(mnodeID, sessID);
 //throw new Exception("OLResults: " + OLResults);
-                            string olXMLSess = extractNode("//labyrinth/mysession", OLResults);
+                            string olXMLSess = extractNode("/labyrinth/mysession/@value", OLResults);
 throw new Exception("olXMLSess: " + olXMLSess);
                             if (sessID == "")
                                 Session["ol-sessid"] = olXMLSess;
@@ -120,30 +158,31 @@ throw new Exception("olXMLSess: " + olXMLSess);
 
                             
                             
-                            string strMNodeTitle = HttpUtility.UrlDecode(extractNode("//labyrinth/mnodetitle", OLResults));
-                            string thisNodeID = extractNode("/labyrinth/mnodeid", OLResults);
+                            string strMNodeTitle = HttpUtility.UrlDecode(extractNode("/labyrinth/mnodetitle/@value", OLResults));
+                            string thisNodeID = extractNode("/labyrinth/mnodeid/@value", OLResults);
                             int intMNodeID = Convert.ToInt32(thisNodeID);
                             //always add vpdtext
                             outboundXMLText = outboundXMLText + "<Asset type=\"VPDText\" name=\"nodenm\" targettype=\"PIVOTE\" value=\"" + strMNodeTitle + "\" ></Asset>";
 
-                            DataTable aT = (DataTable)this.ExecuteQuery("SELECT Lower(AssetTypeName) as AssetTypeName, NodeAssetName,NodeAssetTarget, NodeAssetValue, AssetTypeDesc, MNodeID, AssetTypeUIPairs FROM AssetMapNode mapped, AssetType types where mapped.AssetTypeID = types.AssetTypeID and mapped.MNodeID = 8336 ", thisNodeID, true);
+                            DataTable aT = (DataTable)this.ExecuteQuery("SELECT Lower(AssetTypeName) as AssetTypeName, NodeAssetName,NodeAssetTarget, NodeAssetValue, AssetTypeDesc, "
+                                +"MNodeID, AssetTypeUIPairs, AssetMapNodeID FROM AssetMapNode mapped, AssetType types "
+                                +"where mapped.AssetTypeID = types.AssetTypeID and mapped.MNodeID = 8336 ", thisNodeID, true);
 
 
                             foreach (DataRow row in aT.Rows)
                             {
 //throw new Exception("hey some rows!: ");
-                                outboundXMLText = outboundXMLText + "<Asset type=\"" + row[0] + "\" name=\"" + row[1] + "\" targettype=\"" + row[2] + "\" value=\"" + row[3] + "\" ></Asset>";
-
-
-
-			    }
-/*
-			    DataTable aT3 = (DataTable)this.ExecuteQuery("select AssetTypeID from AssetType", " ", true);
+                                outboundXMLText = outboundXMLText + "<Asset type=\"" + row[0] + "\" name=\"" + row[1] + "\" targettype=\"" + row[2] 
+                                    + "\" value=\"" + row[3] + "\" uipairs=\"" + row[6] + "\" id=\"" + row[7] + "\"></Asset>";
+			                }
+                            /*
+			                DataTable aT3 = (DataTable)this.ExecuteQuery("select AssetTypeID from AssetType", " ", true);
                             foreach (DataRow row3 in aT3.Rows)
                             {
-
                              	// add asset attrib xml, FOR EACH ASSET TYPE
-                            	DataTable aT2 = (DataTable)this.ExecuteQuery("SELECT AssetTypeAttribValue, CASE  WHEN(SELECT SUM(1) FROM AssetTypeAttribs attr WHERE  attr.AssetTypeID = (select distinct AssetTypeID  from AssetType where   AssetType.AssetTypeID = @param )  ) > 1  THEN 'select' ELSE 'input' END as FROM  AssetTypeAttribs  WHERE AssetTypeAttribs.AssetTypeID = @param  ", Convert.ToInt32(row3[0].ToString()), true);
+                            	DataTable aT2 = (DataTable)this.ExecuteQuery("SELECT AssetTypeAttribValue, CASE  WHEN(SELECT SUM(1) FROM AssetTypeAttribs attr "
+                                    +"WHERE  attr.AssetTypeID = (select distinct AssetTypeID  from AssetType where   AssetType.AssetTypeID = @param )  ) > 1  THEN 'select' "
+                                    +"ELSE 'input' END as FROM  AssetTypeAttribs  WHERE AssetTypeAttribs.AssetTypeID = @param  ", Convert.ToInt32(row3[0].ToString()), true);
 
                             	foreach (DataRow row2 in aT2.Rows)
                             	{
@@ -151,23 +190,16 @@ throw new Exception("olXMLSess: " + olXMLSess);
                             	}
 
                             }
-*/
+                             * */
+
 //throw new Exception("OLResults string: " + OLResults);
 
                             //links
-				string linkXML = extractNode("/labyrinth/linker", OLResults);
+				            string linkXML = extractNode("/labyrinth/linker/@value", OLResults);
 
-throw new Exception("linkXML string: " + linkXML);
-
+//throw new Exception("linkXML string: " + linkXML);
                             outboundXMLText = outboundXMLText + getLinkSetXML(linkXML);
-
                         }
-                        break;
-
-
-                    case "slstats":
-                        //googlecharts  asking for stats xml
-                        // TODO: 
                         break;
 
                     case "slbuild":
@@ -246,7 +278,7 @@ doc.Load(reader);
 
 XmlNode xmlNode ;
 XmlElement root = doc.DocumentElement;
-xmlNode  = root.SelectSingleNode(@nodePath);
+xmlNode  = root.SelectSingleNode(nodePath);
 
 
 return xmlNode.Value;

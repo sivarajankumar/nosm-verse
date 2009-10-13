@@ -1,53 +1,146 @@
 
 
 
-$(document).ready(function(){
-    $.get("assets.xml", {}, function(xml){ ///&mode=admin will return assetTypeattrib xml
-        $('Asset', xml).each(function(i){
+$(document).ready(function() {
+    $.get("assets.xml", {}, function(xml) { ///&mode=admin will return assetTypeattrib xml
+        $('Asset', xml).each(function(i) {
             assetType = $(this).attr("type");
             assetName = $(this).attr("name");
             // alert ('in asset attribs: ' + assetName);
             //var qStr = new Querystring(location.search.substring(1, location.search.length));
             var aName = $(document).getUrlParam("asset");
             var assetType = $(document).getUrlParam("assetType");
+
             //var aName = qStr.get("asset");
             //var aType = qStr.get("assetType");
-            
+
             if (assetName.toLowerCase() == aName.toLowerCase() && assetType.toLowerCase() == assetType.toLowerCase()) {
-               // alert("found match: " + aName + '~' + aType);
+                // alert("found match: " + aName + '~' + aType);
                 $("input[name='assetTypeIN']").setValue(assetType);
                 $("input[name='assetNameIN']").setValue(assetName);
                 $("input[name='assetTargetIN']").setValue($(this).attr("targettype"));
                 $("input[name='assetValueIN']").setValue($(this).attr("value"));
+                $("input[name='currentUIpairs']").setValue($(this).attr("uipairs"));
+                $("input[name='assetMapNodeID']").setValue($(this).attr("id"));
+
                 //alert('assetValueIN populated with: ' + $("input[name='assetValueIN']").getValue());
                 //qStr = new Querystring(location.search.substring(1, location.search.length));
-                populateFields();
+                //populateFields();
                 showonlyone(aName, 'type');
             }
         });
         window.oSelector = $("#selector");
-        updateGMap( );
-        
+        updateGMap(); // still needed?
+
         //eventually call all fields that are visible, not just main selector
         document.getElementById("selector").onchange();
     });
-    
-    //$.get("OLXML.xml",{},function(xml){ // passing current mnode
+
+    $(function() {
+
+        function popFlds() {
+            var aName = document.forms[0].assetNameIN.value;
+            var aType = document.forms[0].assetTypeIN.value;
+            //alert('now in popFields: ' + aName + '~' + aType);
+            var aVal = "";
+            var aTar = "";
+
+            if (aName != "") {
+                aTar = $("input[name='assetTargetIN']").getValue();
+                aVal = $("input[name='assetValueIN']").getValue(); // document.forms[0].assetValueIN.value;
+
+                var oldVal = aVal;
+
+                // loop innerhtml of the (aType.toLowerCase() +'type')
+                // get their names
+                $("input[name='assetName']").setValue(aName);
+                //add them to currentUIpairs
+                $("select[name='selector']").setValue(aType.toLowerCase());
+                //alert('do we even get here?');
+                if (document.getElementById('currentUIpairs').value != "") {
+                    //alert('we have pairs: ' + $("input[name='currentUIpairs']").getValue());
+                    $.query.load(decodeURIComponent(document.getElementById('currentUIpairs').value));
+                    //var test = $(".output").empty();
+                    $.each($.query.get(), function(key, value) {
+                        //aVal = $("input[name='currentUIpairs']").getValue();
+                        if (document.getElementById(key) != null) {
+                            $("input[name='" + key + "']").setValue(value);
+                            alert('hooray! ' + document.getElementById(key).name + ' - ' + document.getElementByName(key).value);
+                        } else {
+                            alert('the field ' + key + ' does not exist!');
+                        }
+
+                    });
+                }
+            }
+
+        }
+        // do we need this?
+        $(window).bind("hashchange", function() {
+            $.query = $.query.load(location.href);
+            popFlds();
+        });
+        // start everything
+        popFlds();
+
+
+    });
+
 });
+
 
 function selectorSwitch(fld){
     showonlyone(fld.options[fld.selectedIndex].value, 'type');
+    
     if(fld.options[fld.selectedIndex].value.indexOf('slgoog') == 0){
         chartSetup();
     }
+
+    if (fld.options[fld.selectedIndex].value.indexOf('slamazonmap') == 0) {
+        loadSLmap();
+    } else {
+    // do this for google maps to? any other google objects? viz?
+        GUnload();
+    }
+    if (fld.options[fld.selectedIndex].value.indexOf('vpdmedia') == 0) showYT();
+    
     if(fld.options[fld.selectedIndex].value.indexOf('vpd') == 0){
         document.getElementById('vpd_vpd').style.display = 'block'
     }else{
         document.getElementById('vpd_vpd').style.display = 'none';
     }
- 
+
+    var selTypes = fld.options;
+    for (var i = 0, n = selTypes.length; i < n; ++i) {
+        var elem = selTypes[i].value;
+        if (document.getElementById('type_' + elem) && document.getElementById('type_' + elem).value != 'separator') {
+            var divNodes = document.getElementById('type_' + elem).childNodes; // all nodes for current visible div (selected asset type)
+            if (fld.options[fld.selectedIndex].value == elem) triggerVisibleFormElems(divNodes);
+        } 
+    }
 }
 
+function triggerVisibleFormElems(node) {
+    for (var j = 0; j < node.length; j++) {
+        if (node.nodeName.toLowerCase() == 'div' || node.tagName.toLowerCase() == 'div') {
+                node.style.display = 'block';
+                triggerVisibleFormElems(node.childNodes);
+                return;
+            } else {
+            if (node.nodeName.toLowerCase() == 'input' || node.nodeName.toLowerCase() == 'select' || node.tagName.toLowerCase() == 'input' || node.tagName.toLowerCase() == 'select') {
+                    if (node.onchange) node.onchange();
+                    return;
+                } else {
+                if (node.nodeName.toLowerCase() == 'checkbox' || node.nodeName.toLowerCase() == 'radio' || node.tagName.toLowerCase() == 'checkbox' || node.tagName.toLowerCase() == 'radio') {
+                        if (node.onclick) node.onclick();
+                        return;
+                    }
+                }
+            }
+
+    }
+    return;
+}
 
 var ListHandler = new Object();
 var CheckboxHandler = new Object();
@@ -201,7 +294,7 @@ function isInteger(str){
 
 function DisplayFormValues(){
     var str = '';
-    var elem = document.getElementById('frmMain').elements;
+    var elem = document.getElementById('mainDummy').elements;
     for (var i = 0; i < elem.length; i++) {
         str += "" + elem[i].name + "=" + elem[i].value + "&";
     }
@@ -296,7 +389,7 @@ function gv4ks(url, key2look){
                     var elem = form.elements[i];
 
                     if(elem.id != '' && elem.name != '' && elem.style && 'hidden' != elem.style.visibility) {
-                         alert( $(elem.parentNode).id + ' ---- ' +  elem.name);
+                         alert( $(elem.parentNode).id + ' ---- ' +  elem.name + " -- " + elem.value );
                     }
                }
  }
@@ -304,240 +397,7 @@ function gv4ks(url, key2look){
  //$("select[name='assetValueOUT']").setValue(curVal);
 
 
-function populateFields(){
 
-    var aName = document.forms[0].assetNameIN.value;
-    var aType = document.forms[0].assetTypeIN.value;
-
-    //alert('now in popFields: ' + aName + '~' + aType);
-
-    var aVal = "";
-    var aTar = "";
-
-    if (aName != "") {
-        aTar = document.forms[0].assetTargetIN.value;
-        aVal = document.forms[0].assetValueIN.value;
-        var oldVal = aVal;
-
-        // loop innerhtml of the (aType.toLowerCase() +'Div')
-        // get their names
-        $("input[name='assetName']").setValue(aName);
-        //add them to currentUIpairs
-        $("select[name='selector']").setValue(aType.toLowerCase());
-
-        if ($("input[name='currentUIpairs']").getValue() != "") {
-            aVal = $("input[name='currentUIpairs']").getValue();
-
-        }
-
-        //aVal="assetTargetIN=9993&assetValueIN=load scene shapechoice&assetNameIN=shapechoice&assetTypeIN=SLChat&assetTargetOUT=&assetValueOUT=&assetNameOUT=&assetTypeOUT=&currentUIpairs=assetName=shapechoice&selector=Trigger an external game&isla=&csla=&al=1&ail=false&alc=1&bpt=&bpn=&cc=Other&chatChannelValue=&chatChannelMsg=&chatValue0=&chatValue-8787=&chatValue687687=&chatValue-63342=&Holodeck_chat_cmds=&sname=&sename=&controller_cmds=&hn=&hm=.5&hw=&hap=&imv=&igu=http://&lmn=&mt=&mv=&ncn=&om=.5&ow=&omvp=&on=&oap=&pn=&pm=.5&pw=&psfn=MyParticle&pstn=&psem=false&age=1&psic=false&psscr=1&psscg=1&psscb=1&psecr=1&psecg=1&psecb=1&pssa=1&psea=1&psis=false&psssx=0.04&psssy=0.04&psesx=0.04&psesy=0.04&pspp=&pspr=0&psban=0&psean=180&psmns=1&psmxs=1&psax=0&psay=0&psaz=0&psmox=0&psmoy=0&psmoz=0&psfs=false&psfv=false&psw=false&psb=false&pstr=false&pstrk=object&psr=1&psc=50&psl=0&pt=&pv=&sn=&sv=&sl=false&sd=&tn=&viu=http://&vmu=http://";
-
-        var aFlds = []; // assetAttrib
-        switch (aType.toLowerCase()) {
-       
-            case "slanimation":
-                aFlds
-                // animation type category
-                $("input[name='atc']").setValue(gv4ks(aVal, 'atc'));
-                //internal anims
-                $("select[name='isla']").setValue(gv4ks(aVal, 'isla'));
-                //custom anims
-                $("select[name='csla']").setValue(gv4ks(aVal, 'csla'));
-                //animLength
-                $("input[name='atc']").setValue(gv4ks(aVal, 'atc'));
-                //animIsLoop(checkbox),
-                $("input[name='ail']").setValue(gv4ks(aVal, 'ail'));
-                //animLoopCount')
-                $("input[name='alc']").setValue(gv4ks(aVal, 'alc'));
-                break
-
-            case "slbodypart":
-                //bodypartType')
-                $("select[name='bpt']").setValue(gv4ks(aVal, 'bpt'));
-                //'bodypartName')
-                $("select[name='bpn']").setValue(gv4ks(aVal, 'bpn'));
-                break
-
-            case "slchat":
-                //'saymode'),
-                $("input[name='csm']").setValue(gv4ks(aVal, 'csm'));
-                //channels
-                $("select[name='cc']").setValue(gv4ks(aVal, 'cc'));
-                break
-            case "slhud":
-                //'hudName')
-                $("select[name='hn']").setValue(gv4ks(aVal, 'hn'));
-                //'hudmeters')
-                $("input[name='hm']").setValue(gv4ks(aVal, 'hm'));
-                //hudwhere')
-                $("select[name='hw']").setValue(gv4ks(aVal, 'hw'));
-                //'hud_attach_point')
-                $("select[name='hap']").setValue(gv4ks(aVal, 'hap'));
-                break
-            case "slim":
-                //'imValue')
-                $("input[name='imv']").setValue(gv4ks(aVal, 'imv'));
-                break
-            case "slinnergame":
-                //'igURL')
-                $("input[name='igu']").setValue(gv4ks(aVal, 'igu'));
-                break
-            case "sllandmark":
-                //landmarkName')
-                $("select[name='lmn']").setValue(gv4ks(aVal, 'lmn'));
-
-                break
-            case "slmove":
-                //moveTarget')
-                $("select[name='mt']").setValue(gv4ks(aVal, 'mt'));
-                //moveValue')
-                $("input[name='mv']").setValue(gv4ks(aVal, 'mv'));
-
-                break
-            case "slnotecard":
-                //'notecardName')
-                $("select[name='ncn']").setValue(gv4ks(aVal, 'ncn'));
-                break
-            case "slobject":
-
-                //'objectmeters')
-                $("input[name='om']").setValue(gv4ks(aVal, 'om'));
-                //objectwhere')
-                $("select[name='ow']").setValue(gv4ks(aVal, 'ow'));
-                // MVP'),
-                $("select[name='omvp']").setValue(gv4ks(aVal, 'omvp'));
-                //objectName')
-                $("select[name='on']").setValue(gv4ks(aVal, 'on'));
-                //attach_point')
-                $("select[name='oap']").setValue(gv4ks(aVal, 'oap'));
-                break
-            case "slpackage":
-                //'packageName')
-                $("select[name='pn']").setValue(gv4ks(aVal, 'pn'));
-                //packagemeters')
-                $("input[name='pm']").setValue(gv4ks(aVal, 'pm'));
-                //packagewhere')
-                $("select[name='pw']").setValue(gv4ks(aVal, 'pw'));
-                break
-            case "slparticlesystem":
-                //particleftcname')
-                $("input[name='psfn']").setValue(gv4ks(aVal, 'psfn'));
-                //particletexture')
-                $("select[name='pstn']").setValue(gv4ks(aVal, 'pstn'));
-                //particleemissive')
-                $("input[name='psem']").setValue(gv4ks(aVal, 'psem'));
-                //particleinterpolate_color')
-                $("input[name='psic']").setValue(gv4ks(aVal, 'psic'));
-                //particlestart_color_r')
-                $("input[name='psscr']").setValue(gv4ks(aVal, 'psscr'));
-                //particlestart_color_g')
-                $("input[name='psscg']").setValue(gv4ks(aVal, 'psscg'));
-                //particlestart_color_b')
-                $("input[name='psscb']").setValue(gv4ks(aVal, 'psscb'));
-                //particleend_color_r')
-                $("input[name='psecr']").setValue(gv4ks(aVal, 'psecr'));
-                //particleend_color_g')
-                $("input[name='psecg']").setValue(gv4ks(aVal, 'psecg'));
-                //particleend_color_b')
-                $("input[name='psecb']").setValue(gv4ks(aVal, 'psecb'));
-                //particlestart_alpha')
-                $("input[name='pssa']").setValue(gv4ks(aVal, 'pssa'));
-                //particleend_alpha')
-                $("input[name='psea']").setValue(gv4ks(aVal, 'psea'));
-                //particleinterpolate_scale')
-                $("input[name='psis']").setValue(gv4ks(aVal, 'psis'));
-                //particlestart_scale_x')
-                $("input[name='psssx']").setValue(gv4ks(aVal, 'psssx'));
-                //particlestart_scale_y')
-                $("input[name='psssy']").setValue(gv4ks(aVal, 'psssy'));
-                //particleend_scale_x')
-                $("input[name='psesx']").setValue(gv4ks(aVal, 'psesx'));
-                //particleend_scale_y')
-                $("input[name='psesy']").setValue(gv4ks(aVal, 'psesy'));
-                //particleage')
-                $("input[name='pspa']").setValue(gv4ks(aVal, 'pspa'));
-                //particlepattern')
-                $("input[name='pspp']").setValue(gv4ks(aVal, 'pspp'));
-                //particleradius')
-                $("input[name='pspr']").setValue(gv4ks(aVal, 'pspr'));
-                //particlebegin_angle')
-                $("input[name='psban']").setValue(gv4ks(aVal, 'psban'));
-                //particleend_angle')
-                $("input[name='psean']").setValue(gv4ks(aVal, 'psean'));
-                //particlemin_speed')
-                $("input[name='psmns']").setValue(gv4ks(aVal, 'psmns'));
-                //particlemax_speed')
-                $("input[name='psmxs']").setValue(gv4ks(aVal, 'psmxs'));
-                //particleacceleration_x')
-                $("input[name='psax']").setValue(gv4ks(aVal, 'psax'));
-                //particleacceleration_y')
-                $("input[name='psay']").setValue(gv4ks(aVal, 'psay'));
-                //particleacceleration_z')
-                $("input[name='psaz']").setValue(gv4ks(aVal, 'psaz'));
-                //particleomega_x')
-                $("input[name='pseox']").setValue(gv4ks(aVal, 'pseox'));
-                //particleomega_y')
-                $("input[name='psmoy']").setValue(gv4ks(aVal, 'psmoy'));
-                //particleomega_z')
-                $("input[name='psmoz']").setValue(gv4ks(aVal, 'psmoz'));
-                //particlefollow_source')
-                $("input[name='psfs']").setValue(gv4ks(aVal, 'psfs'));
-                //particlefollow_velocity')
-                $("input[name='psfv']").setValue(gv4ks(aVal, 'psfv'));
-                //particlewind')
-                $("input[name='psw']").setValue(gv4ks(aVal, 'psw'));
-                //particlebounce')
-                $("input[name='psb']").setValue(gv4ks(aVal, 'psb'));
-                //particletarget')
-                $("input[name='pstr']").setValue(gv4ks(aVal, 'pstr'));
-                //particletarget_key')
-                $("input[name='pstrk']").setValue(gv4ks(aVal, 'pstrk'));
-                //particlerate')
-                $("input[name='psr']").setValue(gv4ks(aVal, 'psr'));
-                //particlecount')
-                $("input[name='psc']").setValue(gv4ks(aVal, 'psc'));
-                //particlelife')
-                $("input[name='psl']").setValue(gv4ks(aVal, 'psl'));
-
-                break
-            case "slpoint":
-                //'pointTarget')
-                $("select[name='pt']").setValue(gv4ks(aVal, 'pt'));
-                //'pointValue')
-                $("input[name='pv']").setValue(gv4ks(aVal, 'pv'));
-
-                break
-            case "slsound":
-                //soundName')
-                $("select[name='sn']").setValue(gv4ks(aVal, 'sn'));
-                //soundVolume')
-                $("select[name='sv']").setValue(gv4ks(aVal, 'sv'));
-                //soundloop')
-                $("input[name='sl']").setValue(gv4ks(aVal, 'sl'));
-                //soundduration')
-                $("input[name='sd']").setValue(gv4ks(aVal, 'sd'));
-                break
-            case "sltexture":
-                //textureName')
-                $("select[name='tn']").setValue(gv4ks(aVal, 'tn'));
-
-                break
-            case "vpdimage":
-                //vpdimageURL')
-                $("input[name='viu']").setValue(gv4ks(aVal, 'viu'));
-                break
-            case "vpdmedia":
-                //vpdmediaURL')
-                $("input[name='vmu']").setValue(gv4ks(aVal, 'vmu'));
-                break
-            case "vpdtext":
-                // show node title? edit node title? chose between title and node text?
-                break
-            default:
-            // can we do anything?
-        }
-    }// end if
-}
 
 function toggle_sname(){
     var HH_sel = document.getElementById('Holodeck_chat_cmds');
@@ -578,7 +438,7 @@ function getUrlVars(){
 }
 
 function getAllFormsList(){
-    var elementsForms = top.window.document.getElementsByTagName("form");
+    var elementsForms = top.window.document.getElementsByTagName("mainDummy");
     var elementsList = "";
     for (var intCounter = 0; intCounter < elementsForms.length; intCounter++) {
         elementsList = elementsList + getFormValues(elementsForms[intCounter], []).join('&');

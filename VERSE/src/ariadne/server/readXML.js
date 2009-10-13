@@ -81,7 +81,10 @@ $(document).ready(function(){
 	 myHTMLOutput = myHTMLOutput + output;
 	// alert ('in html builder: ' + myHTMLOutput + '</table>');
 	//var an = getSelectedAsset(); 
-	 return myHTMLOutput + '</table> </form> <A href=\'javascript:window.location.href = "assetEdit.html?asset="+selectedAsset+"&assetType="+selectedAssetType\'>Edit Selected Asset</A> <A href=\'javascript:window.location.href = "assetEdit.html?action=del&asset="+selectedAsset\' >Remove Selected Asset</A> <A onclick="unselect()" href=\'javascript: void(0)\' >Unselect</A>';
+	 return myHTMLOutput + '</table> </form> '+
+	 '<a href=\'javascript:window.location.href = "assetEdit.html?asset="+selectedAsset+"&assetType="+selectedAssetType\'>Edit Selected Asset</A> '+
+	 '<A href=\'javascript:window.location.href = "ariadne3.aspx?action=del&asset="+selectedAsset\' >Remove Selected Asset</A> '+
+	 '<A onclick="unselect()" href=\'return false;\' >Unselect</A>';
 
 }
 
@@ -99,5 +102,8 @@ function unselect()
 {
 for (x in document.forms[0].assetSel.length){
   document.forms[x].assetSel[x].checked = false;
-  }
+}
+  
+
+  
 }
