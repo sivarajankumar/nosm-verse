@@ -1,0 +1,1141 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+     "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+<title>jQuery Google Charting</title>
+<style type="text/css">
+@import "gChart_files/jquery.tabs.css";
+@import "gChart_files/jquery.bookmark.css";
+@import "gChart_files/demo.css";
+
+dt { font-weight: bold; }
+pre { clear: left; }
+.demoLabel { clear: both; }
+.chart { clear: both; margin-left: 15em; }
+.chartSmall { clear: both; margin-left: 15em; }
+.shortLabel { float: left; width: 7em; }
+.shortLabel2 { float: left; width: 7em; margin-left: 3em; }
+.alignInput { float: left; }
+</style>
+<!--[if IE]>
+<style type="text/css">
+#mainTabs { margin-bottom: 2.5em; }
+#subTabs { margin-bottom: 1.3em; }
+</style>
+<![endif]-->
+<script type="text/javascript" src="../../jquery-1.3.2.js"></script>
+<script type="text/javascript" src="jquery.gchart.js"></script>
+<script type="text/javascript" src="gChart_files/jquery.debug.js"></script>
+<script type="text/javascript" src="gChart_files/jquery.tabs.js"></script>
+<script type="text/javascript" src="gChart_files/jquery.bookmark.js"></script>
+<script type="text/javascript" src="gChart_files/jquery.chili-2.0.js"></script>
+<script type="text/javascript" src="gChart_files/demo.js"></script>
+<script type="text/javascript">
+$(function() {
+	$('#download').click(function() {
+		pageTracker._trackPageview('/downloads/gchart-1.2.3');
+		window.location = 'zip/jquery.gchart.package-1.2.3.zip';
+	});
+	if (!$.browser.msie) {
+		$('a[href=#maps]').parent().addClass('tabSplit');
+	}
+	$('#custom').tabs();
+	$('#bgChart').html($('#bgAll').html());
+	$('#axesBottom,#axesLeft,#axesRight,#axesLeft2,#axesRight2').html($('#axesTop').html());
+	$('#axesBottom,#axesLeft').val(1);
+	$('#axesApply').click();
+	$('#ranges2').html($('#ranges1').html());
+	$('#markers2').html($('#markers1').html());
+	$('#selectEncoding').change();
+});
+
+function getValue(id) {
+	return $(id).val() == '' ? null : parseFloat($(id).val());
+}
+</script>
+</head>
+<body>
+<h1>jQuery Google Charting</h1>
+<p>A <a href="http://jquery.com">jQuery</a> <a href="http://jquery.com/plugins/project/gchart">plugin</a>
+	that sets a division to request a Google chart. If you find this plugin useful please
+	<a href="http://jquery.com/plugins/project/gchart">vote for it</a>
+	on the jQuery site<span id="rating"></span>.</p>
+<p>The current version is <span class="version">1.2.3</span> and is available 
+	under the <a href="http://dev.jquery.com/browser/trunk/jquery/GPL-LICENSE.txt">GPL</a> and
+	<a href="http://dev.jquery.com/browser/trunk/jquery/MIT-LICENSE.txt">MIT</a> licences.
+	For more detail see the <a href="gChartRef.html">documentation reference</a> page.
+	Or see a <a href="gChartBasics.html">minimal page</a> that you could
+	use as a basis for your own investigations.</p>
+<p style="text-align: center;">
+	<button type="button" id="download">Download now</button>
+	<span id="bookmark"></span>
+</p>
+<div id="tabs">
+	<ul id="mainTabs">
+		<li><a href="#default"><span>Defaults</span></a></li>
+		<li><a href="#example"><span>Example</span></a></li>
+		<li><a href="#types"><span>Chart Types</span></a></li>
+		<li><a href="#custom"><span>Customising</span></a></li>
+		<li><a href="#types2"><span>More Types</span></a></li>
+		<li><a href="#maps"><span>Maps</span></a></li>
+		<li><a href="#feeds"><span>Live Feeds</span></a></li>
+		<li><a href="#encoding"><span>Encodings</span></a></li>
+		<li><a href="#loading"><span>Loading Data</span></a></li>
+		<li><a href="#wild"><span>In the Wild</span></a></li>
+		<li><a href="#quick"><span>Quick Ref</span></a></li>
+	</ul>
+	<div id="default" class="feature">
+		<h2>Default Settings</h2>
+		<p>The <a href="http://code.google.com/apis/chart">Google Chart</a>
+			functionality can easily be added to a division
+			with appropriate default settings.
+			Google Chart generates a chart as an image in response to a
+			HTTP request with parameters defining the content and appearance.
+			This plugin hides all of that behind a JavaScript interface.</p>
+		<p>You can also remove the charting functionality
+			with the 'destroy' command if it is no longer required.</p>
+		<p><span class="demoLabel">Basic chart:</span>
+			<button type="button" id="removeChart">Remove</button></p>
+		<div id="defaultChart" style="width: 330px; height: 150px; margin-left: 15em;"></div>
+		<pre><code class="jsdemo">$('#defaultChart').gchart();
+
+$('#removeChart').toggle(function() {
+		$(this).text('Re-attach');
+		$('#defaultChart').gchart('destroy');
+	},
+	function() {
+		$(this).text('Remove');
+		$('#defaultChart').gchart();
+	}
+);</code></pre>
+		<p style="clear: both;">You can override the defaults globally as shown below:</p>
+		<pre><code class="js">$.gchart.setDefaults({legend: 'right'});</code></pre>
+		<p>Processed fields are marked with a class of <code>hasGChart</code>
+			and are not re-processed if targetted a second time.</p>
+	</div>
+	<div id="example" class="feature">
+		<h2>Complete Example</h2>
+		<p>This chart shows some of the capabilities of the Google chart API.
+			It depicts average minimum and maximum temperatures and rainfall
+			for Brisbane, Australia.</p>
+		<p>The individual elements of the charts are demonstrated in more
+			detail on the other tabs.</p>
+		<p><span class="demoLabel">Brisbane weather:</span></p>
+		<div id="brisChart" class="chart" style="width: 450px; height: 300px;"></div>
+		<pre><code class="jsdemo">$('#brisChart').gchart({type: 'line', maxValue: 40,
+	title: 'Weather for|Brisbane, Australia', titleColor: 'green',
+	backgroundColor: $.gchart.gradient('horizontal', 'ccffff', 'ccffff00'),
+	series: [$.gchart.series('Max', [29.1, 28.9, 28.1, 26.3,
+		23.5, 21.2, 20.6, 21.7, 23.8, 25.6, 27.3, 28.6], 'red', 'ffcccc'),
+		$.gchart.series('Min', [20.9, 20.8, 19.5, 16.9,
+		13.8, 10.9, 9.5, 10.0, 12.5, 15.6, 18.0, 19.8], 'green'),
+		$.gchart.series('Rainfall', [157.7, 174.6, 138.5, 90.4,
+		98.8, 71.2, 62.6, 42.7, 34.9, 94.4, 96.5, 126.2], 'blue', 0, 200)],
+	axes: [$.gchart.axis('bottom', ['Jan', 'Feb', 'Mar', 'Apr',
+		'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], 'black'),
+		$.gchart.axis('left', 0, 40, 'red', 'right'),
+		$.gchart.axis('left', ['C'], [50], 'red', 'right'),
+		$.gchart.axis('right', 0, 200, 50, 'blue', 'left'),
+		$.gchart.axis('right', ['mm'], [50], 'blue', 'left')],
+	legend: 'right'
+});</code></pre>
+	</div>
+	<div id="types" class="feature">
+		<h2>Chart Types</h2>
+		<p>Google charting provides for a number of different chart styles.
+			Common chart types are shown below.</p>
+		<p><span class="demoLabel">Chart types:</span>
+			<select id="selectType"><option value="line">Simple line (line)</option>
+				<option value="sparkline">Sparkline (sparkline)</option>
+				<option value="barHoriz">Horizontal stacked bar (barHoriz)</option>
+				<option value="barVert">Vertical stacked bar (barVert)</option>
+				<option value="barHorizGrouped">Horizontal grouped bar (barHorizGrouped)</option>
+				<option value="barVertGrouped">Vertical grouped bar (barVertGrouped)</option>
+				<option value="radar">Radar straight (radar)</option>
+				<option value="radarCurved">Radar curved (radarCurved)</option>
+			</select>&nbsp;
+			Show legend <select id="showLegend">
+				<option value="">None</option><option value="top">Top</option>
+				<option value="topVertical">Top vertical</option><option value="bottom">Bottom</option>
+				<option value="bottomVertical">Bottom vertical</option><option value="left">Left</option>
+				<option value="right" selected="selected">Right</option>
+			</select></p>
+		<div id="typedChart" class="chart" style="width: 450px; height: 300px;"></div>
+		<pre><code class="jsdemo">$('#typedChart').gchart({type: 'line',
+	dataLabels: ['2002', '2004', '2005', '2006'], legend: 'right',
+	series: [$.gchart.series('IE', [95.97, 91.80, 88.16, 86.64], 'red'),
+		$.gchart.series('Netscape', [3.39, 2.83, 1.61, 0.00], 'green'),
+		$.gchart.series('Firefox', [0.00, 4.06, 8.13, 9.95], 'blue')]
+});
+
+$('#selectType,#showLegend').change(function() {
+	$('#typedChart').gchart('change', {type: $('#selectType').val(),
+		legend: $('#showLegend').val()});
+});</code></pre>
+	<p>Pie charts only plot a single set of values, unless you choose the <i>pieConcentric</i>
+		chart type. To customise colours for the segments, you need to supply them as
+		an array of colours for each series. If fewer colours than the number of segments
+		are given, the colours are recycled for the remaining segments.</p>
+	<p><span class="demoLabel">Pie charts:</span>
+			<label><input type="radio" name="pieType" value="pie" checked="checked"> Show in 2D</label>&nbsp;
+			<label><input type="radio" name="pieType" value="pie3D"> Show in 3D</label>&nbsp;
+			<label><input type="radio" name="pieType" id="pieConcentric" value="pieConcentric"> Show concentric</label></p>
+	<p><span class="demoLabel">&nbsp;</span>
+			<label><input type="checkbox" id="pieColours"> Multiple colours</label></p>
+	<p><span class="demoLabel">&nbsp;</span>
+			Orientation <select id="pieAngle"><option value="-90">-90</option>
+				<option value="-45">-45</option><option value="0" selected="selected">0</option>
+				<option value="45">45</option><option value="90">90</option></select></p>
+		<div id="pieChart" style="width: 450px; height: 200px; margin-left: 15em;"></div>
+		<pre><code class="jsdemo">var data = [$.gchart.series('2004', [91.80, 2.83, 4.06]),
+	$.gchart.series('2005', [88.16, 1.61, 8.13])];
+		
+$('#pieChart').gchart({type: 'pie', series: data,
+	dataLabels: ['IE', 'Netscape', 'Firefox']});
+
+$('input[name=pieType],#pieColours,#pieAngle').change(function() {
+	data[0].color = ($('#pieColours').is(':checked') ?
+		['red', 'lime', 'blue'] : null);
+	data[1].color = ($('#pieColours').is(':checked') ?
+		['ff8888', '88ff88', '8888ff'] : null);
+	$('#pieChart').gchart('change',
+		{type: $('input[name=pieType]:checked').val(),
+		series: data, pieOrientation: $('#pieAngle').val()});
+});</code></pre>
+		<p>For a line chart you can also explicitly set the x- and y-coordinates,
+			rather than using the even x-spacing that is the default. Use the
+			<code>$.gchart.seriesForXYLines</code> helper function to create the series.
+			It expects an array of series, as before, however each value consists
+			of the point's x- and y-coordinate as an array. If you want to use
+			the default even spacing for one of the series, provide just the y-values.</p>
+		<p><span class="demoLabel">X-Y line charts:</span></p>
+		<div id="lineXYChart" class="chart" style="width: 450px; height: 300px;"></div>
+		<pre><code class="jsdemo">$('#lineXYChart').gchart({type: 'lineXY', series: $.gchart.seriesForXYLines(
+	[$.gchart.series([[0, 20], [30, 30], [60, 40], [70, 50],
+	[90, 60], [95, 70], [100, 80]], 'red'),
+	$.gchart.series([[10, 100], [30, 90], [40, 40], [45,20],
+	[52, 10]], 'green'),
+	$.gchart.series([5, 33, 50, 55, 7], 'blue')])});</code></pre>
+		<p>For a financial chart you need to specify at least four series.
+			You then designate one series to use as the basis for the financial markers.
+			This series defines the bottom of the vertical line. The following two series
+			specify the bottom and top of the rectangle respectively. Finally, the top
+			of the vertical line comes from the third following series.</p>
+		<p>You can also include other series that are graphed normally.
+			Use the <code>visibleSeries</code> setting to indicate which series
+			are directly displayed and which are reserved for the markers.</p>
+		<p><span class="demoLabel">Financial charts:</span></p>
+		<div id="financialChart" class="chart" style="width: 450px; height: 300px;"></div>
+		<pre><code class="jsdemo">$('#financialChart').gchart({type: 'line',
+	encoding: 'scaled', visibleSeries: 1,
+	series: [$.gchart.series([20, 10, 15, 25, 17, 30], 'yellow'),
+	$.gchart.series([0, 5, 10, 7, 12, 6], -50, 100),
+	$.gchart.series([35, 25, 45, 47, 24, 46], -50, 100),
+	$.gchart.series([15, 40, 30, 27, 39, 54], -50, 100),
+	$.gchart.series([70, 55, 63, 59, 80, 60], -50, 100)],
+	markers: [$.gchart.marker('financial', '', 1, [1, 4], 20)]});</code></pre>
+	</div>
+	<div id="custom" class="feature">
+		<ul id="subTabs">
+			<li><a href="#background"><span>Backgrounds</span></a></li>
+			<li><a href="#title"><span>Title</span></a></li>
+			<li><a href="#bars"><span>Bars</span></a></li>
+			<li><a href="#lines"><span>Lines</span></a></li>
+			<li><a href="#fills"><span>Fills</span></a></li>
+			<li><a href="#grids"><span>Grids</span></a></li>
+			<li><a href="#axes"><span>Axes</span></a></li>
+			<li><a href="#ranges"><span>Ranges</span></a></li>
+			<li><a href="#markers"><span>Markers</span></a></li>
+		</ul>
+	<div id="background" class="feature">
+		<h2>Backgrounds and Margins</h2>
+		<p>Change the background colour of the chart and/or the entire image.
+			You can even make these fully or partially transparent to allow
+			a background image to show through.</p>
+		<p>You can also create gradients of colour for your backgrounds by
+			specifying its angle with respect to the positive x-axis (either
+			as a named value or in degrees) and the colours to merge between.</p>
+		<p>Make use of the helper functions, <code>$.gchart.gradient</code> and
+			<code>$.gchart.stripe</code>, for simple gradients and equal stripes.</p>
+		<p>In addition you can set the minimum margins around the chart and the minimum legend size.</p>
+		<p><span class="demoLabel">Backgrounds:</span>
+			<span class="shortLabel">All</span><select id="bgAll" class="bgControl">
+				<option value="0">Solid pale yellow</option>
+				<option value="1">Transparent</option>
+				<option value="2">Transparent pink</option>
+				<option value="3">Horizontal black to transparent</option>
+				<option value="4">Diagonal up green to blue</option>
+				<option value="5">Diagonal down yellow to transparent red</option>
+				<option value="6">Vertical red to white</option>
+				<option value="7">60° white to blue</option>
+				<option value="8">Horizontal white to yellow to red</option>
+				<option value="9">Horizontal stripes</option>
+				<option value="10">Angled stripes</option></select></p>
+		<p><span class="demoLabel">&nbsp;</span>
+			<span class="shortLabel">Chart</span><select id="bgChart" class="bgControl">
+			<option>To be filled</option></select></p>
+		<p><span class="demoLabel">Margins:</span>
+			<span class="shortLabel">Left</span>
+			<input type="text" id="marginLeft" class="alignInput" size="4" value="0">
+			<span class="shortLabel2">Right</span>
+			<input type="text" id="marginRight" class="alignInput" size="4" value="0">&nbsp;</p>
+		<p><span class="demoLabel">&nbsp;</span>
+			<span class="shortLabel">Top</span>
+			<input type="text" id="marginTop" class="alignInput" size="4" value="0">
+			<span class="shortLabel2">Bottom</span>
+			<input type="text" id="marginBottom" class="alignInput" size="4" value="0">&nbsp;</p>
+		<p><span class="demoLabel">Legend:</span>
+			<span class="shortLabel">Width</span>
+			<input type="text" id="legendWidth" class="alignInput" size="4" value="0">
+			<span class="shortLabel2">Height</span>
+			<input type="text" id="legendHeight" class="alignInput" size="4" value="0">&nbsp;</p>
+		<p><span class="demoLabel">&nbsp;</span>
+			<button type="button" id="bgApply">Apply</button></p>
+		<div id="backgroundChart" class="chart" style="width: 450px; height: 300px; background: transparent url(img/wallst.jpg);"></div>
+		<pre><code class="jsdemo">$('#backgroundChart').gchart({type: 'line',
+	maxValue: 61, encoding: 'simple',
+	backgroundColor: 'ffffaa', chartColor: 'ffffaa',
+	dataLabels: ['0', '5', '10'], legend: 'right',
+	series: [$.gchart.series('Level', [28, 4, 0, 4, 11, 5, 9,
+	7, 7, 7, 10, 20, 35, 46, 61, 46, 46, 23, 20, 28])]});
+
+// These are the values you would use for your backgrounds
+var demoBackgrounds = ['ffffaa',
+	'transparent',
+	'ffcccc80',
+	$.gchart.gradient('horizontal', 'black', 'transparent'),
+	$.gchart.gradient('diagonalUp', 'lime', 'blue'),
+	{angle: 'diagonalDown', colorPoints:
+		[['yellow', 0.2], ['ff000000', 0.8]]},
+	{angle: 'vertical', colorPoints: [['red', 0], ['white', 1]]},
+	{angle: 60, colorPoints: [['white', 0.3], ['blue', 0.7]]},
+	$.gchart.gradient(0, ['white', 'yellow', 'red']),
+	$.gchart.stripe('horizontal',
+		['white', 'silver', 'gray', 'white', 'silver']),
+	{angle: 30, striped: true, colorPoints:
+		[['white', 0.25], ['silver', 0.5], ['white', 0.25]]}];
+
+$('#bgApply').click(function() {
+	$('#backgroundChart').gchart('change', {
+		backgroundColor: demoBackgrounds[$('#bgAll').val()],
+		chartColor: demoBackgrounds[$('#bgChart').val()],
+		margins: [getValue('#marginLeft'), getValue('#marginRight'),
+		getValue('#marginTop'), getValue('#marginBottom')],
+		legendSize: [getValue('#legendWidth'), getValue('#legendHeight')]});
+});</code></pre>
+	</div>
+	<div id="title" class="feature">
+		<h2>Chart Title</h2>
+		<p>Specify a title for your chart (<code>title</code>), along with
+			its colour (<code>titleColor</code>) and size (<code>titleSize</code>).
+			Use a pipe (|) in the title for a new line.</p>
+		<p><span class="demoLabel">Titles:</span>
+			<span class="shortLabel">Text</span><input type="text" id="titleText" size="40" value="My Chart">&nbsp;</p>
+		<p><span class="demoLabel">&nbsp;</span>
+			<span class="shortLabel">Colour</span>
+				<input type="text" id="titleColour" class="alignInput" size="8" value="blue">
+			<span class="shortLabel2">Size</span>
+				<input type="text" id="titleSize" class="alignInput" size="4" value="20">&nbsp;</p>
+		<p><span class="demoLabel">&nbsp;</span>
+			<button type="button" id="titleApply">Apply</button></p>
+		<div id="titleChart" class="chart" style="width: 450px; height: 300px;"></div>
+		<pre><code class="jsdemo">$('#titleChart').gchart({type: 'line', maxValue: 61, encoding: 'simple',
+	title: 'My Chart', titleColor: 'blue', titleSize: 20,
+	series: [$.gchart.series('Level', [28, 4, 0, 4, 11, 5, 9,
+	7, 7, 7, 10, 20, 35, 46, 61, 46, 46, 23, 20, 28])]});
+
+$('#titleApply').click(function() {
+	$('#titleChart').gchart('change', {
+		title: $('#titleText').val(), titleColor: $('#titleColour').val(),
+		titleSize: parseFloat($('#titleSize').val())});
+});</code></pre>
+	</div>
+	<div id="bars" class="feature">
+		<h2>Bar Chart Sizing and Spacing</h2>
+		<p>Control the sizing and spacing of the bars on your bar charts.
+			Set the width of the bars (<code>barWidth</code>),
+			the spacing between bars within a group (<code>barSpacing</code>),
+			and the gap between groups of bars (<code>barGroupSpacing</code>).
+			Note that if the width is set to relative, the spacing values
+			should be between 0.0 and 1.0.</p>
+		<p>You can also set the zero point of a bar chart (<code>barZeroPoint</code>).
+			This value, from 0.0 at the bottom/left to 1.0 at the top/right,
+			indicates the starting position for the bars, which then
+			extend from here up/down/left/right to the actual value.</p>
+		<p><span class="demoLabel">Bar sizing:</span>
+			<span class="shortLabel"><label>Width <input type="radio" name="barWidthType" value="w" checked="checked"></label></span>
+			<input type="text" id="barWidth" class="barControl alignInput" size="4" value="20">
+			<span class="shortLabel2"><label>Automatic <input type="radio" name="barWidthType" value="a"></label></span>
+			<label>Relative <input type="radio" name="barWidthType" value="r"></label></p>
+		<p><span class="demoLabel">&nbsp;</span>
+			<span class="shortLabel">Spacing</span>
+			<input type="text" id="barSpacing" class="barControl alignInput" size="4" value="5">
+			<span class="shortLabel2">Group spacing</span>
+			<input type="text" id="barGroupSpacing" class="barControl alignInput" size="4" value="8">&nbsp;</p>
+		<p><span class="demoLabel">&nbsp;</span>
+			<span class="shortLabel">Zero point</span>
+			<input type="text" id="barZeroPoint" class="barControl alignInput" size="4" value="0.0">&nbsp;</p>
+		<p><span class="demoLabel">&nbsp;</span>
+			<span class="shortLabel"><label>
+				<input type="checkbox" id="barHoriz" class="barControl"> Horizontal</label></span>
+			<span class="shortLabel2" style="margin-left: 6em;"><label>
+				<input type="checkbox" id="barGrouped" class="barControl" checked="checked"> Grouped</label></span>&nbsp;</p>
+		<p><span class="demoLabel">&nbsp;</span>
+			<button type="button" id="barApply">Apply</button></p>
+		<div id="barChart" class="chart" style="width: 450px; height: 300px;"></div>
+		<pre><code class="jsdemo">$('#barChart').gchart({type: 'barVertGrouped',
+	barWidth: 20, barSpacing: 5, barGroupSpacing: 8, barZeroPoint: 0.0,
+	series: [$.gchart.series('IE', [95.97, 91.80, 88.16, 86.64], 'red'),
+		$.gchart.series('Netscape', [3.39, 2.83, 1.61, 0.00], 'green'),
+		$.gchart.series('Firefox', [0.00, 4.06, 8.13, 9.95], 'blue')]
+});
+
+$('#barApply').click(function() {
+	var type = 'bar' + ($('#barHoriz').is(':checked') ? 'Horiz' : 'Vert') +
+		($('#barGrouped').is(':checked') ? 'Grouped' : '');
+	var width = $('input[name=barWidthType]:checked').val();
+	width = (width == 'w' ? getValue('#barWidth') : width);
+	$('#barChart').gchart('change', {type: type,
+		barWidth: width, barSpacing: getValue('#barSpacing'),
+		barGroupSpacing: getValue('#barGroupSpacing'),
+		barZeroPoint: getValue('#barZeroPoint')});
+});</code></pre>
+	</div>
+	<div id="lines" class="feature">
+		<h2>Line Appearance</h2>
+		<p>Control the appearance of the lines depicting your data by setting its
+			thickness and the length of the line segments and the gaps between them.
+			A continuous line has a gap of zero. Each line (series) can have a different style.</p>
+		<p><span class="demoLabel">Line appearance:</span>
+			<span class="shortLabel">Line</span><select id="lineNumber" class="alignInput">
+				<option value="0">red</option><option value="1">green</option>
+				<option value="2">blue</option></select>
+			<span class="shortLabel2">Thickness</span>
+			<input type="text" id="lineThickness" class="lineControl alignInput" size="4" value="5">&nbsp;</p>
+		<p><span class="demoLabel">&nbsp;</span>
+			<span class="shortLabel">Dash length</span>
+			<input type="text" id="lineLength" class="lineControl alignInput" size="4" value="5">
+			<span class="shortLabel2" style="margin-left: 4em;">Gap length</span>
+			<input type="text" id="lineGap" class="lineControl alignInput" size="4" value="5">&nbsp;</p>
+		<p><span class="demoLabel">&nbsp;</span>
+			<button type="button" id="lineApply">Apply</button></p>
+		<div id="lineChart" class="chart" style="width: 450px; height: 300px;"></div>
+		<pre><code class="jsdemo">var lineSeries = [$.gchart.series([28, 4, 0, 4, 11, 5, 9, 7, 7, 7,
+	10, 20, 35, 46, 61, 46, 46, 23, 20, 28], 'red', 5, [5, 5]),
+	$.gchart.series([5, 8, 22, 24, 25, 10, 9, 23, 2, 3,
+	5, 10, 37, 49, 56, 41, 15, 18, 20, 20], 'green', 3, [10, 2]),
+	$.gchart.series([43, 50, 52, 54, 35, 10, 24, 33, 32, 43,
+	45, 55, 60, 39, 36, 31, 25, 28, 33, 40], 'blue', 1, [1, 0])];
+
+$('#lineChart').gchart({type: 'line', maxValue: 61, series: lineSeries});
+
+$('#lineNumber').change(function() {
+	var i = $(this).val();
+	$('#lineThickness').val(lineSeries[i].lineThickness);
+	$('#lineLength').val(lineSeries[i].lineSegments[0]);
+	$('#lineGap').val(lineSeries[i].lineSegments[1]);
+});
+
+$('#lineApply').click(function() {
+	$.extend(lineSeries[$('#lineNumber').val()],
+		{lineThickness: getValue('#lineThickness'),
+		lineSegments: [getValue('#lineLength'), getValue('#lineGap')]});
+	$('#lineChart').gchart('change', {series: lineSeries});
+});</code></pre>
+	</div>
+	<div id="fills" class="feature">
+		<h2>Area Fills</h2>
+		<p>Fill in the spaces between lines with colours.
+			Each line (series) can have a different colour.</p>
+		<p>After creating your series, use its <code>fillColor</code> attribute to
+			customise its appearance. This colour applies to the area between the
+			current line and the next in the series. To fill the space at the top
+			and bottom, add extra series for the maximum and minimum values.</p>
+		<p><span class="demoLabel">Fill appearance:</span>
+			<span class="shortLabel">Line</span><select id="fillNumber" class="alignInput">
+				<option value="0">top</option><option value="1">red</option>
+				<option value="2">blue</option></select>
+			<span class="shortLabel2">Colour</span>
+			<input type="text" id="fillColour" class="alignInput" size="8" value="ffcccc">&nbsp;</p>
+		<p><span class="demoLabel">&nbsp;</span>
+			<button type="button" id="fillApply">Apply</button></p>
+		<div id="fillChart" class="chart" style="width: 450px; height: 300px;"></div>
+		<pre><code class="jsdemo">var fillSeries = [$.gchart.series([40, 40], 'black', 'ffffcc'),
+	$.gchart.series('Max', [29.1, 28.9, 28.1,
+	26.3, 23.5, 21.2, 20.6, 21.7, 23.8, 25.6, 27.3, 28.6], 'red', 'ffcccc'),
+	$.gchart.series('Min', [20.9, 20.8, 19.5,
+	16.9, 13.8, 10.9, 9.5, 10.0, 12.5, 15.6, 18.0, 19.8], 'blue', 'ccccff'),
+	$.gchart.series([0, 0], 'black')];
+
+$('#fillChart').gchart({type: 'line', maxValue: 40, series: fillSeries});
+
+$('#fillNumber').change(function() {
+	var i = $(this).val();
+	$('#fillColour').val(fillSeries[i].fillColor);
+});
+
+$('#fillApply').click(function() {
+	fillSeries[$('#fillNumber').val()].fillColor = $('#fillColour').val();
+	$('#fillChart').gchart('change', {series: fillSeries});
+});</code></pre>
+	</div>
+	<div id="grids" class="feature">
+		<h2>Grid Lines</h2>
+		<p>Add grid lines to your charts via the <code>gridSize</code> and <code>gridLine</code>
+			options. The former specifies the x- and y-spacing between grid lines,
+			while the latter provides the length of the line segments and
+			the gaps between them. A continuous line has a gap of zero.</p>
+		<p>The grid lines may be offset from their normal positions by setting
+			<code>gridOffsets</code> to contain the appropriate x and y values.</p>
+		<p><span class="demoLabel">Grid appearance:</span>
+			<span class="shortLabel">X-spacing</span>
+			<input type="text" id="gridX" class="gridControl alignInput" size="4" value="20">
+			<span class="shortLabel2">Y-spacing</span>
+			<input type="text" id="gridY" class="gridControl alignInput" size="4" value="50">&nbsp;</p>
+		<p><span class="demoLabel">&nbsp;</span>
+			<span class="shortLabel">Dash length</span>
+			<input type="text" id="gridLength" class="gridControl alignInput" size="4" value="5">
+			<span class="shortLabel2">Gap length</span>
+			<input type="text" id="gridGap" class="gridControl alignInput" size="4" value="5">&nbsp;</p>
+		<p><span class="demoLabel">&nbsp;</span>
+			<span class="shortLabel">X-offset</span>
+			<input type="text" id="gridXOffset" class="gridControl alignInput" size="4" value="0">
+			<span class="shortLabel2">Y-offset</span>
+			<input type="text" id="gridYOffset" class="gridControl alignInput" size="4" value="0">&nbsp;</p>
+		<p><span class="demoLabel">&nbsp;</span>
+			<button type="button" id="gridApply">Apply</button></p>
+		<div id="gridChart" class="chart" style="width: 450px; height: 300px;"></div>
+		<pre><code class="jsdemo">$('#gridChart').gchart({type: 'line', maxValue: 61, encoding: 'simple',
+	gridSize: [20, 50], gridLine: [5, 5],
+	series: [$.gchart.series([28, 4, 0, 4, 11, 5, 9,
+	7, 7, 7, 10, 20, 35, 46, 61, 46, 46, 23, 20, 28])]});
+
+$('#gridApply').click(function() {
+	var gridLine = [getValue('#gridLength'), getValue('#gridGap')];
+	if (gridLine[0] == null || gridLine[1] == null) {
+		gridLine = [];
+	}
+	var gridOffsets = [getValue('#gridXOffset'), getValue('#gridYOffset')];
+	if (gridOffsets[0] == null || gridOffsets[1] == null) {
+		gridOffsets = [];
+	}
+	$('#gridChart').gchart('change',
+		{gridSize: [getValue('#gridX'), getValue('#gridY')],
+		gridLine: gridLine, gridOffsets: gridOffsets});
+});</code></pre>
+	</div>
+	<div id="axes" class="feature">
+		<h2>Axes Labels</h2>
+		<p>Provide labels for any of the chart axes with the <code>axes</code> option,
+			which is an array of objects describing each axis.
+			You can even have multiple sets of labels on the one axis.</p>
+		<p>Each axis object has attributes for placement (<code>axis</code>),
+			displayed text (<code>labels</code>), their positions (<code>positions</code>)
+			and/or the range of values shown (<code>range</code>).
+			The axes are named 'top', 'left' or 'y', 'bottom' or 'x', and 'right'.</p>
+		<p><span class="demoLabel">Axes:</span>
+			<span class="shortLabel">Top</span><select id="axesTop" class="alignInput">
+				<option value="0">None</option>
+				<option value="1">Default</option>
+				<option value="2">Numeric labels</option>
+				<option value="3">Text labels</option>
+				<option value="4">Positioned</option>
+				<option value="5">Position only</option>
+				<option value="6">Range</option>
+				<option value="7">Inverted range</option>
+				<option value="8">Positioned range</option>
+				<option value="9">Custom tick marks</option>
+				<option value="10">Tick marks only</option></select>
+			<span class="shortLabel2">Bottom</span><select id="axesBottom" class="alignInput">
+			<option>To be filled</option></select>&nbsp;</p>
+		<p><span class="demoLabel">&nbsp;</span>
+			<span class="shortLabel">Left</span><select id="axesLeft" class="alignInput">
+			<option>To be filled</option></select>
+			<span class="shortLabel2">Right</span><select id="axesRight" class="alignInput">
+			<option>To be filled</option></select>&nbsp;</p>
+		<p><span class="demoLabel">&nbsp;</span>
+			<span class="shortLabel">Second left</span><select id="axesLeft2" class="alignInput">
+			<option>To be filled</option></select>
+			<span class="shortLabel2">Second right</span><select id="axesRight2" class="alignInput">
+			<option>To be filled</option></select>&nbsp;</p>
+		<p><span class="demoLabel">&nbsp;</span>
+			<button type="button" id="axesApply">Apply</button></p>
+		<div id="axesChart" class="chart" style="width: 450px; height: 300px;"></div>
+		<pre><code class="jsdemo">$('#axesChart').gchart({type: 'line', maxValue: 61, encoding: 'simple',
+	axes: [],
+	series: [$.gchart.series('Level', [28, 4, 0, 4, 11, 5, 9,
+	7, 7, 7, 10, 20, 35, 46, 61, 46, 46, 23, 20, 28])]});
+
+// These are the values you would use for your axes,
+// ignoring null and replacing '??' with the axis name
+var demoAxes = [null,
+	'??',
+	$.gchart.axis('??', ['0', '50', '100']),
+	$.gchart.axis('??', ['2005', '2006', '2007', '2008']),
+	$.gchart.axis('??', ['min', 'avg', 'max'], [10, 35, 70]),
+	$.gchart.axis('??', [], [0, 10, 20, 40, 80]),
+	$.gchart.axis('??', 100, 200),
+	$.gchart.axis('??', 1000, 0, -200),
+	$.gchart.axis('??', [], [250, 350, 450], 200, 500),
+	$.gchart.axis('??').ticks('red', -100),
+	$.gchart.axis('??').drawing('ticks')];
+
+$('#axesApply').click(function() {
+	var newAxes = [];
+	$.each(['Top', 'Bottom', 'Left', 'Right', 'Left2', 'Right2'],
+		function(i, name) {
+			var axis = demoAxes[$('#axes' + name).val()];
+			if (axis) {
+				newAxes[newAxes.length] = (typeof axis == 'string' ?
+					name.toLowerCase() : axis.axis(name.toLowerCase()));
+			}
+		});
+	$('#axesChart').gchart('change', {axes: newAxes});
+});</code></pre>
+	</div>
+	<div id="ranges" class="feature">
+		<h2>Value Ranges</h2>
+		<p>Highlight ranges of values on the chart via the <code>ranges</code> option,
+			which is an array of objects describing each range.
+			You can draw any number of ranges on a chart and they are added in
+			their order in the array, with later ones overlaying earlier ones.</p>
+		<p>Each range object has attributes for orientation (<code>vertical</code>),
+			colour (<code>color</code>), and the range covered (<code>start</code>
+			and <code>end</code>) between 0.0 and 1.0.
+			Omit the end of the range for a simple line.</p>
+		<p>You can use the <code>$.gchart.range</code> function
+			to assist in creating range definitions.</p>
+		<p><span class="demoLabel">Ranges:</span>
+			<span class="shortLabel">First</span><select id="ranges1" class="alignInput">
+				<option value="0">None</option>
+				<option value="1">Horizontal band</option>
+				<option value="2">Horizontal line</option>
+				<option value="3">Vertical band</option>
+				<option value="4">Vertical line</option></select>
+			<span class="shortLabel2">Second</span><select id="ranges2" class="alignInput">
+				<option>To be filled</option></select>&nbsp;</p>
+		<p><span class="demoLabel">&nbsp;</span>
+			<button type="button" id="rangesApply">Apply</button></p>
+		<div id="rangesChart" class="chart" style="width: 450px; height: 300px;"></div>
+		<pre><code class="jsdemo">$('#rangesChart').gchart({type: 'line', maxValue: 61, encoding: 'simple',
+	ranges: [],
+	series: [$.gchart.series('Level', [28, 4, 0, 4, 11, 5, 9,
+	7, 7, 7, 10, 20, 35, 46, 61, 46, 46, 23, 20, 28])]});
+
+// These are the values you would use for your ranges, ignoring null
+var demoRanges = [null,
+	$.gchart.range('ccccff', 0.25, 0.75),
+	{color: 'red', start: 0.1},
+	$.gchart.range(true, 'ccffcc', 0.6, 0.8),
+	{vertical: true, color: 'blue', start: 0.7}];
+
+$('#rangesApply').click(function() {
+	var newRanges = [];
+	$.each([1, 2], function(i, name) {
+		var range = demoRanges[$('#ranges' + name).val()];
+		if (range) {
+			newRanges[newRanges.length] = range;
+		}
+	});
+	$('#rangesChart').gchart('change', {ranges: newRanges});
+});</code></pre>
+	</div>
+	<div id="markers" class="feature">
+		<h2>Point Markers</h2>
+		<p>Specify a custom marker for each point in your chart with the <code>markers</code>
+			option, which is an array of objects describing each marker.
+			You can add as many markers as you want.</p>
+		<p>Each marker object has attributes for shape (<code>shape</code>), colour
+			(<code>color</code>), index of the series to which it applies (<code>series</code>),
+			item in the series (<code>item</code>, 'all' for all), size (<code>size</code>),
+			and priority with respect to other chart elements (<code>priority</code>).</p>
+		<p>You can use the <code>$.gchart.marker</code> function
+			to assist in creating marker definitions.</p>
+		<p><span class="demoLabel">Markers:</span>
+			<span class="shortLabel">Red line</span><select id="markers1" class="alignInput">
+				<option value="0">None</option>
+				<option value="1">All diamonds</option>
+				<option value="2">All circles</option>
+				<option value="3">Transparent cross</option>
+				<option value="4">Plus highlight</option>
+				<option value="5">Sparkline</option>
+				<option value="6">Sparkfill</option>
+				<option value="7">Text marker</option>
+				<option value="8">Flag marker</option>
+				<option value="9">Number marker</option>
+				<option value="10">Spaced numbers</option>
+				<option value="11">Positioned text</option></select>
+			<span class="shortLabel2">Green line</span><select id="markers2" class="alignInput">
+				<option>To be filled</option></select>&nbsp;</p>
+		<p><span class="demoLabel">&nbsp;</span>
+			<button type="button" id="markersApply">Apply</button></p>
+		<div id="markersChart" class="chart" style="width: 450px; height: 300px;"></div>
+		<pre><code class="jsdemo">$('#markersChart').gchart({type: 'line', maxValue: 61, encoding: 'scaled',
+	markers: [],
+	series: [$.gchart.series([28, 4, 0, 4, 11, 5, 9,
+	7, 7, 7, 10, 20, 35, 46, 61, 46, 46, 23, 20, 28], 'red'),
+	$.gchart.series([5, 8, 22, 24, 25, 10, 9,
+	23, 2, 3, 5, 10, 37, 49, 56, 41, 15, 18, 20, 20], 'green')]});
+
+// These are the values you would use for your markers, ignoring null
+var demoMarkers = [null,
+	$.gchart.marker('diamond', 'red', 0),
+	$.gchart.marker('circle', 'yellow', 0),
+	{shape: 'cross', color: '0000ff80', series: 0,
+		item: 6, size: 30, priority: 'behind'},
+	{shape: 'plus', color: '800080', series: 0,
+		item: 6, size: 20, priority: 'above'},
+	$.gchart.marker('sparkline', 'ffff0080', 0, 'all', 6),
+	$.gchart.marker('sparkfill', 'ccccff', 0),
+	$.gchart.marker('text', 'black', 0, 14, 12, 'above', 'Note this'),
+	$.gchart.marker('flag', 'red', 0, 7, 'Unusual'),
+	$.gchart.marker('number', 'blue', 0, 4),
+	$.gchart.marker('number', 'gray', 0, 'every2',
+		$.gchart.numberFormat($.gchart.formatFloat, 1, false, true)),
+	$.gchart.marker('text', 'silver', 0, [0.25, 0.5], 50,
+		'behind', 'Watermark', true)];
+
+$('#markersApply').click(function() {
+	var newMarkers = [];
+	$.each([1, 2], function(i, name) {
+		var marker = demoMarkers[$('#markers' + name).val()];
+		if (marker) {
+			newMarkers.push($.extend({}, marker, {series: i}));
+		}
+	});
+	$('#markersChart').gchart('change', {markers: newMarkers});
+});</code></pre>
+	</div>
+	</div>
+	<div id="types2" class="feature">
+		<h2>More Chart Types</h2>
+		<p>You can create other chart types as well.</p>
+		<p>For a scatter chart, use the <code>$.gchart.scatter</code> helper function.
+			It expects an array of arrays of two or three numbers. The first two
+			numbers are the x- and y-coordinates of the point, and the optional
+			third value is the size of the point (0-100, defaulting to 100).</p>
+		<p><span class="demoLabel">Scatter diagram:</span></p>
+		<div id="scatterChart" class="chartSmall" style="width: 200px; height: 150px;"></div>
+		<pre><code class="jsdemo">$('#scatterChart').gchart($.gchart.scatter(
+	[[10, 80], [30, 40, 50], [60, 70, 25], [90, 20], [20, 10],
+	[40, 90], [20, 50, 75], [50, 70, 75], [90, 30], [70, 50]]));</code></pre>
+		<p>For a Venn diagram, use the <code>$.gchart.venn</code> helper function.
+			It expects three values for the relative sizes of the circles,
+			then three values for the percentage overlaps between them
+			(1 to 2, 1 to 3, and 2 to 3), and a final value
+			for the percentage overlap between all three.</p>
+		<p><span class="demoLabel">Venn diagram:</span></p>
+		<div id="vennChart" class="chartSmall" style="width: 200px; height: 150px;"></div>
+		<pre><code class="jsdemo">$('#vennChart').gchart($.gchart.venn(100, 80, 60, 10, 30, 30, 10));</code></pre>
+		<p>For a Google meter, use the <code>$.gchart.meter</code> helper function.
+			It expects the label for the arrow, the arrow's position,
+			and the maximum value for the range (defaulting to 100).</p>
+		<p><span class="demoLabel">Google meter:</span></p>
+		<div id="meterChart" class="chartSmall" style="width: 200px; height: 150px;"></div>
+		<pre><code class="jsdemo">$('#meterChart').gchart($.gchart.meter('Speed', 70));</code></pre>
+		<p>QR Codes are a popular type of <a href="http://en.wikipedia.org/wiki/QR_Code">
+			two-dimensional barcode</a>, also known as
+			hardlinks or physical world hyperlinks, that can store text
+			containing a hyperlink, contact information, telephone number, etc.
+			The individual block size depends on the amount of data to be presented,
+			along with the encoding and error correction level specified.</p>
+		<p>For a QR code, use the <code>$.gchart.qrCode</code> helper function.
+			It expects the text to encode, followed (optionally) by the
+			encoding scheme, error correction level, and margin.</p>
+		<p><span class="demoLabel">QR Codes:</span>
+			<span id="qrCode1" class="chartSmall" style="width: 200px; height: 150px; float: left;"></span>
+			<span id="qrCode2" class="chartSmall" style="width: 200px; height: 150px; clear: none; float: left; margin-left: 0px;"></span></p>
+		<pre><code class="jsdemo">$('#qrCode1').gchart($.gchart.qrCode('This is a QR Code'));
+$('#qrCode2').gchart($.gchart.qrCode(
+	'This one contains a longer text message', 'ISO-8859-1', 'high', 2));</code></pre>
+	</div>
+	<div id="maps" class="feature">
+		<h2>Maps</h2>
+		<p>Google charting allows you to colour maps based on data.</p>
+		<p>For a map, use the <code>$.gchart.map</code> helper function.
+			It expects the map area (selectable below) and an object that
+			contains the country/state codes as attribute names with
+			the corresponding values to be plotted. You can also optionally
+			provide a default colour for regions not plotted, and a starting
+			and ending colour for those regions that are. Use the appropriate
+			<a href="http://code.google.com/apis/chart/#iso_codes">ISO 3166 country codes</a>
+			or <a href="http://code.google.com/apis/chart/#state_codes">US state codes</a>
+			to identify the regions.</p>
+		<p><span class="demoLabel">Maps:</span>
+			<select id="selectMap"><option value="world">The world (world)</option>
+				<option value="africa">Africa (africa)</option>
+				<option value="asia">Asia (asia)</option>
+				<option value="europe">Europe (europe)</option>
+				<option value="middle_east">Middle East (middle_east)</option>
+				<option value="south_america">South America (south_america)</option>
+				<option value="usa">USA (usa)</option>
+			</select></p>
+		<div id="mapChart" style="width: 440px; height: 220px; margin-left: 15em;"></div>
+		<pre><code class="jsdemo">$('#mapChart').gchart($.gchart.map('world',
+	{AU: 20, BR: 40, CO: 60, EG: 80, FR: 100, IN: 0,
+	JP: 20, PL: 40, SA: 60, TR: 80, US: 100, ZA: 0}));
+
+$('#selectMap').change(function() {
+	$('#mapChart').gchart('change', {mapArea: $(this).val()});
+});</code></pre>
+	</div>
+	<div id="feeds" class="feature">
+		<h2>Live Feeds</h2>
+		<p>Charts can be used to show live feeds of data by continually updating the
+			series data displayed. A flicker-free update ensures smooth transitions.</p>
+		<p>Here a live feed is simulated by rotating the series values.
+			An <code>onLoad</code> callback updates the range of months being shown.</p>
+		<p><span class="demoLabel">"Live" feed:</span></p>
+		<div id="liveChart" class="chart" style="width: 450px; height: 300px;"></div>
+		<p><span class="demoLabel">&nbsp;</span><span id="liveRange"></span></p>
+		<pre><code class="jsdemo">var liveData = [$.gchart.series('Max', [29.1, 28.9, 28.1, 26.3,
+	23.5, 21.2, 20.6, 21.7, 23.8, 25.6, 27.3, 28.6], 'red', 'ffcccc'),
+	$.gchart.series('Min', [20.9, 20.8, 19.5, 16.9,
+	13.8, 10.9, 9.5, 10.0, 12.5, 15.6, 18.0, 19.8], 'green')];
+var liveAxis = $.gchart.axis('bottom', ['Jan', 'Feb', 'Mar', 'Apr',
+	'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], 'black');
+
+$('#liveChart').gchart({type: 'line', maxValue: 40,
+	series: liveData, axes: [liveAxis], legend: 'right',
+	onLoad: showRange});
+	
+setInterval(liveUpdate, 1000);
+
+// Cycle labels and data
+function liveUpdate() {
+	var rotate = function(arr) {
+		var value = arr.shift();
+		arr.push(value);
+		return arr;
+	};
+	for (var i = 0; i &lt; 2; i++) {
+		liveData[i].data = rotate(liveData[i].data);
+	}
+	liveAxis.labels(rotate(liveAxis.labels()));
+	$('#liveChart').gchart('change', {series: liveData, axes: [liveAxis]});
+}
+
+function showRange() {
+	$('#liveRange').text('Showing ' + liveAxis.labels()[0] +
+		' to ' + liveAxis.labels()[11]);
+}</code></pre>
+	</div>
+	<div id="encoding" class="feature">
+		<h2>Data Encoding</h2>
+		<p>Google charting provides for a number of different encoding schemes
+			for the data values so as to reduce the size of the information passed
+			in the request.</p>
+		<dl>
+			<dt>Text</dt>
+			<dd>Values are normalised to 0-100 and are presented in normal text
+				with commas (,) separating values and pipes (|) separating series.</dd>
+			<dt>Scaled text</dt>
+			<dd>Values are not normalised and are presented in normal text
+				with commas (,) separating values and pipes (|) separating series.
+				Additional values specify the minimum and maximum for each series.</dd>
+			<dt>Simple</dt>
+			<dd>Values are normalised to 0-61 and are presented as one character (A-Za-z0-9)
+				with no value separator and commas (,) separating series.</dd>
+			<dt>Extended</dt>
+			<dd>Values are normalised to 0-4095 and are presented as two characters (A-Za-z0-9-.)
+				with no value separator and commas (,) separating series.</dd>
+		</dl>
+		<p><span class="demoLabel">Encoding types:</span>
+			<select id="selectEncoding"><option value="text">Standard text (text)</option>
+				<option value="scaled">Scaled text (scaled)</option>
+				<option value="simple">Simple (simple)</option>
+				<option value="extended">Extended (extended)</option>
+			</select></p>
+		<div id="encodedChart" style="width: 450px; height: 300px; margin-left: 15em;"></div>
+		<p><span class="demoLabel">Encoded data:</span>
+			<span id="encodedData"></span></p>
+		<pre><code class="jsdemo">$('#encodedChart').gchart({type: 'barVertGrouped', encoding: 'text',
+	dataLabels: ['2002', '2004', '2005', '2006'], legend: 'right',
+	series: [$.gchart.series('IE', [95.97, 91.80, 88.16, 86.64], 'ff0000'),
+		$.gchart.series('Netscape', [3.39, 2.83, 1.61, 0.00], '00ff00'),
+		$.gchart.series('Firefox', [0.00, 4.06, 8.13, 9.95], '0000ff')]
+});
+
+$('#selectEncoding').change(function() {
+	$('#encodedChart').gchart('change', {encoding: $(this).val()});
+	$('#encodedData').text($.gchart['_' + $(this).val() + 'Encoding'].
+		apply($.gchart, [$.data($('#encodedChart')[0], 'gChart')]));
+});</code></pre>
+	</div>
+	<div id="loading" class="feature">
+		<h2>Loading Data</h2>
+		<p>Data for the series may be loaded from external sources either
+			as XML or CSV (comma-separated values).</p>
+		<p>The XML structure is as follows, with all attributes except
+			<code>point/@y</code> being optional. Use the <code>point/@x</code>
+			attribute to specify an X-Y line point.</p>
+		<pre><code class="html">&lt;data&gt;
+	&lt;series label="" color="" fillColor="" minValue=""
+		maxValue="" lineThickness="" lineSegments=""&gt;
+		&lt;point x="" y=""/&gt;
+		...
+	&lt;/series&gt;
+	...
+&lt;/data&gt;</code></pre>
+		<p><span class="demoLabel">Load XML:</span>
+			<button type="button" id="xmlLoad">Load</button></p>
+		<p><span class="demoLabel">&nbsp;</span>
+			<textarea id="xmlSource" rows="10" cols="50">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;data&gt;
+  &lt;series label="IE" color="ff0000"&gt;
+    &lt;point y="95.97"/&gt;
+    &lt;point y="91.80"/&gt;
+    &lt;point y="88.16"/&gt;
+    &lt;point y="86.64"/&gt;
+  &lt;/series&gt;
+  &lt;series label="Netscape" color="00ff00"&gt;
+    &lt;point y="3.39"/&gt;
+    &lt;point y="2.83"/&gt;
+    &lt;point y="1.61"/&gt;
+    &lt;point y="0.00"/&gt;
+  &lt;/series&gt;
+  &lt;series label="Firefox" color="0000ff"&gt;
+    &lt;point y="0.00"/&gt;
+    &lt;point y="4.06"/&gt;
+    &lt;point y="8.13"/&gt;
+    &lt;point y="9.95"/&gt;
+  &lt;/series&gt;
+&lt;/data&gt;</textarea></p>
+		<div id="xmlChart" style="width: 450px; height: 300px; margin-left: 15em;"></div>
+		<pre><code class="jsdemo">$('#xmlChart').gchart({type: 'barVertGrouped',
+	dataLabels: ['2002', '2004', '2005', '2006'], legend: 'right'});
+		
+$('#xmlLoad').click(function() {
+	$('#xmlChart').gchart('change',
+		{series: $.gchart.seriesFromXml($('#xmlSource').val())});
+});</code></pre>
+		<p>The CSV format may have a header line to identify the columns.
+			These should be labelled with the series attributes
+			(<code>label</code>, <code>color</code>, <code>fillColor</code>, <code>minValue</code>,
+			<code>maxValue</code>, <code>lineThickness</code>, <code>lineSegmentLine</code>,
+			<code>lineSegmentGap</code>) or be of the form <code>y<i>n</i></code>,
+			where <i>n</i> is a sequential number, for the data values.
+			If you want to specify x-y line values, include columns named
+			<code>x<i>n</i></code> before the corresponding y-values.
+			If x-values are not required for one series, leave the fields blank on that line.
+			If there is no header line, all entries are treated as data values.</p>
+		<p><span class="demoLabel">Load CSV:</span>
+			<button type="button" id="csvLoad">Load</button></p>
+		<p><span class="demoLabel">&nbsp;</span>
+			<textarea id="csvSource" rows="5" cols="50">label,color,y1,y2,y3,y4
+IE,ff0000,95.97, 91.80, 88.16, 86.64
+Netscape,00ff00,3.39, 2.83, 1.61, 0.00
+Firefox,0000ff,0.00, 4.06, 8.13, 9.95</textarea></p>
+		<div id="csvChart" style="width: 450px; height: 300px; margin-left: 15em;"></div>
+		<pre><code class="jsdemo">$('#csvChart').gchart({type: 'line',
+	dataLabels: ['2002', '2004', '2005', '2006'], legend: 'right'});
+	
+$('#csvLoad').click(function() {
+	$('#csvChart').gchart('change',
+		{series: $.gchart.seriesFromCsv($('#csvSource').val())});
+});</code></pre>
+	</div>
+	<div id="wild" class="feature">
+		<h2>In the Wild</h2>
+		<p>This tab highlights examples of this plugin in use "in the wild".</p>
+		<div id="wildLinks">
+			<div>
+				<h3><!--a href=""></a--></h3>
+				<p>None as yet.</p>
+			</div>
+		</div>
+		<p style="clear: both;">To add another example, please contact me (kbwood{at}iinet.com.au)
+			and provide the plugin name, the URL of your site, its title,
+			and a short description of its purpose and where/how the plugin is used.</p>
+	</div>
+	<div id="quick" class="feature">
+		<h2>Quick Reference</h2>
+		<p>A full list of all possible settings is shown below.
+			Note that not all would apply in all cases. For more detail see the
+			<a href="gChartRef.html">documentation reference</a> page.</p>
+		<pre><code class="js">$(selector).gchart({
+	width: 0, // Width of the chart
+	height: 0, // Height of the chart
+	margins: null, // The minimum margins (pixels) around the chart:
+		// all or [left/right, top/bottom] or [left, right, top, bottom]
+	title: '', // The title of the chart
+	titleColor: '', // The colour of the title
+	titleSize: 0, // The font size of the title
+	backgroundColor: null, // The background colour for the entire image
+	chartColor: null, // The background colour for the chart area
+	legend: '', // The location of the legend: top, topVertical,
+		// bottom, bottomVertical, left, right, or '' for none
+	legendSize: null, // The minimum size (pixels) of the legend: [width, height]
+	type: 'pie3D', // Type of chart requested: line, lineXY, sparkline,
+		// barHoriz, barVert, barHorizGrouped, barVertGrouped, pie, pie3D (default),
+		// pieConcentric, venn, scatter, radar, radarCurved, map, meter, qrCode
+	encoding: '', // Type of data encoding: text (default), scaled, simple, extended
+	series: [this.series('Hello World', [60, 40])], // Details about the values to be plotted
+	visibleSeries: 0, // The number of series that are directly displayed, 0 for all
+	dataLabels: [], // Labels for the values across all the series
+	axes: [], // Definitions for the various axes, each entry is either
+		// a string of the axis name or a GChartAxis object
+	ranges: [], // Definitions of ranges for the chart, each entry is an object with
+		// vertical (boolean), color (string), start (number, 0-1),
+		// and end (number, 0-1) attributes
+	markers: [], // Definitions of markers for the chart, each entry is an object with
+		// shape (arrow, circle, cross, diamond, down, flag, horizontal,
+		// number, plus, sparkfill, sparkline, square, text, vertical),
+		// color (string), series (number), item (number), size (number),
+		// priority (number), text (string), positioned (boolean)
+	minValue: 0, // The minimum value of the data, $.gchart.calculate to calculate from data
+	maxValue: 100, // The maximum value of the data, $.gchart.calculate to calculate from data
+	gridSize: [], // The x and y spacings between grid lines
+	gridLine: [], // The line and gap lengths for the grid lines
+	gridOffsets: [], // The x and y offsets for the grid lines
+	extension: {}, // Any custom extensions to the Google chart parameters
+	// Bar charts -------------
+	barWidth: null, // The width of each bar (pixels) or 'a' for automatic or 'r' for relative
+	barSpacing: null, // The space (pixels) between bars in a group
+	barGroupSpacing: null, // The space (pixels) between groups of bars
+	barZeroPoint: null, // The position (0.0 to 1.0) of the zero-line
+	// Pie charts -------------
+	pieOrientation: 0, // The angle (degrees) of orientation from the positive x-axis
+	// Maps -------------------
+	mapArea: 'world', // The general area to show: world,
+		// africa, asia, europe, middle_east, south_america, usa
+	mapRegions: [], // List of country/state codes to plot
+	mapDefaultColor: 'white', // The colour for non-plotted countries/states
+	mapColors: ['aaffaa', 'green'], // The colour range for plotted countries/states
+	// QR Code ----------------
+	qrECLevel: null, // Error correction level: low, medium, quarter, high
+	qrMargin: null // Margin (squares) around QR code, default is 4
+});
+
+$.gchart.setDefaults(options) // Set defaults for all instances
+
+$(selector).gchart('change', options) // Update the chart settings
+
+$(selector).gchart('destroy') // Remove the chart functionality
+
+$.gchart.map(mapArea, values, defaultColour, startColour, endColour,
+	options) // Generate the options for a map
+$.gchart.meter(text, value, maxValue, colours, options)
+	// Generate the options for a meter
+$.gchart.qrCode(text, encoding, ecLevel, margin)
+	// Generate the options for a QR Code
+$.gchart.venn(size1, size2, size3, overlap12, overlap13, overlap23, overlap123,
+	options) // Generate the options for a Venn diagram
+
+$.gchart.axis(axis, labels, positions, rangeStart, rangeEnd,
+	rangeInterval, colour, alignment, size) // Generate an axis definition
+$.gchart.color(r, g, b, a) // Convert a colour
+$.gchart.gradient(angle, colour1, colour2) // Generate a gradient definition
+$.gchart.marker(shape, colour, series, item, size, priority, text, positioned)
+	// Generate a marker definition
+$.gchart.numberFormat(type, prefix, suffix, precision, showX, zeroes, separators)
+	// Generate a number format definition
+$.gchart.range(vertical, colour, start, end) // Generate a range definition
+$.gchart.scatter(values, options) // Generate series for a scatter chart
+$.gchart.series(label, data, colour, fillColour,
+	minValue, maxValue, thickness, segments) // Generate a series definition
+$.gchart.seriesForXYLines( series) // Generate series for an X-Y line chart
+$.gchart.seriesFromCsv(csv) // Generate series from CSV data
+$.gchart.seriesFromXml(xml) // Generate series from XML data
+$.gchart.stripe(angle, colours) // Generate a stripe definition
+</code></pre>
+	</div>
+</div>
+<h2>Usage</h2>
+<ol>
+<li>Include the jQuery library in the head section of your page.
+	<pre><code class="html">&lt;script type="text/javascript" src="http://code.jquery.com/jquery-latest.pack.js"&gt;&lt;/script&gt;</code></pre></li>
+<li>Download and include the jQuery Google Charting JavaScript in the head section of your page.
+	<pre><code class="html">&lt;script type="text/javascript" src="jquery.gchart.js"&gt;&lt;/script&gt;</code></pre>
+    Alternately, you can use the packed version <code>jquery.gchart.pack.js</code> (14.6K vs 51.1K),
+	or the minified version <code>jquery.gchart.min.js</code> (18.4K, 6.1K when zipped).</li>
+<li>Connect the Google charting functionality to your divisions.
+	<pre><code class="js">$(selector).gchart({series: [$.gchart.series([20, 50, 30])]});</code></pre></li>
+</ol>
+<p> For more detail see the
+	<a href="gChartRef.html">documentation reference</a> page.
+	Or see a <a href="gChartBasics.html">minimal page</a> that you could
+	use as a basis for your own investigations.</p>
+<h2>Comments</h2>
+<blockquote><p>I've been developing some internal web apps for my team ...
+	to display log statistics and whatnot, and jQuery and gCharts have become
+	an integral component. So kudos to you. gChart is well made and I am a fan.</p></blockquote>
+<div><cite>Steven Rosenshine</cite></div>
+<blockquote><p>Thanks a lot for the really easy to use and useful plugin.
+	It works like a charm.</p></blockquote>
+<div><cite>Siddhartha Azad</cite></div>
+<blockquote><p>Your jQuery Google Chart plugin is great, thank you for making this
+	available for use. I'm really impressed with your work.</p></blockquote>
+<div><cite>Don Yash</cite></div>
+<blockquote><p>Just a quick note to say thanks...that plugin is unreal!
+	Very powerful, yet so simple.</p></blockquote>
+<div><cite>Gary (Canada)</cite></div>
+<blockquote><p>Thanks for the great plugin. It's made interacting with the Google
+	Charting API so much easier than building the URLs myself.</p></blockquote>
+<div><cite>Dan Turkenkopf</cite></div>
+<p style="clear: both;">Contact <a href="index.html">Keith Wood</a> at kbwood{at}iinet.com.au 
+	with comments or suggestions.</p>
+<h2><a name="changes">Change History</a></h2>
+<table border="0" id="history" width="100%">
+<tr><th>Version</th><th>Date</th><th>Changes</th></tr>
+<tr><td><a href="zip/jquery.gchart.package-1.2.3.zip" onclick="pageTracker._trackPageview('/downloads/gchart-1.2.3');">
+	1.2.3</a></td><td>15&nbsp;Aug&nbsp;2009</td><td><ul>
+	<li>Added <code>onLoad</code> setting</li>
+</ul></td></tr>
+<tr><td><a href="zip/jquery.gchart.package-1.2.2.zip" onclick="pageTracker._trackPageview('/downloads/gchart-1.2.2');">
+	1.2.2</a></td><td>20&nbsp;Jun&nbsp;2009</td><td><ul>
+	<li>Corrected missing colours for series</li>
+	<li>Corrected error with title size when no title colour</li>
+</ul></td></tr>
+<tr><td><a href="zip/jquery.gchart.package-1.2.1.zip" onclick="pageTracker._trackPageview('/downloads/gchart-1.2.1');">
+	1.2.1</a></td><td>04&nbsp;Apr&nbsp;2009</td><td><ul>
+	<li>Ensure width and height are not zero</li>
+	<li>Apply flicker-free chart updates (thanks to Andrew Collins)</li>
+</ul></td></tr>
+<tr><td><a href="zip/jquery.gchart.package-1.2.0.zip" onclick="pageTracker._trackPageview('/downloads/gchart-1.2.0');">
+	1.2.0</a></td><td>07&nbsp;Feb&nbsp;2009</td><td><ul>
+	<li>Added <code>margins</code> and <code>legendSize</code> settings</li>
+	<li>Added item colours per series</li>
+	<li>Added <code>visibleSeries</code> setting</li>
+	<li>Added <code>$.gchart.barWidthAuto</code> and <code>$.gchart.barWidthRelative</code> for bar widths</li>
+	<li>Added <code>pieOrientation</code> setting</li>
+	<li>Added <i>topVertical</i> and <i>bottomVertical</i> values for <code>legend</code> setting</li>
+	<li>Added <code>gridOffsets</code> setting</li>
+	<li>Added range interval to <code>axis</code> function</li>
+	<li>Added <code>GChartAxis</code> object and support for drawing control,
+		and tick mark colour and length</li>
+	<li>Added <i>flag</i>, <i>financial</i>, and <i>number</i> types for markers</li>
+	<li>Added every <i>n</i> and absolute positioning for markers</li>
+	<li>Added <code>numberFormat</code> function to prepare number format definitions</li>
+	<li>Corrected encoding of labels for other languages</li>
+	<li>Correct 0 item index for markers</li>
+	<li>Simple pie charts no longer accept multiple series to customise labels and colours</li>
+</ul></td></tr>
+<tr><td><a href="zip/jquery.gchart.package-1.1.1.zip" onclick="pageTracker._trackPageview('/downloads/gchart-1.1.1');">
+	1.1.1</a></td><td>29&nbsp;Nov&nbsp;2008</td><td><ul>
+	<li>Corrected encoding of labels</li>
+</ul></td></tr>
+<tr><td><a href="zip/jquery.gchart.package-1.1.0.zip" onclick="pageTracker._trackPageview('/downloads/gchart-1.1.0');">
+	1.1.0</a></td><td>08&nbsp;Nov&nbsp;2008</td><td><ul>
+	<li>Added <i>sparkfill</i> and <i>sparkline</i> marker types</li>
+	<li>Deprecated <code>lineXYSeries</code> function in favour of <code>seriesForXYLines</code></li>
+	<li>Added <code>seriesFromXml</code> and <code>seriesFromCsv</code> functions for loading external data</li>
+	<li>Google chart URLs now generated as XHTML-compliant</li>
+</ul></td></tr>
+<tr><td><a href="zip/jquery.gchart.package-1.0.0.zip" onclick="pageTracker._trackPageview('/downloads/gchart-1.0.0');">
+	1.0.0</a></td><td>04&nbsp;Oct&nbsp;2008</td><td><ul>
+	<li>Initial release</li>
+</ul></td></tr>
+</table>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-4715900-1");
+pageTracker._initData();
+pageTracker._trackPageview();
+</script>
+</body>
+</html>

@@ -1,176 +1,180 @@
+float pulse = 0.1;//the time between each check, adjust it to your liking
+//bigger == slower == low resources
 
-string continuance;
-list continuances;
-integer continuance_count;
-integer continuance_index = 0;
-integer gCurrentContinuanceChannel;
-list continuance_times;
-list continuance_targets;
+//if a state isnt in the list its just ignored, you can add new overriding states here
+list states = [];
+
+//list of ther anims yo will use instead if the value == pass on, we let the anim play. One anim per state
+list anims = [];
 
 
-list sequence_continuances;
-list sequence_times;
-integer sequence_index;
-integer sequence_count;
-float time_to_next_sequence;
+string anim_overrided= "";
+string curr_anim= "";
 
 float gSensorRange = 196.0;
 float gSoundVolume = 0.8;
 
-integer gFauxIMChannel = -696969; // never gets used as channel, just a mask
 
-integer gPIVOTEChannel = 687686;
+// DECLARATION ==============================
+string Texture;
+integer Interpolate_Scale;
+vector Start_Scale;
+vector End_Scale;
+integer Interpolate_Colour;
+vector Start_Colour;
+vector End_Colour;
+float Start_Alpha;
+float End_Alpha;
+integer Emissive;
+float Age;
+float Rate;
+integer Count;
+float Life;
+integer Pattern;
+float Radius;
+float Begin_Angle;
+float End_Angle;
+vector Omega;
+integer Follow_Source;
+integer Follow_Velocity;
+integer Wind;
+integer Bounce;
+float Minimum_Speed;
+float Maximum_Speed;
+vector Acceleration;
+integer Target;
+key Target_Key;
 
-integer gAttachChannel = 687687;
 
-//integer gHUDChannel = 72; // needed? can determine chatter by key, safer than checking this
+// YOUR PARTICLES FUNCTION ==============================
 
-integer handle = -1;
-integer handleHUD = -99;
+Particle_viewer_area_edition (list aVal){
 
-string Letters= "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-string Numbers = "0123456789.";
+    Interpolate_Scale = FALSE;
+    Start_Scale = <0.04,0.04, 0>;;
+    End_Scale = <0.04,0.04, 0>;
+    Interpolate_Colour = FALSE;
+    Start_Colour = < 1, 1, 1 >;
+    End_Colour = < 1, 1, 1 >;
+    Start_Alpha = 1;
+    End_Alpha =1;
+    Emissive = FALSE;
+    Age = 1;
+    Rate = 1;
+    Count = 50;
+    Life = 0;
+    Pattern = PSYS_SRC_PATTERN_EXPLODE;
+    Radius = 0;
+    Begin_Angle = 0;
+    End_Angle = 3.14159;
+    Omega = < 0, 0, 0 >;
+    Follow_Source = FALSE;
+    Follow_Velocity = FALSE;
+    Wind = FALSE;
+    Bounce = FALSE;
+    Minimum_Speed = 1;
+    Maximum_Speed = 1;
+    Acceleration = < 0, 0, 0 >;
+    Target = FALSE;
+    Target_Key = NULL_KEY;
 
-
-integer OnlyContains(string a, string b){
-    integer len = llStringLength(a);
-    integer result = FALSE;
-    if(len != 0) {
-        result = TRUE;
-        integer index = 0;
-        do {
-            string chara = llGetSubString(a,index,index);
-            integer posa = llSubStringIndex(b,chara);
-            if(posa < 0){
-                result = FALSE;
-                index = len;
-            }
-            ++index;
-        }
-        while(index < len);
-    }
-    return result;
+list Parameters =
+[
+PSYS_PART_FLAGS,
+(
+(Emissive * PSYS_PART_EMISSIVE_MASK) |
+(Bounce * PSYS_PART_BOUNCE_MASK) |
+(Interpolate_Colour * PSYS_PART_INTERP_COLOR_MASK) |
+(Interpolate_Scale * PSYS_PART_INTERP_SCALE_MASK) |
+(Wind * PSYS_PART_WIND_MASK) |
+(Follow_Source * PSYS_PART_FOLLOW_SRC_MASK) |
+(Follow_Velocity * PSYS_PART_FOLLOW_VELOCITY_MASK) |
+(Target * PSYS_PART_TARGET_POS_MASK)
+),
+PSYS_PART_START_COLOR, Start_Colour,
+PSYS_PART_END_COLOR, End_Colour,
+PSYS_PART_START_ALPHA, Start_Alpha,
+PSYS_PART_END_ALPHA, End_Alpha,
+PSYS_PART_START_SCALE, Start_Scale,
+PSYS_PART_END_SCALE, End_Scale,
+PSYS_SRC_PATTERN, Pattern,
+PSYS_SRC_BURST_PART_COUNT, Count,
+PSYS_SRC_BURST_RATE, Rate,
+PSYS_PART_MAX_AGE, Age,
+PSYS_SRC_ACCEL, Acceleration,
+PSYS_SRC_BURST_RADIUS, Radius,
+PSYS_SRC_BURST_SPEED_MIN, Minimum_Speed,
+PSYS_SRC_BURST_SPEED_MAX, Maximum_Speed,
+PSYS_SRC_TARGET_KEY, Target_Key,
+PSYS_SRC_ANGLE_BEGIN, Begin_Angle,
+PSYS_SRC_ANGLE_END, End_Angle,
+PSYS_SRC_OMEGA, Omega,
+PSYS_SRC_MAX_AGE, Life,
+PSYS_SRC_TEXTURE, Texture
+];
+llParticleSystem (Parameters);
+integer Particles = (integer) (Age * (float) Count / Rate);
+if (4096 < Particles)
+{
+llOwnerSay ("Emitter creates too many particles!");
+}
+llOwnerSay ("Emitter produces " + (string) Particles + " concurrent particles.");
 }
 
-integer IsNumeric(string a){
-    return OnlyContains(a,Numbers);
-}
-
-integer IsAlpha(string a){
-    return OnlyContains(a,Letters);
-}
-
-integer IsAlphanumeric(string a){
-    return OnlyContains(a,Letters + Numbers);
-}
-
-playContinuance(){
-
-    if (llGetInventoryType(continuance) == INVENTORY_SOUND) {
-        llSetSoundQueueing(TRUE);
-        llSetSoundRadius(gSensorRange);
-        llPlaySound(continuance, gSoundVolume);
-        // llLoopSound, llTriggerSound, llTriggerSoundLimited() ???
-    }else{
-            if (llGetInventoryType(continuance) == INVENTORY_ANIMATION) {
-                llStartAnimation(continuance);
-            } else{ // it's another object, with hard-coded duration:
-                float continuance_duration = (float)llList2String(continuance_times, continuance_index);
-                if (llGetInventoryType(continuance) == INVENTORY_OBJECT && continuance_duration > 0) //
-                {
-                    llSetTimerEvent(continuance_duration);
-                }
-            }
-    }
-}
-
-runSequence(){
-    if (llGetInventoryType(continuance) == INVENTORY_ANIMATION) {
-        llStopAnimation(continuance);
-    }else {
-            if (llGetInventoryType(continuance) == INVENTORY_SOUND) {
-                llStopSound();
-            }
-    }
-
-    if (!sequence_count && continuance_count > 1){
-        continuance_index = 0;
-        continuance = llList2String(continuances, continuance_index);
-    } else {
-            llSetTimerEvent(0);
-        sequence_index = 0;
-        continuance = llList2String(sequence_continuances, sequence_index);
-    }
-
-    playContinuance();
-
-    if (sequence_count) {
-        llSetTimerEvent(time_to_next_sequence);
-    }
-
-
-} //end runSequence
+// SCRIPT BODY ==============================
 
 
 assignSL(string type, string name, string val){
 
-    if (type == "slinnersequence"){
-        sequence_index = 0; // see timer event
-        sequence_continuances = [];
-        sequence_times = [];
+list valOpts = llParseString2List(val,["|"],[]);
 
-        list parts = llParseString2List(val, ["," ,"~"], []);
-        integer n = llGetListLength(parts);
+    if (type == "SLAnimation"){
+        //duration~isLoop~loopCount~loopCtrls
+        integer foundstate = 0;
+        integer n = llGetListLength(valOpts);
         integer i;
         for(i = 0; i < n; i++){
-            string seqStr = llList2String(parts, i);
-            if(IsNumeric( seqStr)) {
-                sequence_times += [seqStr];
-            }else{ //is name
-                    sequence_continuances += [seqStr];
+          if (i==3) { // any ctrls defined
+            list ctrl_val_list = llParseString2List(llList2String(valOpts, i),[","],[]);
+            integer ll = llGetListLength(ctrl_val_list);
+            integer j;
+            for(j = 0; j < ll; j++){
+                string curVal = llList2String(ctrl_val_list, j);
+                if(llListFindList(ctrl_val_list,[curVal]) != -1){
+                    // must add both, as array position must match... i think.
+                    foundstate = 1;
+                    anims += name;
+                    states += curVal;
+                }
             }
+          }
         }
-        sequence_count = llGetListLength(sequence_continuances);
-        continuance = llList2String(sequence_continuances,0);
-        time_to_next_sequence = llList2Float(sequence_times, 0);
-        runSequence();
-        jump out;
-    }
-
-    //scene loaded, run playlist
-    // if user-triggered (ie.clickable) object, wait for obj's onSit to tell us
-
-    if (type == "slanimation"){
 
 
-            if (continuance != "") llStopAnimation(continuance);
-            llSetTimerEvent(0);
-            continuance = llStringTrim(name,STRING_TRIM);
-            runSequence();
+        if (foundstate == 0){ // auto assign to default if no ctrls defined
+            anims += name;
+            states += "Standing";
+            // llSay(0,"we're gettin er done");
+        }
 
+        //llSay(0, "anim"+ llList2String(anims,0) + "state" +llList2String(states,0));
 
-        llMessageLinked(LINK_SET,0,"ON",NULL_KEY); // call chatbot to change color of bracelet?? if so, call llSetColor cmd
-        llRequestPermissions(llGetOwner(),PERMISSION_TAKE_CONTROLS | PERMISSION_TRIGGER_ANIMATION);
-        llTakeControls(CONTROL_ML_LBUTTON | CONTROL_LBUTTON | CONTROL_UP | CONTROL_FWD
-        | CONTROL_BACK | CONTROL_ROT_LEFT | CONTROL_LEFT | CONTROL_RIGHT
-        | CONTROL_ROT_RIGHT | CONTROL_DOWN, TRUE, TRUE);
-
-        llStartAnimation(name);
+        llRequestPermissions(llGetOwner(),PERMISSION_TRIGGER_ANIMATION);//we ask for permissions
         jump out;
 
     }
 
-    if (type == "slbodypart"){
-        if(llGetInventoryType(name) != INVENTORY_NONE && llGetInventoryType(name) == INVENTORY_BODYPART){
+    if (type == "SLBodypart"){
+        //if(llGetInventoryType(name) != INVENTORY_NONE && llGetInventoryType(name) == INVENTORY_BODYPART){
             llGiveInventory(llGetOwner(), name);
             llInstantMessage(llGetOwner(), name + " has been added to your inventory. "
                 +"Drag it to appropriate area on your avatar to wear it. ");
-        }
+        //}
         jump out;
     }
 
-    if (type == "slsound"){
-        if(llGetInventoryType(name) != INVENTORY_NONE && llGetInventoryType(name) == INVENTORY_SOUND){
+    if (type == "SLSound"){
+        //if(llGetInventoryType(name) != INVENTORY_NONE && llGetInventoryType(name) == INVENTORY_SOUND){
            // llTriggerSound(name,gSoundVolume);
 
             // if duration > sound length
@@ -178,217 +182,192 @@ assignSL(string type, string name, string val){
                 llSetSoundQueueing(TRUE);
             //}
 
+// TODO: bind to user controls
             llSetSoundRadius(gSensorRange);
-            llPlaySound(name, gSoundVolume);
-        }
+            llTriggerSound(name, gSoundVolume);
+        //}
         jump out;
 
     }
 
-    if (type == "slobject"){
-        //show dialog on where to attach this object
-        if(llGetInventoryType(name) != INVENTORY_NONE && llGetInventoryType(name) == INVENTORY_OBJECT){
+    if (type == "SLObject"){
+        //if(llGetInventoryType(name) != INVENTORY_NONE && llGetInventoryType(name) == INVENTORY_OBJECT){
             llGiveInventory(llGetOwner(),name);
             llInstantMessage(llGetOwner(), name + " has been added to your inventory. "
                 +"Drag it to the ground to rez it");
-        }
-        //llAttachToAvatar(integer)
+        //}
+        //llAttachToAvatar(integer);
         jump out;
     }
 
-    if (type == "slpoint"){
-        llPointAt((vector)((string)"<"+val+">"));
-        jump out;
-    }
 
-    if (type == "slhud"){
-        if(llGetInventoryType(name) != INVENTORY_NONE && llGetInventoryType(name) == INVENTORY_OBJECT){
-            //deternine target, get ther key
-            llGiveInventory(llGetOwner(), "HUD_"+name);
+    if (type == "SLHud"){
+        //if(llGetInventoryType(name) != INVENTORY_NONE && llGetInventoryType(name) == INVENTORY_OBJECT){
+            llGiveInventory(llGetOwner(), "hud "+name);
             llInstantMessage(llGetOwner(), "The "+ name +" HUD has been added to your inventory. "
                 +"Please attach it to the " + val + "of your display.");
-        }
+        //}
         jump out;
     }
 
-    if (type == "slpackage"){
-        if(llGetInventoryType(name) != INVENTORY_NONE &&  llGetInventoryType(name) == INVENTORY_OBJECT){
-            //deternine target, get ther key
-            llGiveInventory(llGetOwner(), "crate_"+name);
-            llInstantMessage(llGetOwner(), "The " +name + "crate has been added to your inventory. "
+    if (type == "SLPackage"){
+       // if(llGetInventoryType(name) != INVENTORY_NONE &&  llGetInventoryType(name) == INVENTORY_OBJECT){
+            llGiveInventory(llGetOwner(), "crate "+name);
+            llInstantMessage(llGetOwner(), "The " +name + " crate has been added to your inventory. "
                 +"Drag it to the ground to rez it, and right-click to open it.");
 
-        }
+       // }
         jump out;
     }
 
-    if (type == "slmove"){
-        vector dest = (vector)("<"+llList2String(llParseString2List(val,["~"],[]),1)+">");
-        do //Do-while loop.
+    if (type == "SLAction"){
+        vector dest = (vector)("<"+llList2String(llParseString2List(val,["|"],[]),1)+">");
+        do
         {
             llPushObject(llGetOwner(),(dest-llGetPos())*(llVecDist(llGetPos(),dest)),ZERO_VECTOR,FALSE); //Pushes the avatar to the position.
             llMoveToTarget(dest,0.05); //If your agent gets close to the avatar it will direct the path.
         }
-        while(llVecDist(dest,llGetPos()) > 40.0); //End of do-while loop.
+        while(llVecDist(dest,llGetPos()) > 40.0);
 
-        llMoveToTarget(dest,0.05); //Movement
+        llMoveToTarget(dest,0.05);
         llSleep(0.25); //Prevents you from flying.
-        llStopMoveToTarget(); //Stops the movement
+        llStopMoveToTarget();
+         jump out;
     }
 
+    if (type == "SLParticleSystem"){
+        llSay(0, "Particler sys str: " + llDumpList2String(valOpts, ",") );
+        Particle_viewer_area_edition(valOpts);
+        jump out;
+    }
+
+    if (type == "SLLandmark"){
+        llGiveInventory(llGetOwner(), name);
+        llInstantMessage(llGetOwner(), "The " +name + " landmark has been added to your inventory.");
+    jump out;
+    }
+
+    if (type == "SLTexture"){
+        llGiveInventory(llGetOwner(), name);
+        llInstantMessage(llGetOwner(), "The " +name + " texture has been added to your inventory.");
+    jump out;
+    }
+
+
+    if (type == "SLClothing"){
+        llGiveInventory(llGetOwner(), name);
+       llInstantMessage(llGetOwner(), "The " +name + " apparel item has been added to your inventory.");
+    }
+
+     llParticleSystem ([]); // Stop the particles, just in case
+     llResetScript();
     @out;
 
 }
 
 
+
 default
 {
-    state_entry(){
-        state playing;
-    }
-
-    attach(key attached)
+    attach(key id)
     {
-        if(attached == llGetOwner())
-        {
-            llListen(0,"",llGetOwner(),"");
-            llListen(gPIVOTEChannel,"",NULL_KEY,"");
-
-            llSetStatus(STATUS_BLOCK_GRAB,TRUE);
-           // atk = FALSE;
-            //llRequestPermissions(llGetOwner(),PERMISSION_TAKE_CONTROLS | PERMISSION_TRIGGER_ANIMATION);
-            // llMessageLinked(LINK_SET,0,"OFF",NULL_KEY);
-            state playing;
-
-        }
+        if(id == NULL_KEY && curr_anim != "")//IF detached and an animation is running
+            llStopAnimation(curr_anim);
+        else
+            llResetScript();
     }
+    state_entry()
 
-
-}
-
-state scanning
-{
-    state_entry(){
-        state playing;
-    }
-
-    sensor(integer num_detected)
     {
-       // llSay(0, "found the controller!");
-        if (handle== -1){
-            handle  = llListen( gAttachChannel, "", NULL_KEY, "" );
-
-        }
-
-       if( handleHUD == -99){
-            handleHUD =  llListen(72,"","",""); // listen for HUD
-        }
+     llListen( -1, "", NULL_KEY, "" );
+     llListen(0, "", llGetOwner(), "" );
     }
-
-    listen (integer ch, string s, key k, string msg) {
-
-        if (ch == gAttachChannel){
-            list parts = llParseString2List(msg, ["~"], []);
-
-            key iKey = (key)llList2String(parts, 0);
-            string itype =  llList2String(parts, 1);
-            string iname = llList2String(parts, 2);
-            string ival = llList2String(parts, 3);
-
-            // parse from msg the player key, if yours, go:
-            if (llGetOwner() == iKey || llGetOwnerKey(iKey) == llGetOwner())
-            {
-                llSay(0,"itype, iname, ival: "+ itype + iname + ival);
-                  assignSL(itype, iname, ival);
-                  state playing;
-            }
-        }else {
-            if (k == llGetOwner()  || llGetOwnerKey(k) == llGetOwner()){ // from the HUD
-                //llGetParcelPrimOwners(vector)
-            }
-        }
-
-    }
-
-
-
-
-}
-
-state playing
-{
-
-    state_entry(){
-        handle = -1;
-        handleHUD= -99;
-         llSetTimerEvent(1); //Repeats the sensor every 1 second.
-
-    }
-
-
-
     run_time_permissions(integer perms)
     {
-        if(perms & PERMISSION_TAKE_CONTROLS)
-        {
-            llTakeControls(CONTROL_ML_LBUTTON | CONTROL_LBUTTON | CONTROL_UP | CONTROL_FWD | CONTROL_BACK | CONTROL_ROT_LEFT | CONTROL_LEFT | CONTROL_RIGHT | CONTROL_ROT_RIGHT | CONTROL_DOWN, TRUE, TRUE);
-        }
+
+        llSetTimerEvent(pulse);
     }
-
-
-
-    listen (integer ch, string s, key k, string msg) {
-
-        if (ch == gAttachChannel){
-
-            if (msg == "REQUEST_CONTROL") // what does this do??
-            {
-                llWhisper(gAttachChannel,"GRANT_CONTROL," + llList2CSV(continuances));
-                return;
-            }
-
-            list parts = llParseString2List(msg, ["~"], []);
-
-            key iKey = (key)llList2String(parts, 0);
-            string itype =  llList2String(parts, 1);
-            string iname = llList2String(parts, 2);
-            string ival = llList2String(parts, 3);
-
-            // parse from msg the player key, if yours, go:
-            if (llGetOwner() == iKey || llGetOwnerKey(iKey) == llGetOwner())
-            {
-                llSay(0,"itype, iname, ival: "+ itype+ iname+ ival);
-                  assignSL(itype, iname, ival);
-            }
-        }else {
-            if (k == llGetOwner()  || llGetOwnerKey(k) == llGetOwner()){ // from the HUD
-                //llGetParcelPrimOwners(vector)
-            }
-        }
-
-    }
-
-
     timer()
     {
-        // are we within range of the controller
-        //llSensor("PIVOTE Controller NOSSUM",NULL_KEY, ACTIVE, 95,PI);
+        string anim_state = llGetAnimation(llGetPermissionsKey());
+        if(anim_state == "Turning Left" || anim_state == "Turning Right")//this is a little HACK to remove the turn left and right
+            anim_state = "Standing";
+        integer anim_index = llListFindList(states,[anim_state]);
+        if((anim_index != -1) && (anim_overrided != anim_state))//IF we havent specified this anim must be ignored
+        {
+            anim_overrided = anim_state;
+            llSetText("",<1,1,1>,1.0);//DEBUG displaying the state
+            if(llList2String(anims,anim_index) == "PASS_ON")
+            {
+                if(curr_anim != "")
+                    llStopAnimation(curr_anim);
+                curr_anim = "";
+            }
+            else
+            {
 
-        //TODO: untested, prob needs lots of work
-        if (!sequence_count && continuance_count > 1){
-            ++continuance_index;
-            continuance = llList2String(continuances, continuance_index);
-            playContinuance();
-            llSetTimerEvent(llList2Float(continuance_times, continuance_index));
-        } else {
-                if (sequence_index == sequence_count - 1) {
-                    sequence_index = 0;
+                string stop_anim = curr_anim;
+                curr_anim = llList2String(anims,anim_index);
+                if(stop_anim != "")
+                    llStopAnimation(stop_anim);
+
+                if(curr_anim != stop_anim)//if its the same anim we already play no need to change it
+                    llStartAnimation(curr_anim);
+
+                if(anim_state == "Walking")//another lil hack so the av turn itself 180 when walking backward
+                    llStopAnimation("walk");//comment these 2 lines if you have a real backward animation
+
+            }
+        }
+    }
+
+     listen (integer ch, string s, key k, string msg) {
+
+        if (ch == -1){
+            if( llSubStringIndex(msg, "~") > -1){
+
+               // llSay(0, "bracelet heard ya: "+ msg);
+                list parts = llParseString2List(msg, ["~"], []);
+
+                string iKey = llList2String(parts, 0);
+                string itype =  llList2String(parts, 1);
+                string iname = llList2String(parts, 2);
+                string ival = llList2String(parts, 3);
+
+               // llSay(0, msg);
+
+                if ( (string)llGetOwner() == iKey || iKey == llKey2Name(llGetOwner()) ){
+                    //llSay(0,"ya?");
+                    assignSL(itype, iname, ival);
                 }else{
-                        ++sequence_index;
+                     //llSay(0, "Doesn't apply to me: "+ iKey);
                 }
-            continuance = llList2String(sequence_continuances, sequence_index);
-            playContinuance();
-            llSetTimerEvent(llList2Float(sequence_times, sequence_index));
+
+            }else{
+                if( llSubStringIndex(msg, "reset") > -1){
+                    //llSay(0, "resetting");
+                   // llSetTimerEvent(0.0);
+                    //llStopAnimation(curr_anim);
+                    //curr_anim = "";
+                    // states = [];
+                    // anims = [];
+                   llResetScript();
+                   // llListen( -1, "", NULL_KEY, "" );
+                    //llListen(0, "", llGetOwner(), "" );
+                   llSleep(1);
+
+
+                }
+            }
+        }
+
+        if (ch == 0){
+            if( llSubStringIndex(msg, "chose:") == 0){
+                string thisOpt = llGetSubString(msg, 6, 7);
+                //llSay(0, thisOpt);
+                llSay(687686, "option=" + thisOpt);
+            }
+
 
         }
 
@@ -396,17 +375,6 @@ state playing
 
     }
 
-    sensor(integer num_detected)
-    {
-       // llSay(0, "found the controller!");
-        if (handle== -1){
-            handle  = llListen( gAttachChannel, "", NULL_KEY, "" );
 
-        }
 
-       if( handleHUD == -99){
-            handleHUD =   llListen(72,"","",""); // listen for HUD
-        }
-    }
-}
-
+} // END //

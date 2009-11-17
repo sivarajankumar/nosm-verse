@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="Asset">
+
+	<typeAlias alias="Asset" type="com.nosm.elearning.ariadne.model.Asset" />
+
+	<resultMap id="AssetResult" class="Asset">
+		<result property="type" column="aname" />
+		<result property="name" column="name" />
+		<result property="target" column="target" />
+		<result property="value" column="val" />
+	</resultMap>
+	<resultMap id="AssetResultFull" class="Asset">
+		<result property="id" column="id" />
+		<result property="nodeid" column="mnodeid" />
+		<result property="type" column="aname" />
+		<result property="name" column="name" />
+		<result property="target" column="target" />
+		<result property="value" column="val" />
+		<result property="UIPairs" column="ui_pairs" />
+	</resultMap>
+
+	<select id="selectAllAssets" resultClass="Asset">
+		SELECT aname, name, target, val
+		FROM assetmapnode mapped,
+		assettype types
+		where types.id = mapped.type_id
+	</select>
+	<select id="selectAssetsAdminByMNodeId" parameterClass="int"
+		resultMap="AssetResultFull">
+		SELECT mapped.id, mnodeid, aname, name, target, val, ui_pairs
+		FROM
+		assetmapnode mapped, assettype types
+		where types.id =
+		mapped.type_id
+		and mapped.mnodeid = #id#
+	</select>
+	<select id="selectAssetsSLByMNodeId" parameterClass="int"
+		resultMap="AssetResult">
+		SELECT mapped.id, aname, name, target, val
+		FROM assetmapnode
+		mapped, assettype types
+		where types.id = mapped.type_id
+		and
+		mapped.mnodeid = #id#
+	</select>
+	<select id="doesAssetExist" parameterClass="int"
+		resultClass="int">
+		SELECT count(id) from assetmapnode
+		where id = #id#
+	</select>
+	<select id="getAssetById" parameterClass="int"
+		resultMap="AssetResultFull">
+		SELECT mapped.id, mnodeid, aname, name, target, val, ui_pairs
+		FROM assetmapnode
+		mapped, assettype types
+		where types.id = mapped.type_id
+		and mapped.id = #id#
+	</select>
+
+	<select id="getSeqbyNodeID" parameterClass="int"
+		resultMap="AssetResultFull">
+		SELECT mapped.id, mnodeid, aname, name, target, val, ui_pairs
+		FROM assetmapnode
+		mapped, assettype types
+		where types.id = mapped.type_id and
+		mnodeid = #nodeid#
+		and type_id = (select id from assettype where assettype.aname = 'SLInnerSequence')
+	</select>
+
+	<select id="getSeqForNode" parameterClass="int"
+		resultMap="AssetResultFull">
+		SELECT mapped.id, mnodeid, aname, name, target, val, ui_pairs
+		FROM assetmapnode mapped,
+		assettype types where
+		types.id = mapped.type_id and
+		mnodeid = #nodeid#
+		and type_id = (select id from assettype where assettype.aname = 'SLInnerSequence')
+	</select>
+
+	<insert id="insertAsset" parameterClass="Asset">
+		INSERT INTO
+		assetmapnode ( id, mnodeid, type_id, name, target,
+		val, ui_pairs  )
+		VALUES (
+		#id#, #nodeid#,
+		( select id from assettype where aname = #type# ),
+		#name#, #target#, #value#, '')
+	</insert>
+
+
+
+	<insert id="insertAssetGOOD" parameterClass="Asset">
+		INSERT INTO
+		assetmapnode ( id, mnodeid, type_id, name, target,
+		val, ui_pairs )
+		VALUES (
+		#id#, #nodeid#,
+		( select id from assettype where aname = #type# ),
+		#name#, #target#, #value#, #UIPairs# )
+	</insert>
+
+	<update id="resetSequence" parameterClass="Asset">
+		update assetmapnode
+		set val = #value#
+		where id = #id#
+	</update>
+
+	<delete id="deleteAssetById" parameterClass="int">
+		delete from assetmapnode where id = #id#
+	</delete>
+	<delete id="deleteAssetByName" parameterClass="String">
+		delete from assetmapnode where name = #name#
+	</delete>
+</sqlMap>

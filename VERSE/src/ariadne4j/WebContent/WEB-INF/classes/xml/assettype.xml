@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="AssetType">
+  <typeAlias alias="AssetType" type="com.nosm.elearning.ariadne.model.AssetType"/>
+
+  <resultMap id="AssetTypeResult" class="AssetType">
+    <result property="id" column="id" />
+    <result property="type" column="tname"/>
+    <result property="name" column="name"/>
+    <result property="value" column="val"/>
+  </resultMap>
+
+  <resultMap id="AssetTypeResultFull" class="AssetType">
+  	<result property="id" column="id"/>
+    <result property="type" column="tname"/>
+    <result property="name" column="name"/>
+    <result property="value" column="val"/>
+    <result property="sl_inv_type" column="sl_inv_code"/>
+	<result property="desc" column="adesc"/>
+	<result property="ui_cat" column="ui_cat"/>
+	<result property="parcel_media" column="parcel_media"/>
+	<result property="loop" column="loop"/>
+	<result property="duration" column="duration"/>
+	<result property="prim" column="prim"/>
+	<result property="object" column="object"/>
+	<result property="media" column="media"/>
+	<result property="action" column="action"/>
+	<result property="text" column="text"/>
+	<result property="mut_excl" column="mut_excl"/>
+	<result property="persist" column="persist"/>
+	<result property="chat" column="chat"/>
+	<result property="clickable" column="clickable"/>
+	<result property="controllable" column="controllable"/>
+	<result property="restrainable" column="restrainable"/>
+	<result property="url" column="url"/>
+	<result property="mime" column="mime"/>
+	<result property="system" column="system"/>
+	<result property="hidden" column="hidden"/>
+	<result property="admin" column="admin"/>
+  </resultMap>
+
+<select id="getSLInventoryForType" parameterClass="int" resultMap="AssetTypeResult">
+	SELECT id, name, val, types.aname as tname
+	FROM assettypeattribs attribs, assettype types
+	where
+	attribs.type_id = types.id
+	and types.prim = 1 and sl_inv_code = #id#
+	or
+	attribs.type_id = types.id
+	and types.object = 1 and sl_inv_code = #id#
+</select>
+
+<select id="getAllSLInventory" resultMap="AssetTypeResult">
+	SELECT id, name, val, types.aname as tname
+	FROM assettypeattribs attribs, assettype types
+	where attribs.type_id = types.id
+	and types.prim = 1
+	or
+	attribs.type_id = types.id and types.object = 1
+</select>
+
+<select id="getHolodeckScenes" resultMap="AssetTypeResult">
+	select id, name, name as value, types.aname as tname from assettypeattribs attribs, assettype types
+	where type_id = ( select id from assettype where aname = #type#)
+	and INSTR(attribs.name, 'SHELL') = 0
+	and attribs.type_id = types.id
+</select>
+
+<select id="getHolodeckShells" resultMap="AssetTypeResult">
+	select id, SUBSTR(name, 7) as name, name as value, types.aname as tname
+	from assettypeattribs attribs, assettype types
+	where attribs.type_id = ( select id from assettype where aname = #type#)
+	and INSTR(attribs.name, 'SHELL') = 1
+	and attribs.type_id = types.id
+</select>
+<select id="selectAttribByNameAndType" resultMap="AssetTypeResult">
+	SELECT id, name, val, types.aname as tname
+	FROM assettypeattribs attribs, assettype types
+	where
+	attribs.type_id = ( select id from assettype where aname = #type#)
+	and name = #name#
+
+</select>
+<select id="selectAttribByName" parameterClass="String" resultMap="AssetTypeResult">
+	SELECT id, name, val, types.aname as tname
+	FROM assettypeattribs attribs, assettype types
+	where
+	name = #name#
+</select>
+
+<select id="getAssetTypeBySlType" parameterClass="int" resultMap="AssetTypeResultFull">
+	SELECT id, name, val, types.aname as tname
+	FROM assettypeattribs attribs, assettype types
+	where
+	types.sl_inv_code = #id#
+</select>
+
+ <select id="selectAllAttribs" resultMap="AssetTypeResultFull">
+	SELECT
+	t1.id, t2.aname as tname, t1.name, t1.val, t2.sl_inv_code,
+	t2.adesc, t2.ui_cat, t2.parcel_media, t2.loop,
+	t2.duration, t2.prim, t2.object, t2.media,
+	t2.action, t2.text, t2.mut_excl, t2.persist,
+	t2.chat, t2.clickable, t2.controllable,
+	t2.restrainable, t2.url, t2.mime, t2.system,
+	t2.hidden, t2.admin
+	FROM assettypeattribs AS t1 INNER JOIN assettype AS t2 ON t1.type_id = t2.id;
+ </select>
+
+<select id="selectPrimAttribs" resultMap="AssetTypeResult">
+	SELECT id, name, val, types.aname as tname
+	FROM assettypeattribs attribs, assettype types
+	where attribs.type_id = types.id
+	and types.prim = 1 or attribs.type_id = types.id and types.object = 1
+ </select>
+
+  <insert id="insertInventoryAttrib" parameterClass="AssetType">
+   	INSERT INTO assettypeattribs
+	(
+	   type_id,
+	   name,
+	   val
+	 ) VALUES (
+	    ( select id from assettype where aname = #type# ), #name#, #value#
+     )
+  </insert>
+
+  <update id="updateAssetAttribByName" parameterClass="AssetType">
+    update assettypeattribs set
+		   type_id = ( select id from assettype where aname = #type# ),
+		   val = #value#,
+		   where name = #name#
+  </update>
+
+  <delete id="deleteAssetAttribByName" parameterClass="AssetType">
+    delete from assettypeattribs where name = #name#
+  </delete>
+
+</sqlMap>

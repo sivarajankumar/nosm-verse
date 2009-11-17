@@ -1,0 +1,245 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta name="generator" content="HTML Tidy, see www.w3.org">
+<title></title>
+</head>
+<body>
+<h2>LSL Particles System script generator.</h2>
+
+<div id="gl_container">
+<div id="gl_wrapper">
+<div id="gl_content"><!-- START OF CONTENT AREA -->
+<a name="content-start" id="content-start"></a>
+<!--for screenreaders -->
+ <!-- End of header.thtml -->
+<div class="block-box"><span class="block-helpicon"></span> 
+
+<h2>Particules generator 2</h2>
+
+<form name="data"><font face="arial, helvetica, sans-serif" size=
+"3"><input name="ftcname" size="60" value=
+"Particle-viewer_area_edition" type="hidden"></font>
+<hr>
+<font face="arial, helvetica, sans-serif" size="3"><font size=
+"5"><b>Particle definition:</b></font><br>
+</font>
+<blockquote><font face="arial, helvetica, sans-serif" size=
+"3"><b>Texture:</b> <select name="ainv_sltexture"><br>
+<br>
+<br>
+ <input name="emissive" type="checkbox"><b>Glowing.</b> <font
+color="ffffff" face="arial, helvetica, sans-serif" size=
+"2"><i>(Particles will glow in the dark, otherwise will reflect the
+ambiant light)</i></font><br>
+<br>
+ <input name="interpolate_color" type="checkbox"><b>Interpolate
+Color.</b> <font color="ffffff" face="arial, helvetica, sans-serif"
+size="2"><i>(Turns on or off interpolating color.)</i></font><br>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Start color:</b> &lt;<input
+name="start_color_r" size="3" value="1" onchange=
+"valide_start_color();" type="text"> , <input name="start_color_g"
+size="3" value="1" onchange="valide_start_color();" type="text"> ,
+<input name="start_color_b" size="3" value="1" onchange=
+"valide_start_color();" type="text">&gt; <font color="ffffff" face=
+"arial, helvetica, sans-serif" size="2"><i>(Initial color value,
+RGB (values between 0.0 to 1.0)</i></font></font>
+<div id="start_col" style=
+"border-style: solid; border-width: thin; width: 90px; height: 20px;">
+<font face="arial, helvetica, sans-serif" size=
+"3">&nbsp;</font></div>
+
+<font face="arial, helvetica, sans-serif" size="3"><br>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>End color:</b> &lt;<input
+name="end_color_r" size="3" value="1" onchange=
+"valide_end_color();" type="text"> , <input name="end_color_g"
+size="3" value="1" onchange="valide_end_color();" type="text"> ,
+<input name="end_color_b" size="3" value="1" onchange=
+"valide_end_color();" type="text">&gt; <font color="ffffff" face=
+"arial, helvetica, sans-serif" size="2"><i>(Final color value, RGB
+(values between 0.0 to 1.0))</i></font></font>
+<div id="end_col" style=
+"border-style: solid; border-width: thin; width: 90px; height: 20px;">
+<font face="arial, helvetica, sans-serif" size=
+"3">&nbsp;</font></div>
+
+<font face="arial, helvetica, sans-serif" size="3"><br>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Start Apha:</b> <input
+name="start_alpha" size="3" value="1" type="text"> <font color=
+"ffffff" face="arial, helvetica, sans-serif" size="2"><i>(Initial
+transparency value. Range: 0.0 to 1.0)</i></font><br>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>End Apha:</b> <input name=
+"end_alpha" size="3" value="1" type="text"> <font color="ffffff"
+face="arial, helvetica, sans-serif" size="2"><i>(final transparency
+value. Range: 0.0 to 1.0)</i></font><br>
+<br>
+ <input name="interpolate_scale" type="checkbox"><b>Interpolate
+Scale.</b> <font color="ffffff" face="arial, helvetica, sans-serif"
+size="2"><i>(Turns on or off interpolating scale.)</i></font><br>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Start Scale:</b> X: <input
+name="start_scale_x" size="5" value="0.04" type="text">m | Y:<input
+name="start_scale_y" size="5" value="0.04" type="text">m <font
+color="ffffff" face="arial, helvetica, sans-serif" size=
+"2"><i>(Initial scale value. Range (0.04m to 4m))</i></font><br>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>End Scale:</b> X: <input
+name="end_scale_x" size="5" value="0.04" type="text">m | Y:<input
+name="end_scale_y" size="5" value="0.04" type="text">m <font color=
+"ffffff" face="arial, helvetica, sans-serif" size="2"><i>(final
+scale value. Range (0.04m to 4m))</i></font><br>
+<br>
+ <b>Particle Life Time:</b><input name="age" size="5" value="1"
+type="text">&nbsp;&nbsp;<font color="ffffff" face=
+"arial, helvetica, sans-serif" size="2"><i>(How many seconds each
+particle lives for: 0.1 to 60.0 seconds.)</i></font><br>
+</font></blockquote>
+
+<hr>
+<font face="arial, helvetica, sans-serif" size="3"><font size=
+"5"><b>Particle Behavior:</b></font><br>
+</font>
+<blockquote><font face="arial, helvetica, sans-serif" size=
+"3"><b>Pattern:</b> <font color="ffffff" face=
+"arial, helvetica, sans-serif" size="2"><i>(type of
+emission)</i></font><br>
+<select name="patern">
+<option selected="selected" value="PSYS_SRC_PATTERN_EXPLODE">
+EXPLODE (Sends particles in all directions.)</option>
+<option value="PSYS_SRC_PATTERN_DROP">DROP (Droping
+effects.)</option>
+<option value="PSYS_SRC_PATTERN_ANGLE_CONE">ANGLE CONE (Uses Angle
+values to make rings &amp; cones.)</option>
+<option value="PSYS_SRC_PATTERN_ANGLE_CONE_EMPTY">ANGLE CONE EMPTY
+(Sends particles excepts in the defined ring or cone.)</option>
+<option value="PSYS_SRC_PATTERN_ANGLE">ANGLE (Uses Angle to make
+flat wedges.)</option>
+</select><br>
+<br>
+ <b>Initial Position Distance Radius:</b><input name="radius" size=
+"5" value="0" type="text">m &nbsp;&nbsp;<font color="ffffff" face=
+"arial, helvetica, sans-serif" size="2"><i>(Distance between
+emitter and each new particle, 0.0 to 64.)</i></font><br>
+<br>
+</font>
+<table border="0">
+<tbody>
+<tr valign="middle">
+<td><img src="angles.jpg" align="top" border="1" hspace="4"></td>
+<td><b>Begin Angle:</b><input name="begin_angle" size="5" value="0"
+type="text">m &nbsp;&nbsp;<br>
+<font color="ffffff" face="arial, helvetica, sans-serif" size=
+"2"><i>(Emission Cone begin angle (0 to 180
+degrees))</i></font><br>
+<br>
+ <b>End Angle:</b><input name="end_angle" size="5" value="180"
+type="text">m &nbsp;&nbsp;<br>
+<font color="ffffff" face="arial, helvetica, sans-serif" size=
+"2"><i>(Emission Cone end angle (0 to 180 degrees))</i></font><br>
+ </td>
+</tr>
+</tbody>
+</table>
+
+<font face="arial, helvetica, sans-serif" size="3"><br>
+<br>
+ <b>Minimum Speed:</b><input name="min_speed" size="5" value="1"
+type="text">m &nbsp;&nbsp;<font color="ffffff" face=
+"arial, helvetica, sans-serif" size="2"><i>(Slowest speed of new
+particles. 0.01 to ? (Speed is ignore by DROP
+Pattern.))</i></font><br>
+ <b>Maximum Speed:</b><input name="max_speed" size="5" value="1"
+type="text">m &nbsp;&nbsp;<font color="ffffff" face=
+"arial, helvetica, sans-serif" size="2"><i>(Fastest speed of new
+particles. 0.01 to ? (Speed is ignore by DROP
+Pattern.))</i></font><br>
+<br>
+ <b>Acceleration vector:</b> &lt;<input name="acceleration_x" size=
+"3" value="0" type="text"> , <input name="acceleration_y" size="3"
+value="0" type="text"> , <input name="acceleration_z" size="3"
+value="0" type="text">&gt;<br>
+<font color="ffffff" face="arial, helvetica, sans-serif" size=
+"2"><i>(A continous force pushed on particles. Use small settings
+for long lived particles.)</i></font><br>
+<br>
+ <b>Rotation (Omega):</b> &lt;<input name="omega_x" size="3" value=
+"0" type="text"> , <input name="omega_y" size="3" value="0" type=
+"text"> , <input name="omega_z" size="3" value="0" type=
+"text">&gt;<br>
+<font color="ffffff" face="arial, helvetica, sans-serif" size=
+"2"><i>(How much to rotate the emitter around the X, Y &amp; Z axes
+after each burst.)</i></font><br>
+<br>
+ <input name="follow_source" type="checkbox"><b>Follow Source.</b>
+<font color="ffffff" face="arial, helvetica, sans-serif" size=
+"2"><i>(Moves particles when emitter moves. Disables
+Radius.)</i></font><br>
+ <input name="follow_velocity" type="checkbox"><b>Follow
+Velocity.</b> <font color="ffffff" face=
+"arial, helvetica, sans-serif" size="2"><i>(Particles rotate
+towards their heading.)</i></font><br>
+ <input name="wind" type="checkbox"><b>Wind.</b> <font color=
+"ffffff" face="arial, helvetica, sans-serif" size="2"><i>(Sim's
+wind will push particles.)</i></font><br>
+ <input name="bounce" type="checkbox"><b>Bounce.</b> <font color=
+"ffffff" face="arial, helvetica, sans-serif" size="2"><i>(Make
+particles bounce above the Z altitude of emitter.)</i></font><br>
+ <input name="target" type="checkbox"><b>Target.</b> <font color=
+"ffffff" face="arial, helvetica, sans-serif" size="2"><i>(Turns on
+or off targeting of particles.)</i></font><br>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Target Key:</b> <select
+name="target_key">
+<option selected="selected" value="object">To the object
+it-self.</option>
+<option value="owner">To the object owner.</option>
+<option value="parameter">To the agent or object key passed in the
+target parameter.</option>
+</select></font></blockquote>
+
+<hr>
+<font face="arial, helvetica, sans-serif" size="3"><font size=
+"5"><b>Generation setup:</b></font><br>
+</font>
+<blockquote><font face="arial, helvetica, sans-serif" size=
+"3"><b>Particle Burst:</b><br>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Rate:</b><input name="rate"
+size="5" value="1" type="text">&nbsp;&nbsp;<font color="ffffff"
+face="arial, helvetica, sans-serif" size="2"><i>(Seconds between
+particle bursts, 0.0 to 60.)</i></font><br>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Number of Particles per
+Burst:</b><input name="count" size="5" value="50" type=
+"text">&nbsp;&nbsp;<font color="ffffff" face=
+"arial, helvetica, sans-serif" size="2"><i>(Number of particles per
+burst, 1 to 4096.)</i></font><br>
+<br>
+ <b>Emission Duration:</b><input name="life" size="5" value="0"
+type="text">&nbsp;&nbsp;<font color="ffffff" face=
+"arial, helvetica, sans-serif" size="2"><i>(Number of seconds to
+wait before shutting off, 0.1 to 60. (0.0 never
+stops.))</i></font><br>
+</font></blockquote>
+
+<hr>
+<font face="arial, helvetica, sans-serif" size="3"><input name=
+"generatedcode" type="hidden"></font></form>
+
+<font face="arial, helvetica, sans-serif" size="3">
+<script type="text/javascript" language="javascript">
+valide_start_color();
+valide_end_color();
+</script>
+</font>
+<p class="aligncenter"><font face="arial, helvetica, sans-serif"
+size="3"><span style=
+"padding-left: 5px; padding-right: 5px; visibility: hidden;">|</span></font></p>
+</div>
+
+<!-- END OF CONTENT AREA -->
+</div>
+
+<!-- end of gl_content -->
+</div>
+
+<!-- end of gl_wrapper -->
+</div>
+</body>
+</html>
+

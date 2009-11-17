@@ -1,0 +1,10 @@
+body { background-color: #99cc99; }
+
+form { border-width: 0; margin: 0; }
+
+hr { border-style: outset; }
+hr.thick { height: 10px; background-color: #cccc99; border-color: #cccc99; border-width: 2px; }
+hr.short { width: 10em; }
+
+img.logo { float: right; padding: 5px; }
+img.mailto { border: 0px; }

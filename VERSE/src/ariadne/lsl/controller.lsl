@@ -1,9 +1,5 @@
 integer gUseNewParser = TRUE;
-string cTestURL = "http://142.51.75.111/cs_dispatch.aspx?";
-
-//string errorTXT = "";
-
-//string tempNodeID = "";
+string cTestURL = "http://localhost:8080/ariadne4j/Ariadne?mode=slplay";
 
 string cRootNode= "ariadne";
 
@@ -24,28 +20,12 @@ string cLink = "link";
 string cLinkLabel = "label";
 string cLinkRef = "ref";
 
-list knownItems = [cSSID, cNodeName];
-list knownSets = [cAsset, cLink];
+list knownItems = []; // make sure to reset these arrays!
+list knownSets = [];
 
 list gPlayerList;
 list gPlayerRoleList;
 list gPlayerAgentKeyList;
-
-//string continuance;
-//list continuances;
-//integer continuance_count;
-//integer continuance_index = 0;
-//integer gCurrentContinuanceChannel;
-//list continuance_times;
-//list continuance_targets;
-
-list orderedAssets;
-
-//list sequence_continuances;
-//list sequence_times;
-//integer sequence_index;
-//integer sequence_count;
-//float time_to_next_sequence;
 
 // END newParser constants
 
@@ -93,11 +73,11 @@ integer gHolodeckAPIChannel = -9993;
 
 integer gSignupObjChannel = -8787;
 
-integer gPIVOTEChannel = 687686; // different for each master within 20m - MUST CHANGE ALL OBJECTS
+integer gPIVOTEChannel = 0; // different for each master within 20m - MUST CHANGE ALL OBJECTS
 integer gMediaCh = -63342;
 //integer gFauxIMChannel = -696969; // never gets used as channel, just a mask
 
-integer gPlayerTrackingObjChannel = 687687; // bracelet
+integer gPlayerTrackingObjChannel = -1; // bracelet
 //integer gQuizChannel = 555;
 
 // newParser globals
@@ -108,6 +88,8 @@ list assetTargets;
 list assetValues;
 list linkLabels;
 list linkRefs;
+
+list orderedAssets;
 
 string gServiceUID = "";
 string gServicePwd = "";
@@ -125,7 +107,7 @@ string gHelpURL;
 string gMenuURL;
 //string gIdleURL;
 string gUpdatingURL;
-string gQSParserPageURL = "http://142.51.75.111/SLDataCollection/show.html";
+string gQSParserPageURL = "http://localhost:8080/ariadne4j/show.html";
 string gObjectBox = "PIVOTE Paramedic Equipment Box 1.0";
 integer gShowHUD=TRUE;
 integer gShowObjects=TRUE;
@@ -165,6 +147,10 @@ string Numbers = "0123456789";
 
 // ******** FUNCTIONS ********
 
+string str_replace(string src, string from, string to){
+    return llDumpList2String(llParseStringKeepNulls((src = "") + src, [from], []), to);
+}
+
 string getAssetAttribValByName(string assetName, string attrib){
     integer nAssets = llGetListLength(assetNames);
     integer i;
@@ -177,7 +163,6 @@ string getAssetAttribValByName(string assetName, string attrib){
                     return llList2String(assetValues,i);
                 }else{
                     return llList2String(assetTypes,i);
-
                 }
             }
         }
@@ -190,57 +175,19 @@ string xtraktSeq (string stream, string type, string attrib) {
     integer sts = llSubStringIndex(stream, type);
 
     string chunk =  llGetSubString(stream,sts,-1);
-    //llSay(0, "chunk " + chunk);
     string attribChunk = llGetSubString(chunk,llStringLength(type),llSubStringIndex(chunk, "/>") - 1);// truncate to front of said caret...
-    //llSay(0, "attribChunk " + attribChunk);
     if (llSubStringIndex(attribChunk, attrib) > -1){
         string myAttribChunk = llGetSubString(attribChunk,llSubStringIndex(attribChunk, attrib + "=\"") + llStringLength(attrib + "=\""),-1);
-        //llSay(0, "myAttribChunk " + myAttribChunk);
         param = llGetSubString(myAttribChunk, 0, llSubStringIndex(myAttribChunk, "\"")- 1); // grab everything before the first double-quote
     }else{
         param = "";
     }
 
-    //llWhisper(0, "XMLextractAttribByTag: p:"+param);
+    llWhisper(0, "XMLextractAttribByTag: p:"+param);
     return param;
 }
 
-string tempGetNodeID(string p) {
-
-    if (p == "black") {
-        return "8338";
-    }
-    if (p == "blue") {
-        return "8342";
-    }
-    if (p == "carbon") {
-        return "8341";
-    }
-    if (p == "door") {
-        return "8344";
-    }
-    if (p == "red") {
-        return  "8343";
-    }
-    if (p == "salt") {
-        return "8340";
-    }
-    if (p == "shapechoice") {
-        return "8336";
-    }
-    if (p == "water") {
-        return "8339";
-    }
-    if (p == "white") {
-        return "8337";
-    }
-
-    return p;
-}
-
 key getKeyforPlayerName(string target){
-
-// do we need llhttprequest to: http://name2key.appspot.com/?name=firstname%20lastname
 
     key response = NULL_KEY;
     integer nPlayers = llGetListLength(gPlayerList);
@@ -287,17 +234,14 @@ integer IsAlphanumeric(string a){
 
 assignSL(string type, string target, string name, string val, integer duration){
 
-    //scene loaded, run playlist
-    // if user-triggered (ie.clickable) object, wait for obj's onSit to tell us
-
-    if (type == "slanimation"){
-        sendChatCommand(gPlayerTrackingObjChannel, (string)getKeyforPlayerName(target)+"~"+ type+"~"+name);
+    if (type == "SLAnimation"){
+        target = "f8c8b994-8ada-400b-8790-154efc70ea25"; // hard coded dummy key for openSim
+        sendChatCommand(gPlayerTrackingObjChannel, target +"~"+type+"~"+name+"~"+ val + "|gla3");
         jump out;
-
     }
 
     // should just be a chat command to the target player's bracelet:
-    if (type == "slbodypart"){
+    if (type == "SLBodypart"){
         sendChatCommand(gPlayerTrackingObjChannel, (string)getKeyforPlayerName(target)+"~"+ type+"~"+name);
         sendChatCommand (-1, name + " has been added to your inventory. "
         +"Drag it to appropriate area on your avatar to wear it. ");
@@ -306,14 +250,14 @@ assignSL(string type, string target, string name, string val, integer duration){
     }
 
     // should just be a chat command to the target player's bracelet:
-    if (type == "slsound"){
+    if (type == "SLSound"){
         sendChatCommand(gPlayerTrackingObjChannel, (string)getKeyforPlayerName(target)+"~"+ type +"~"+ name);
         jump out;
 
     }
 
     // should just be a chat command to the target player's bracelet:
-    if (type == "slobject"){
+    if (type == "SLObject"){
         sendChatCommand(gPlayerTrackingObjChannel, (string)getKeyforPlayerName(target)+"~"+ type +"~"+ name);
         sendChatCommand (-1, name + " has been added to your inventory. "
         +"Drag it to the ground to rez it");
@@ -321,29 +265,24 @@ assignSL(string type, string target, string name, string val, integer duration){
         //llAttachToAvatar(integer)
         jump out;
     }
-    if (type == "slpoint"){
-        sendChatCommand(gPlayerTrackingObjChannel, (string)getKeyforPlayerName(target)+"~"+ type +"~"+ name);
-        //llPointAt((vector)((string)"<"+target+">"));
-        jump out;
-    }
-    if (type == "slhud"){
+    if (type == "SLHud"){
         sendChatCommand(gPlayerTrackingObjChannel, (string)getKeyforPlayerName(target)+"~"+ type +"~"+ name);
         sendChatCommand (-1, "The "+ name +" HUD has been added to your inventory. "
         +"Please attach it to the " + val + "of your display.");
 
         jump out;
     }
-    if (type == "slchat"){
+    if (type == "SLChat"){
         //llSay(0, "about to chat >" +val+"< on channel:"+ name);
         sendChatCommand((integer)target, val);
         jump out;
     }
 
-    if (type == "slim"){
+    if (type == "SLIM"){
         sendChatCommand (-1, val);
         jump out;
     }
-    if (type == "sltexture"){
+    if (type == "SLTexture"){
         //if it starts with http, it's a remote texture
         //else in inv
         sendChatCommand(gPlayerTrackingObjChannel, (string)getKeyforPlayerName(target)+"~"+ type +"~"+ name);
@@ -352,7 +291,7 @@ assignSL(string type, string target, string name, string val, integer duration){
     }
 
     // should just be a chat command to the target player's bracelet:
-    if (type == "slpackage"){
+    if (type == "SLPackage"){
         sendChatCommand(gPlayerTrackingObjChannel, (string)getKeyforPlayerName(target)+"~"+ type +"~"+ name);
         sendChatCommand (-1, "The " +name + "crate has been added to your inventory. "
         +"Drag it to the ground to rez it, and right-click to open it.");
@@ -360,20 +299,9 @@ assignSL(string type, string target, string name, string val, integer duration){
         jump out;
     }
     // is a  chat command to the target player's bracelet, nothin to do
-    if (type == "slmove"){
-        //llSay(0,"in assignSL"+(string)PlayerAgentKey+"~"+val);
-        //call llMoveToTarget() on the bracelet
+    if (type == "SLAction"){
         sendChatCommand(gPlayerTrackingObjChannel, (string)PlayerAgentKey+"~"+val);
-        //OR do it 'violently':
-        //llPushObject(PlayerAgentKey, (vector)name, (vector)target, 1);
         jump out;
-    }
-
-    if (type == "slinnergame"){
-        sendChatCommand(0,"show "+name);
-        //set parcel media to sloodle URL
-        sendChatCommand(gMediaCh,val);
-        //wait for end of game msg, tranlate into call to option_option(i)
     }
 
     @out;
@@ -404,14 +332,12 @@ resetElements(){
     linkLabels = [];
     linkRefs = [];
 
+   // orderedAssets = [];
+
     gNodeDesc= "";
     gNodeImage= "";
     gNodeMedia= "";
     gNodeOptions= "";
-
-orderedAssets = [];
-
-    // errorTXT = "";
 
 }
 string ampSepChar = "&amp;";
@@ -424,9 +350,10 @@ parseFeed(string body){
     integer i;
     for(i = 0; i < n; i++){
 
-        string line = llToLower(llList2String(lines, i));
+        //string line = llToLower(llList2String(lines, i));
+        string line = llList2String(lines, i);
         /// if root - new feed
-        if(line == cRootNode){
+        if(llSubStringIndex(line,cRootNode + " xmlns:xsi") > -1){
             resetElements();
             //return;
         }
@@ -438,35 +365,36 @@ parseFeed(string body){
         integer i2;
 
         for(i2 = 0; i2 < n2; i2 += 2){
-            //llSay(0, "in parsefeed " + (string)llGetFreeMemory());
-            string name = llToLower(llList2String(parts, i2));
+            string name = llList2String(parts, i2);
             string value = llList2String(parts, i2 + 1);
-            //string label = element;
-
             // nodeSets attribs:
             if(element == cAsset){
                 //stridedAssetsList  = (stridedAssetsList=[]) + stridedAssetsList + [value];
-                if(name == cAssetType) assetTypes = (assetTypes=[]) + assetTypes + [value];
+                //if(name == cAssetType) assetTypes = (assetTypes=[]) + assetTypes + [value];
 
-                //if(name == cAssetType) assetTypes += [value];
+                if(name == cAssetType) assetTypes += [value];
 
-                if(name == cAssetName) assetNames = (assetNames=[]) + assetNames + [value];
-                //if(name == cAssetName) assetNames += [value];
+                //if(name == cAssetName) assetNames = (assetNames=[]) + assetNames + [value];
+                if(name == cAssetName) assetNames += [value];
 
-                if(name == cAssetTarget)assetTargets = (assetTargets=[]) + assetTargets + [value];
-                //if(name == cAssetTarget) assetTargets += [value];
+                //if(name == cAssetTarget)assetTargets = (assetTargets=[]) + assetTargets + [value];
+                if(name == cAssetTarget) assetTargets += [value];
 
-                if(name == "value") assetValues = (assetValues=[]) + assetValues + [value];
-                //if(name == "value") assetValues += [value];
+                //if(name == "value") {
+                    // llSay(0, "there is a value!" + value );
+                    // assetValues = (assetValues=[]) + assetValues + [value];
+                    //}
+                if(name == "value") assetValues += [value];
             }
 
             if(element == cLink){
 
-                 if(name == cLinkLabel) linkLabels = (linkLabels=[]) + linkLabels + [value];
+                // if(name == cLinkLabel) linkLabels = (linkLabels=[]) + linkLabels + [value];
 
-                //if(name == cLinkLabel) linkLabels += [value];
-                if(name == cLinkRef) linkRefs = (linkRefs=[]) + linkRefs + [value];
-                //if(name == cLinkRef) linkRefs += [value];
+                if(name == cLinkLabel) linkLabels += [value];
+                // if(name == cLinkRef) linkRefs = (linkRefs=[]) + linkRefs + [value];
+                if(name == cLinkRef) linkRefs += [value];
+                //llSay(0, "links: " + value);
             }
 
             // single nodes attribs:
@@ -476,10 +404,10 @@ parseFeed(string body){
                         //llSay(0, "SSIDs match. All is fine");
                     }else{
                         if (gSSID == ""){ // first timer
-                           // llSay(0, "SSID set for the 1st time.");
+                            llSay(0, "1st request for this session");
                             gSSID = value;
                         }else{
-                           // llSay(0, "SSID present, but does not match current session. What happened?");
+                            // llSay(0, "SSID present, but does not match current session. What happened?");
                         }
                     }
                 }
@@ -497,19 +425,22 @@ parseFeed(string body){
         }
 
     }
-
-   // llSay(0, "in parsefeed " + llList2CSV(assetTypes));
+  //  llSay(0, "in linkLabels " + llList2CSV(linkLabels));
+   // llSay(0, "in linkRefs " + llList2CSV(linkRefs));
+   // llSay(0, "in assetTypes " + llList2CSV(assetTypes));
+   // llSay(0, "in assetValues " + llList2CSV(assetValues));
+   // llSay(0, "in assetTargets " + llList2CSV(assetTargets));
+   // llSay(0, "in assetNames " + llList2CSV(assetNames));
 }
 
 sendChatCommand (integer channel, string cmd) {
-
-    if (channel == -1){
-        llInstantMessage(PlayerAgentKey, cmd);
-    }else{
+   // if (channel == -1){
+     //   llInstantMessage(PlayerAgentKey, cmd);
+    //}else{
         if (channel == gPIVOTEChannel && gPIVOTEPrefix != ""){
             cmd = gPIVOTEPrefix+":"+ cmd;
         }
-    }
+    //}
     llSay(channel, cmd);
 }
 
@@ -699,10 +630,8 @@ option_start(key id) {
 }
 
 option_text() {
-    //set_media(gServicePageURL+gSSID+"_title.html?"+gNode);
-
-    sendChatCommand(gMediaCh, gQSParserPageURL + "?options="
-    + llEscapeURL(localtext)+"&dtext="
+    sendChatCommand(gMediaCh, gQSParserPageURL + "?dtext="
+    + llGetSubString(llEscapeURL(localtext), 0, 32)+"&options=" /// **** truncating text to display in opensim
     + llEscapeURL(llList2CSV(gOptions))); // page with doc.write() JS, presents QS params
 }
 
@@ -722,9 +651,6 @@ option_media() {
 option_back() {
     integer canGoBack = FALSE;
     if (gUseNewParser) urlroot = cTestURL;
-    // should just be value of oldNode
-    //llSay(0, "gSSID = "+ gSSID);
-
     if (oldNode != ""){
         integer n = llGetListLength(linkLabels);
         integer i;
@@ -766,7 +692,7 @@ option_options(key id) {
     if ((gQuickOption) && (l==1)) {
         option_option(0);
     } else {
-        sendChatCommand(gMediaCh, gQSParserPageURL + "?dtext="+ llEscapeURL(llList2CSV(gOptions)));
+        sendChatCommand(gMediaCh, gQSParserPageURL + "?options="+ llEscapeURL(llList2CSV(gOptions)));
     }
 }
 
@@ -789,8 +715,6 @@ option_option(integer num) {
 
         if (gPage == "node") {
             nodeName = llEscapeURL(nodeName);
-            //if (gUseNewParser) urlroot = cTestURL + "1.xml";
-            //llSay(0, "gSSID = "+ gSSID);
 
             Rq_getnode = llHTTPRequest(urlroot+"&api=shownode&case="+gCase+
             "&mnodeid="+nodeName+"&sessid="+gSSID, [HTTP_METHOD,"GET"], "");
@@ -824,16 +748,7 @@ option_option(integer num) {
 }
 
 set_button(string btn, string cond) {
-    llMessageLinked(LINK_SET, 0, btn+"_"+cond, NULL_KEY);
-}
-
-resetAnimator()
-{
-    //llMessageLinked(0, 0, "cancel", prekey);
-    prekey = NULL_KEY;
-    PatientAgentKey  = NULL_KEY;
-    PlayerAgentKey = NULL_KEY;
-    //llSetTimerEvent(0);
+    //llMessageLinked(LINK_SET, 0, btn+"_"+cond, NULL_KEY);
 }
 
 // ******** END FUNCTIONS ********
@@ -848,7 +763,7 @@ default {
 state findingPlayers {
     state_entry() {
 
-        string obj2Scan = "nossum regional hospital bracelet 0.2";
+        string obj2Scan = "nosm bracelet 2.0"; // should be in config notecard
 
         //llListenRemove(lh);
         lh = llListen(gSignupObjChannel, "", NULL_KEY, "");
@@ -917,7 +832,8 @@ state load_config
     state_entry()
     {
         sendChatCommand(0, "Please wait, loading configuration data ...");
-        sendChatCommand(gMediaCh, gQSParserPageURL + "?options=Updating...");
+        sendChatCommand(gMediaCh, gQSParserPageURL + "?dtext
+        =Updating...");
         sendChatCommand(gPIVOTEChannel, gResetCommands);
 
         if (llGetInventoryType(gXMLConfigCard) != INVENTORY_NOTECARD || llGetInventoryType(gConfigCard) != INVENTORY_NOTECARD)
@@ -1012,6 +928,7 @@ state active
         gUserKey = id;
         if (llSubStringIndex(msg, "user=") == 0) {
             integer amp = llSubStringIndex(msg, "&");
+
             amp--;
             gUserKey = (key)llGetSubString(msg, 5, amp);
             id = gUserKey;
@@ -1066,22 +983,12 @@ state active
             msg = llEscapeURL(msg);
 
             if (gUseNewParser) urlroot = cTestURL;
-            //llSay(0, "listen: gSSID = "+ gSSID + "mem: "+(string)llGetFreeMemory());
 
-            //if (!IsNumeric(msg)){
-                //integer n = llGetListLength(linkLabels);
-                // integer i;
-
-                //  for(i = 0; i < n; i++){
-
-                    //if (msg == llList2String(linkLabels,i)) msg = llList2String(linkRefs,i);
-                    msg = tempGetNodeID(msg);
-                    //  }
-                //}
             resetElements();
             if (gSSID == "" ) gSSID = "y";
-            //llSay(0, "the string: mnodeid="+msg+"&sessid="+gSSID);
-            Rq_getnode = llHTTPRequest(urlroot+"&mnodeid="+msg+"&sessid="+gSSID, [HTTP_METHOD,"GET"], "");
+            key thisowner = llGetOwner();
+            string avname = llKey2Name(thisowner);
+            Rq_getnode = llHTTPRequest(urlroot+"&mnodeid="+msg+"&av="+avname+"&sessid="+gSSID, [HTTP_METHOD,"GET"], "");
         }
 
         if (channel==gHolodeckChatChannel){
@@ -1089,278 +996,183 @@ state active
 
         }
 
-        //if (channel==gCurrentContinuanceChannel){
-          //  gCurrentSceneStatus = msg;
-        //}
-
     }
 
-    // where the 2 http response types get handled: (get node or get node-list)
     http_response(key request_id, integer status, list metadata, string body) {
+
         string errorTXT = "";
-        //llSay(0,"body:"+ llGetSubString(body,0,200) + ", free mem: "+ (string)llGetFreeMemory());
+        parseFeed(body);
 
-        //if (llSubStringIndex(llToLower(body), "<html>") > -1 || llSubStringIndex(llToLower(body), "<errors>") > -1){
-            // is not xml, or is an error:
+        gPage = "node";
+        gNodeMedia = "";
+        gNodeImage = "";
 
-            //if (llSubStringIndex(body, "<html>") > -1){
+        integer nAssets = llGetListLength(assetTypes);
 
-                //errorTXT = "Error! Node has been reset, labyrinth compromised: "+XMLextractTag(body, "Error") + XMLextractAttribByTag(body, "Error", "message");
-                // errorTXT = "Error! Node has been reset, labyrinth compromised...";
-                //  jump errorCatch;
-                //}
+        // first, get sequence
+        string seq = xtraktSeq(body, "SLInnerSequence", "value");
+        list parts = llParseString2List(seq , [","], []);
+        integer n = llGetListLength(parts);
+        integer i;
 
-           // sequence_index = 0;
-           // sequence_continuances = [];
-           // sequence_times = [];
+        orderedAssets = ["OL"]; // always add OL vpdText
 
-          //  continuance_targets = [];
-           // continuances = [];
-           // continuance_times= [];
-           // continuance_count=0;
-
-           // llSay(0, "free mem"+ (string)llGetFreeMemory());
-
-            parseFeed(body);
-
-           // llSay(0, "free mem post: "+ (string)llGetFreeMemory());
-
-            // broadcastCounterValues(); ???
-
-            set_button("media", "hide");
-            set_button("options", "hide");
-
-            gPage = "node";
-            gNodeMedia = "";
-            gNodeImage = "";
-
-            integer nAssets = llGetListLength(assetTypes);
-
-            // integer i;
-
-            // first, get sequence
-            string seq = llUnescapeURL(xtraktSeq(body, "SLInnerSequence", "value"));
-           // llSay(0, "free mem post seq:"+ (string)llGetFreeMemory()+ " - seq: " + seq);
-
-            list parts = llParseString2List(llUnescapeURL( seq ), ["&amp;"], []); // llUnescapeURL doesn't seem to get rid of this!
-            integer n = llGetListLength(parts);
-            integer i;
-            for(i = 0; i < n; i++){
-                string seqStr = llList2String(parts, i);
-                list nameVal = llParseString2List(seqStr, ["="], []);
-                string thisAssetName = llList2String(nameVal, 0);
-                //llSay(0, "thisAssetName"+thisAssetName);
-                string thisAssetValue = llList2String(nameVal, 1);
-                //llSay(0, "thisAssetValue"+thisAssetValue);
-                orderedAssets  = (orderedAssets=[]) + orderedAssets + [i] + [thisAssetName] + [thisAssetValue];
-                // llSay(0, stridedAssetsList);
-            }
-
-            list  runnableAssetlist = llList2ListStrided(llDeleteSubList(orderedAssets, 0, 0), 0, -1, 3);
-         //   llSay(0, "runnableAssetlist" + llList2CSV( runnableAssetlist));
-
-            // run the assets in order
-            n = llGetListLength(runnableAssetlist);
-            for(i = 0; i < n; i++){
-                string name = llList2String(runnableAssetlist, i);
-                string value = getAssetAttribValByName(name, "value");
-                string type = getAssetAttribValByName(name, "type");
-
-                string dtext = "";
-                string device = "";
-
-                if(type=="vpdtext"){
-                    //llSay(0,"******** IN VPDTEXT: "+llList2String(assetValues,i) );
-
-                    dtext = value;
-                    dtext = llGetSubString(dtext, llSubStringIndex(dtext, "]]]]")+4, -1); // trims that id stuff off the front end...
-                }
-
-                if (dtext != "") {
-                    // check device
-                    if (device == "") {
-                        //llSay(0, dtext);
-                        //localtext = localtext + dtext + ". ";
-                        localtext = dtext;
-
-                    } else {
-                        // assume at beginning
-                        sendChatCommand(gPIVOTEChannel, "<device>"+device+"</device>"+dtext);
-                    }
-                }
-
-                integer done = FALSE;
-                // todo: if image does not begin with http, add prefix
-                if (type == "vpdimage") {
-                    gNodeImage =  value;
-                    dtext = "";
-                    //set_media(gNodeImage);
-                    done = TRUE;
-                    set_button("media", "show");
-                }
-
-                // todo: if image does not begin with http, add prefix
-                if (type == "vpdmedia") {
-                    gNodeMedia = value;
-                    dtext = "";
-                    //set_media(gNodeMedia);
-                    done = TRUE;
-                    set_button("media", "show");
-
-                }
-
-                if(llGetSubString( type, 0, 1 ) == "sl"){
-
-                    //gPlayerList += name;
-                    //integer nRoles = llGetListLength(gPlayerRoleList);
-                    // integer j;
-                    //  for (j = 0; j < nRoles; j++) {
-                        // string maybe_role = llList2String(gPlayerRoleList,j);
-                        // if (maybe_role == llList2String(assetTargets,i)){ // does target=role
-                            // continuances += llList2String(assetNames,i);
-                            //  continuance_times += llList2String(assetValues,i); //implicit here is that any asset that supports duration will pass it in as a value
-                            //  continuance_count++;
-                            // not very clean or efficient, this:
-                            //assignSL(type, llList2String(gPlayerList,j), llList2String(assetNames,i), llList2String(assetValues,i) );
-                            assignSL(type, getAssetAttribValByName(name, "target"), name, value, 0 );
-                            //    }
-                        //  } //end for
-                }
-
-                if (gNode == "finish") {
-                    sendChatCommand(gPIVOTEChannel, gEndCommands);
-                    if (gPIVOTEPrefix == "") {
-                        sendChatCommand(gPIVOTEChannel, "<device>"+device+"</device>"+dtext);
-                    } else {
-                        sendChatCommand(gPIVOTEChannel, gPIVOTEPrefix+":"+"<device>"+device+"</device>"+dtext);
-                    }
-                    if (gShowSession) {
-                        llSay(0, "Please note that your Session ID was "+(string)gSSID+
-                        ". Please make a note of it as you may need it for later assessment or review.");
-                    }
-
-                }
-
-            }
-            set_button("options", "show");
-            gOptions = linkLabels;
-
-            option_text();
-
-            @errorCatch;
-            if (errorTXT != ""){
-                sendChatCommand(gMediaCh, gQSParserPageURL + "?options="+errorTXT);
-            }
-            resetElements();
-            runnableAssetlist = [];
+        for(i = 0; i < n; i++){
+            string thisAssetName = llList2String(parts, i);
+            orderedAssets += [thisAssetName];
         }
 
-        link_message(integer sender_num, integer num, string str, key id) {
+        // run the assets in order
+        n = llGetListLength(orderedAssets);
+        llSay(0, "number of items to run: "+(string)n);
+        for(i = 0; i < n; i++){
+            string name = llList2String(orderedAssets, i);
+             llSay(0, "name to run: "+name);
+            string value = getAssetAttribValByName(name, "value");
+            string type = getAssetAttribValByName(name, "type");
+
+            string dtext = "";
+            string device = "";
+
+            if(llToLower(type)=="vpdtext"){
+                llSay(0,"******** IN VPDTEXT: "+value );
+
+                dtext = value;
+                // trims that id stuff off the front end...
+                //dtext = llGetSubString(dtext, llSubStringIndex(dtext, "]]]]")+4, -1);
+            }
+
+
+            if (dtext != "") {
+                // check device
+                if (device == "") {
+                   // llSay(0, "detex: "+dtext);
+                    //localtext = localtext + dtext + ". ";
+                    localtext = dtext;
+                } else {
+                    // assume at beginning
+                    sendChatCommand(gPIVOTEChannel, "<device>"+device+"</device>"+dtext);
+                }
+            }
 
             integer done = FALSE;
-            gUserKey = id;
-
-            if (str == "start") {
+            // todo: if image does not begin with http, add prefix
+            if (llToLower(type) == "vpdimage") {
+                gNodeImage =  value;
+                dtext = "";
+                //set_media(gNodeImage);
                 done = TRUE;
-                option_start(NULL_KEY);
-            }
-            if (str == "reset") {
-                done = TRUE;
-                state load_config;
+                set_button("media", "show");
             }
 
-            if (str == "options") {
+            if (llToLower(type) == "vpdmedia") {
+                gNodeMedia = value;
+                dtext = "";
+                //set_media(gNodeMedia);
                 done = TRUE;
-                option_options(id);
-            }
-            if (str == "text") {
-                done = TRUE;
-                option_text();
-            }
-
-            if (str == "media") {
-                option_media();
-                done = TRUE;
-            }
-            if (str == "back") {
-                option_back();
-                done = TRUE;
-            }
-
-            if (str == "help") {
-                done = TRUE;
-                option_help();
-            }
-            if (str == "menu") {
-                done = TRUE;
-                option_menu();
-            }
-
-            if (str == "option") {
-                option_option(num);
-            }
-            if (str == "hud") {
-                llGiveInventory(id, "PIVOTE HUD Player 1.0");
-            }
-            if (str == "objects") {
-                llGiveInventory(id, gObjectBox);
+                set_button("media", "show");
 
             }
-            if (str == "showbrowser") {
-                option_showbrowser(gUserKey);
-            }
-            if (str == "hardreset") {
-                llResetScript();
+
+            if(llGetSubString( llToLower(type), 0, 1 ) == "sl"){
+                //llSay(0,"******** about to assign: "+type+value + name + getAssetAttribValByName(name, "target") );
+                assignSL(type, getAssetAttribValByName(name, "target"), name, value, 0 );
             }
 
-            if (str == "playerAgentKey"){
-                PlayerAgentKey = id;
-            }
+            if (gNode == "finish") {
+                sendChatCommand(gPIVOTEChannel, gEndCommands);
+                if (gPIVOTEPrefix == "") {
+                    sendChatCommand(gPIVOTEChannel, "<device>"+device+"</device>"+dtext);
+                } else {
+                    sendChatCommand(gPIVOTEChannel, gPIVOTEPrefix+":"+"<device>"+device+"</device>"+dtext);
+                }
+                if (gShowSession) {
+                    llSay(0, "Please note that your Session ID was " + (string)gSSID +
+                    ". Please make a note of it as you may need it for later assessment or review.");
+                }
 
-            if (str == "patientAgentKey"){
-                PatientAgentKey = id;
             }
 
         }
+        set_button("options", "show");
+        gOptions = linkLabels;
 
-        timer() {
+        option_text();
 
-          //  if (llGetInventoryType(continuance) == INVENTORY_ANIMATION) {
-           //     llStopAnimation(continuance);
-           /// }else {
-              //  if (llGetInventoryType(continuance) == INVENTORY_SOUND) {
-                   // llStopSound();
-           //     }
-           // }
+        @errorCatch;
+        if (errorTXT != ""){
+            sendChatCommand(gMediaCh, gQSParserPageURL + "?options="+errorTXT);
+        }
+        resetElements();
+        orderedAssets = [];
+    }
 
-            //TODO: untested, prob needs lots of work
-          //  if (!sequence_count && continuance_count > 1){
-           //     ++continuance_index;
-            //    continuance = llList2String(continuances, continuance_index);
-                //playContinuance();
-              //  llSetTimerEvent(llList2Float(continuance_times, continuance_index));
-            //} else {
-              ///  if (sequence_index == sequence_count - 1) {
-                //    sequence_index = 0;
-               // }else{
-                //    ++sequence_index;
-              //  }
-               // continuance = llList2String(sequence_continuances, sequence_index);
-                // playContinuance();
-               // llSetTimerEvent(llList2Float(sequence_times, sequence_index));
+    link_message(integer sender_num, integer num, string str, key id) {
 
-            //}
+        integer done = FALSE;
+        gUserKey = id;
 
+        if (str == "start") {
+            done = TRUE;
+            option_start(NULL_KEY);
+        }
+        if (str == "reset") {
+            done = TRUE;
+            state load_config;
         }
 
-        run_time_permissions(integer perms)
-        {
-            if (perms & PERMISSION_TRIGGER_ANIMATION)
-            {
-                //llTakeControls(CONTROL_UP|CONTROL_DOWN, TRUE, FALSE);
-                // runSequence();
-            }
+        if (str == "options") {
+            done = TRUE;
+            option_options(id);
+        }
+        if (str == "text") {
+            done = TRUE;
+            option_text();
+        }
+
+        if (str == "media") {
+            option_media();
+            done = TRUE;
+        }
+        if (str == "back") {
+            option_back();
+            done = TRUE;
+        }
+
+        if (str == "help") {
+            done = TRUE;
+            option_help();
+        }
+        if (str == "menu") {
+            done = TRUE;
+            option_menu();
+        }
+
+        if (str == "option") {
+            option_option(num);
+        }
+        if (str == "hud") {
+            llGiveInventory(id, "PIVOTE HUD Player 1.0");
+        }
+        if (str == "objects") {
+            llGiveInventory(id, gObjectBox);
+
+        }
+        if (str == "showbrowser") {
+            option_showbrowser(gUserKey);
+        }
+        if (str == "hardreset") {
+            llResetScript();
+        }
+
+        if (str == "playerAgentKey"){
+            PlayerAgentKey = id;
+        }
+
+        if (str == "patientAgentKey"){
+            PatientAgentKey = id;
         }
 
     }
 
+}
