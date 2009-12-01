@@ -1,11 +1,7 @@
 $(document).ready(function(){
     mnode = $(document).getUrlParam("mnodeid");
-    $.get("Ariadne?mnodeid=" + mnode + "&mode=admin", {}, function(xml){
-        //$.get("asset.xml", {}, function(xml){ ///&mode=admin will return assetTypeattrib xml
-        //if (mnode != $('node', xml).attr("id")) {
-        //  alert('node id returned (' + $('node', xml).attr("id") + ') in xml does not match node requested: ' + mnode);
-        //}
-        //else {
+    $.get("Ariadne?mnodeid=" + mnode + "&mode=admin", {}, function(xml){//&mode=admin will return assetTypeattrib xml
+        //$.get("asset.xml", {}, function(xml){ // testing xml
         mnode = $('node', xml).attr("id");
         $("input[name='assetMapNodeid']").setValue(mnode);
 
@@ -176,19 +172,26 @@ $(document).ready(function(){
     });
 
     $("#Holodeck_chat_cmds").change(function(){
-        if ($("select[name='Holodeck_chat_cmds']").getValue().indexOf('run ') == 0 ||
-        $("select[name='Holodeck_chat_cmds']").getValue().indexOf('end ') == 0) {
-            $("#scenename").show();
-            $("div[id^=scenename]").show();
+        if ($("select[name='Holodeck_chat_cmds']").getValue().indexOf('run') == 0 ||
+        $("select[name='Holodeck_chat_cmds']").getValue().indexOf('end') == 0 ) {
+			// issue 32: this does not work:
+            //$("#sceneName").show();
+            $("div[id^=sceneName]").show();
         } else {
-            $("#scenename").hide();
-            $("div[id^=scenename]").hide();
+            //$("#sceneName").hide();
+            $("div[id^=sceneName]").hide();
         }
     });
 
     $("input[name='atc']").change(function(){
 		$("div[id^=animType_]").hide();
         $("div[id^=animType_" + $("input[name='atc']").getValue()+"]").show();
+        //$('#selectList :selected').text();
+    });
+
+    $("input[name='stc']").change(function(){
+		$("div[id^=soundType_]").hide();
+        $("div[id^=soundType_" + $("input[name='stc']").getValue()+"]").show();
         //$('#selectList :selected').text();
     });
 
@@ -199,7 +202,6 @@ $(document).ready(function(){
             $("div[id^=hud_rez]").hide();
         }
     });
-
 
     $("#oioc").click(function(){
         if ($("input[name='oioc']").getValue() == "rez") {
@@ -230,25 +232,15 @@ $(document).ready(function(){
         }
     });
 
-    $("#a[id^=submit]").click(function(){
-
-        $('#hidden_dummy').submit(function(){
-            // submit the form
-
-            alert('submitting dammit');
-            $(this).ajaxSubmit();
-            // return false to prevent normal browser submit and page navigation
-            return true;
-        });
+    $("#manq_int").click(function(){
+        if ($("input[name='manq_int']").getValue() == " manq_talk") {
+            $("div[id^=mannequin_talk]").show();
+            $("div[id^=mannequin_part]").hide();
+        } else {
+            $("div[id^=mannequin_talk]").hide();
+            $("div[id^=mannequin_part]").show();
+        }
     });
-
-    $("#selector").change();
-    if ($("div[id^=type_] :visible").children.change) {
-        $("div[id^=type_] :visible").children.change();
-    }
-    if ($("div[id^=type_] :visible").children.click) {
-        $("div[id^=type_] :visible").children.click();
-    }
 });
 
 function processXml(responseXML){
@@ -289,10 +281,13 @@ function submitIt(){
     // params built here MUST match the controller LSL switch statement in assignSL():
     switch (curType) {
         case 'SLChat':
-            var curChan = $("select[name='chatchannel']").getValue();
-            if (curChan == '9993') { //HOLODECK
-                outgoingVal = $("select[name='Holodeck_chat_cmds']").getValue();
-                outgoingVal = outgoingVal + ' ' + $("input[id^=ainv_slchat] :visible").val();
+			var curChan = $("select[name='chatchannel']").getValue();
+			if (curChan == '9993') { //HOLODECK
+				outgoingVal = $("select[name='Holodeck_chat_cmds']").getValue();
+				if (outgoingVal.indexOf('run') == 0 || outgoingVal.indexOf('end') == 0) {
+					outgoingVal = outgoingVal + ' ' + $("select[id^=ainv_slchat]").getValue();
+				}
+				outgoingName = $("select[id^=ainv_slchat]").getValue();
             }
             else {
                 if (curChan == "687686") { //PIVOTE
@@ -318,9 +313,11 @@ function submitIt(){
             }
 
             outgoingVal = outgoingVal + '~' + $("input[id='csm']").getValue();
-            //outgoingTarget = $("select[name='chatchannel']").getValue();
-            outgoingTarget = $("select[name='linklist_manq']").getValue(); // node link
-            outgoingName = $("#chatchannel :selected").text();
+            outgoingTarget = $("select[name='chatchannel']").getValue();
+            //outgoingTarget = $("select[name='linklist_manq']").getValue(); // node link
+
+			//outgoingName = $("#chatchannel :selected").text();
+
             break;
 
         case 'VPDText':
@@ -508,18 +505,22 @@ function submitIt(){
             break;
 
         case 'VPMannequin':
-            // outgoingVal = 'attach/touch';
-            // outgoingTarget = 'node-to-call';
-            // outgoingName = 'part';
+			var mAction = $("input[name='manq_int']").getValue();
+			if (mAction == " manq_talk") {
+				outgoingName = $("select[name='mannequin_cmds']").getValue();
+	        } else {
+				outgoingName = $("select[name='mannequin_parts']").getValue();
+	        }
+			outgoingTarget = $("select[name='linklist_manq']").getValue();
+            outgoingVal = mAction.substring('manq_'.length, mAction.length);
             break;
 
         default:
             alert('oops... did not get the current type');
             //break;
 			return;
-
     }
-//alert("outgoingVal: "+outgoingVal+", outgoingTarget: "+outgoingTarget+", outgoingName: "+outgoingName);
+
     $("input[id='assetValueIN']").setValue(outgoingVal);
     $("input[id='assetTargetIN']").setValue(outgoingTarget);
     $("input[id='assetNameOUT']").setValue(outgoingName);
@@ -531,9 +532,6 @@ function submitIt(){
     //var queryString = $('#mainDummy').serialize();
 
 	var queryString = $(":visible").serialize();
-
-	//alert(queryString);
-
    // var queryString = '' + $('#hidden_dummy').formHash();
 
 	$("input :hidden").removeAttr('disabled');

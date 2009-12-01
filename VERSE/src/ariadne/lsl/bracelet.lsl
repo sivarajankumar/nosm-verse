@@ -15,68 +15,38 @@ float gSensorRange = 196.0;
 float gSoundVolume = 0.8;
 
 
-// DECLARATION ==============================
-string Texture;
-integer Interpolate_Scale;
-vector Start_Scale;
-vector End_Scale;
-integer Interpolate_Colour;
-vector Start_Colour;
-vector End_Colour;
-float Start_Alpha;
-float End_Alpha;
-integer Emissive;
-float Age;
-float Rate;
-integer Count;
-float Life;
-integer Pattern;
-float Radius;
-float Begin_Angle;
-float End_Angle;
-vector Omega;
-integer Follow_Source;
-integer Follow_Velocity;
-integer Wind;
-integer Bounce;
-float Minimum_Speed;
-float Maximum_Speed;
-vector Acceleration;
-integer Target;
-key Target_Key;
-
 
 // YOUR PARTICLES FUNCTION ==============================
 
 Particle_viewer_area_edition (list aVal){
-
-    Interpolate_Scale = FALSE;
-    Start_Scale = <0.04,0.04, 0>;;
-    End_Scale = <0.04,0.04, 0>;
-    Interpolate_Colour = FALSE;
-    Start_Colour = < 1, 1, 1 >;
-    End_Colour = < 1, 1, 1 >;
-    Start_Alpha = 1;
-    End_Alpha =1;
-    Emissive = FALSE;
-    Age = 1;
-    Rate = 1;
-    Count = 50;
-    Life = 0;
-    Pattern = PSYS_SRC_PATTERN_EXPLODE;
-    Radius = 0;
-    Begin_Angle = 0;
-    End_Angle = 3.14159;
-    Omega = < 0, 0, 0 >;
-    Follow_Source = FALSE;
+	string Texture;
+    integer Interpolate_Scale = FALSE;
+    vector Start_Scale = <0.04,0.04, 0>;;
+    vector End_Scale = <0.04,0.04, 0>;
+    integer Interpolate_Colour = FALSE;
+    vector Start_Colour = < 1, 1, 1 >;
+    vector End_Colour = < 1, 1, 1 >;
+    float Start_Alpha = 1;
+    float End_Alpha =1;
+    integer Emissive = FALSE;
+    float Age = 1;
+    float Rate = 1;
+    integer Count = 50;
+    float Life = 0;
+    integer Pattern = PSYS_SRC_PATTERN_EXPLODE;
+    float Radius = 0;
+    float Begin_Angle = 0;
+    float End_Angle = 3.14159;
+    vector Omega = < 0, 0, 0 >;
+    integer Follow_Source = FALSE;
     Follow_Velocity = FALSE;
-    Wind = FALSE;
-    Bounce = FALSE;
-    Minimum_Speed = 1;
-    Maximum_Speed = 1;
-    Acceleration = < 0, 0, 0 >;
-    Target = FALSE;
-    Target_Key = NULL_KEY;
+    integer Wind = FALSE;
+    integer Bounce = FALSE;
+    float Minimum_Speed = 1;
+    float Maximum_Speed = 1;
+    vector Acceleration = < 0, 0, 0 >;
+    integer Target = FALSE;
+    key Target_Key = NULL_KEY;
 
 list Parameters =
 [
@@ -279,7 +249,7 @@ default
     state_entry()
 
     {
-     llListen( -1, "", NULL_KEY, "" );
+     llListen( 603, "", NULL_KEY, "" );
      llListen(0, "", llGetOwner(), "" );
     }
     run_time_permissions(integer perms)
@@ -323,7 +293,7 @@ default
 
      listen (integer ch, string s, key k, string msg) {
 
-        if (ch == -1){
+        if (ch == 603){
             if( llSubStringIndex(msg, "~") > -1){
 
                // llSay(0, "bracelet heard ya: "+ msg);

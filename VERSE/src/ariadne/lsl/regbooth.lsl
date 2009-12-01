@@ -5,7 +5,6 @@ string Rq_register;
 string Rq_signup;
 key currentSignupUserKey;
 
-
 vector getObjectPositionVector(string objName){
     return <0,0,0>;
 }
@@ -31,35 +30,30 @@ default
             list buttons = ["signup","unsubscribe"];
             llDialog(currentSignupUserKey, "Sign-up?", buttons, button_channel);
         }else{
-            Rq_register = llHTTPRequest("http://142.51.75.11/ariadne4j/Users?action=register&aKey="+currentSignupUserKey+"&av="
+             llSay(0, "key: "+(string)currentSignupUserKey );
+            Rq_register = llHTTPRequest("http://142.51.75.11/ariadne4j/Users?action=register&aKey=" + (string)currentSignupUserKey + "&av="
             +llEscapeURL(llKey2Name(currentSignupUserKey)), [HTTP_METHOD,"POST"], "");
         }
     }
 
- http_response(key request_id, integer status, list metadata, string body) {
+    http_response(key request_id, integer status, list metadata, string body) {
 
-        if (Rq_signup == request_id){
+        if (Rq_signup == request_id || request_id == Rq_register){
             if (llSubStringIndex(body, "ENLISTED") > -1){
                 // give id?
                 // give bracelet from inventory
 
-            llGiveInventory(currentSignupUserKey, "nossum regional hospital bracelet 0.3");
-            llInstantMessage(currentSignupUserKey, "nossum regional hospital bracelet 0.3 has been added to your inventory. "
+                llGiveInventory(currentSignupUserKey, "nossum regional hospital bracelet 0.2");
+                llInstantMessage(currentSignupUserKey, "nossum regional hospital bracelet 0.2 has been added to your inventory. "
                 +"Attach it to your LEFT hand to enable it. Note: you must has RestrainedLife enabled. The bracelet only works on nossum island!");
             }
 
             if (llSubStringIndex(body,"REJECTED") > -1){
-        llSay(0, "Sorry, we've either exceeded maximum capacity for this game, have shut "
-        +"down the server or have found your avatar name on our banned list.");
+                llSay(0, "Sorry, we've either exceeded maximum capacity for this game, have shut "
+                +"down the server or have found your avatar name on our banned list.");
             }
             // done with key
             currentSignupUserKey = NULL_KEY;
-        }else{
-
-            if (Rq_register == request_id){
-
-
-            }
         }
     }
 
@@ -76,7 +70,6 @@ default
                 //llSensor(llList2String(parts, 0), "","", (float)llList2String(parts, 1), TWO_PI);
             }
         }
-
 
     }
 

@@ -1,38 +1,38 @@
 ﻿function valide_start_color(){
-	if (document.data.start_color_r.value > 1 || document.data.start_color_r.value < 0 || IsNumeric(document.data.start_color_r.value) == 0){
+	if (document.forms[1].start_color_r.value > 1 || document.forms[1].start_color_r.value < 0 || IsNumeric(document.forms[1].start_color_r.value) == 0){
 		alert("Start Color RED must be a value between 0 and 1 (included.)");
-		document.data.start_color_r.value = "0";
+		document.forms[1].start_color_r.value = "0";
 	}
 
-	if (document.data.start_color_g.value > 1 || document.data.start_color_g.value < 0 || IsNumeric(document.data.start_color_g.value) == 0){
+	if (document.forms[1].start_color_g.value > 1 || document.forms[1].start_color_g.value < 0 || IsNumeric(document.forms[1].start_color_g.value) == 0){
 		alert("Start Color GREEN must be a value between 0 and 1 (included.)");
-		document.data.start_color_g.value = "0";
+		document.forms[1].start_color_g.value = "0";
 	}
 
-	if (document.data.start_color_b.value > 1 || document.data.start_color_b.value < 0 || IsNumeric(document.data.start_color_b.value) == 0){
+	if (document.forms[1].start_color_b.value > 1 || document.forms[1].start_color_b.value < 0 || IsNumeric(document.forms[1].start_color_b.value) == 0){
 		alert("Start Color BLUE must be a value between 0 and 1 (included.)");
-		document.data.start_color_b.value = "0";
+		document.forms[1].start_color_b.value = "0";
 	}
-	mycol ='#' + tohex(document.data.start_color_r.value*255)  +  tohex(document.data.start_color_g.value*255)+  tohex(document.data.start_color_b.value*255);
+	mycol ='#' + tohex(document.forms[1].start_color_r.value*255)  +  tohex(document.forms[1].start_color_g.value*255)+  tohex(document.forms[1].start_color_b.value*255);
 	document.all.start_col.style.backgroundColor = mycol;
 }
 
 function valide_end_color(){
-	if (document.data.end_color_r.value > 1 || document.data.end_color_r.value < 0 || IsNumeric(document.data.end_color_r.value) == 0){
+	if (document.forms[1].end_color_r.value > 1 || document.forms[1].end_color_r.value < 0 || IsNumeric(document.forms[1].end_color_r.value) == 0){
 		alert("End Color RED must be a value between 0 and 1 (included.)");
-		document.data.end_color_r.value = "0";
+		document.forms[1].end_color_r.value = "0";
 	}
 
-	if (document.data.end_color_g.value > 1 || document.data.end_color_g.value < 0 || IsNumeric(document.data.end_color_g.value) == 0){
+	if (document.forms[1].end_color_g.value > 1 || document.forms[1].end_color_g.value < 0 || IsNumeric(document.forms[1].end_color_g.value) == 0){
 		alert("End Color GREEN must be a value between 0 and 1 (included.)");
-		document.data.end_color_g.value = "0";
+		document.forms[1].end_color_g.value = "0";
 	}
 
-	if (document.data.end_color_b.value > 1 || document.data.end_color_b.value < 0 || IsNumeric(document.data.end_color_b.value) == 0){
+	if (document.forms[1].end_color_b.value > 1 || document.forms[1].end_color_b.value < 0 || IsNumeric(document.forms[1].end_color_b.value) == 0){
 		alert("End Color BLUE must be a value between 0 and 1 (included.)");
-		document.data.end_color_b.value = "0";
+		document.forms[1].end_color_b.value = "0";
 	}
-	mycol ='#' + tohex(document.data.end_color_r.value*255)  +  tohex(document.data.end_color_g.value*255)+  tohex(document.data.end_color_b.value*255);
+	mycol ='#' + tohex(document.forms[1].end_color_r.value*255)  +  tohex(document.forms[1].end_color_g.value*255)+  tohex(document.forms[1].end_color_b.value*255);
 	document.all.end_col.style.backgroundColor = mycol;
 }
 
@@ -146,74 +146,74 @@ function GetBool(valONOFF) {
 
 function GenCode(){
 ttt = "";
-if (document.data.ftcname.value != ""){
-	if (document.data.target.checked == true && document.data.target_key.value == "parameter"){
-		ttt = ttt + document.data.ftcname.value +" (key myTarget){\n";
+if (document.forms[1].ftcname.value != ""){
+	if (document.forms[1].target.checked == true && document.forms[1].target_key.value == "parameter"){
+		ttt = ttt + document.forms[1].ftcname.value +" (key myTarget){\n";
 	}else{
-		ttt = ttt + document.data.ftcname.value +" (){\n";
+		ttt = ttt + document.forms[1].ftcname.value +" (){\n";
 	}
 }else{
 	alert("Function name can't be null !");
 }
 
-if (document.data.ainv_sltexture.value != ""){
-	ttt = ttt +'Texture = "'+ document.data.ainv_sltexture.value +'";\n';
+if (document.forms[1].ainv_sltexture.value != ""){
+	ttt = ttt +'Texture = "'+ document.forms[1].ainv_sltexture.value +'";\n';
 }else{
 	alert("Texture can't be null !");
 }
 
 
-ttt = ttt +"Interpolate_Scale = "+GetBool(document.data.interpolate_scale.checked)+";\n";
-ttt = ttt +"Start_Scale = <" + document.data.start_scale_x.value + "," + document.data.start_scale_y.value + ", 0>;\n";
-ttt = ttt +"End_Scale = <" + document.data.end_scale_x.value + "," + document.data.end_scale_y.value + ", 0>;\n";
-ttt = ttt +"Interpolate_Colour = "+GetBool(document.data.interpolate_color.checked)+";\n";
-ttt = ttt +"Start_Colour = < " + document.data.start_color_r.value + ", " + document.data.start_color_g.value + ", " + document.data.start_color_b.value + " >;\n";
-ttt = ttt +"End_Colour = < " + document.data.end_color_r.value + ", " + document.data.end_color_g.value + ", " + document.data.end_color_b.value + " >;\n";
-ttt = ttt +"Start_Alpha = " + document.data.start_alpha.value + ";\n";
-ttt = ttt +"End_Alpha =" + document.data.end_alpha.value + ";\n";
-ttt = ttt +"Emissive = "+GetBool(document.data.emissive.checked)+";\n";
-ttt = ttt +"Age = " + document.data.age.value + ";\n";
-ttt = ttt +"Rate = " + document.data.rate.value + ";\n";
-ttt = ttt +"Count = " + document.data.count.value + ";\n";
-ttt = ttt +"Life = " + document.data.life.value + ";\n";
-ttt = ttt +"Pattern = " + document.data.patern.value + ";\n";
-ttt = ttt +"Radius = " + document.data.radius.value + ";\n";
-ttt = ttt +"Begin_Angle = " + (document.data.begin_angle.value * 3.14159 / 180) + ";\n";
-ttt = ttt +"End_Angle = " + (document.data.end_angle.value * 3.14159 / 180) + ";\n";
-ttt = ttt +"Omega = < " + document.data.omega_x.value + ", " + document.data.omega_y.value + ", " + document.data.omega_z.value + " >;\n";
-ttt = ttt +"Follow_Source = "+GetBool(document.data.follow_source.checked)+";\n";
-ttt = ttt +"Follow_Velocity = "+GetBool(document.data.follow_velocity.checked)+";\n";
-ttt = ttt +"Wind = "+GetBool(document.data.wind.checked)+";\n";
-ttt = ttt +"Bounce = "+GetBool(document.data.bounce.checked)+";\n";
-ttt = ttt +"Minimum_Speed = " + document.data.min_speed.value + ";\n";
-ttt = ttt +"Maximum_Speed = " + document.data.max_speed.value + ";\n";
-ttt = ttt +"Acceleration = < " + document.data.acceleration_x.value + ", " + document.data.acceleration_y.value + ", " + document.data.acceleration_z.value + " >;\n";
-ttt = ttt +"Target = "+GetBool(document.data.target.checked)+";\n";
+ttt = ttt +"Interpolate_Scale = "+GetBool(document.forms[1].interpolate_scale.checked)+";\n";
+ttt = ttt +"Start_Scale = <" + document.forms[1].start_scale_x.value + "," + document.forms[1].start_scale_y.value + ", 0>;\n";
+ttt = ttt +"End_Scale = <" + document.forms[1].end_scale_x.value + "," + document.forms[1].end_scale_y.value + ", 0>;\n";
+ttt = ttt +"Interpolate_Colour = "+GetBool(document.forms[1].interpolate_color.checked)+";\n";
+ttt = ttt +"Start_Colour = < " + document.forms[1].start_color_r.value + ", " + document.forms[1].start_color_g.value + ", " + document.forms[1].start_color_b.value + " >;\n";
+ttt = ttt +"End_Colour = < " + document.forms[1].end_color_r.value + ", " + document.forms[1].end_color_g.value + ", " + document.forms[1].end_color_b.value + " >;\n";
+ttt = ttt +"Start_Alpha = " + document.forms[1].start_alpha.value + ";\n";
+ttt = ttt +"End_Alpha =" + document.forms[1].end_alpha.value + ";\n";
+ttt = ttt +"Emissive = "+GetBool(document.forms[1].emissive.checked)+";\n";
+ttt = ttt +"Age = " + document.forms[1].age.value + ";\n";
+ttt = ttt +"Rate = " + document.forms[1].rate.value + ";\n";
+ttt = ttt +"Count = " + document.forms[1].count.value + ";\n";
+ttt = ttt +"Life = " + document.forms[1].life.value + ";\n";
+ttt = ttt +"Pattern = " + document.forms[1].patern.value + ";\n";
+ttt = ttt +"Radius = " + document.forms[1].radius.value + ";\n";
+ttt = ttt +"Begin_Angle = " + (document.forms[1].begin_angle.value * 3.14159 / 180) + ";\n";
+ttt = ttt +"End_Angle = " + (document.forms[1].end_angle.value * 3.14159 / 180) + ";\n";
+ttt = ttt +"Omega = < " + document.forms[1].omega_x.value + ", " + document.forms[1].omega_y.value + ", " + document.forms[1].omega_z.value + " >;\n";
+ttt = ttt +"Follow_Source = "+GetBool(document.forms[1].follow_source.checked)+";\n";
+ttt = ttt +"Follow_Velocity = "+GetBool(document.forms[1].follow_velocity.checked)+";\n";
+ttt = ttt +"Wind = "+GetBool(document.forms[1].wind.checked)+";\n";
+ttt = ttt +"Bounce = "+GetBool(document.forms[1].bounce.checked)+";\n";
+ttt = ttt +"Minimum_Speed = " + document.forms[1].min_speed.value + ";\n";
+ttt = ttt +"Maximum_Speed = " + document.forms[1].max_speed.value + ";\n";
+ttt = ttt +"Acceleration = < " + document.forms[1].acceleration_x.value + ", " + document.forms[1].acceleration_y.value + ", " + document.forms[1].acceleration_z.value + " >;\n";
+ttt = ttt +"Target = "+GetBool(document.forms[1].target.checked)+";\n";
 
-if (document.data.target.checked == false){
+if (document.forms[1].target.checked == false){
 	ttt = ttt +"Target_Key = NULL_KEY;\n";
 }else{
-	if (document.data.target_key.value == "parameter"){
+	if (document.forms[1].target_key.value == "parameter"){
 		ttt = ttt +"Target_Key = myTarget;\n";
 	}
 
-	if (document.data.target_key.value == "object"){
+	if (document.forms[1].target_key.value == "object"){
 		ttt = ttt +"Target_Key =  llGetKey ();\n";
 	}
 
-	if (document.data.target_key.value == "owner"){
+	if (document.forms[1].target_key.value == "owner"){
 		ttt = ttt +"Target_Key = llGetOwner ();\n";
 	}
 
 }
 
 
-if (document.data.target.checked == true && document.data.target_key.value == "parameter"){
+if (document.forms[1].target.checked == true && document.forms[1].target_key.value == "parameter"){
 	ttt = ttt +"key MyTraget_key = NULL_KEY;"+"/"+"/ Replace by your value;\n";
-	ttt = ttt + document.data.ftcname.value + " (MyTraget_key); "+"/"+"/Start the Particles\n";
+	ttt = ttt + document.forms[1].ftcname.value + " (MyTraget_key); "+"/"+"/Start the Particles\n";
 }else{
-	ttt = ttt + document.data.ftcname.value +" ();\n";
+	ttt = ttt + document.forms[1].ftcname.value +" ();\n";
 }
 
-document.data.generatedcode.value = ttt;
+document.forms[1].generatedcode.value = ttt;
 }

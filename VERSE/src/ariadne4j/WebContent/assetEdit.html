@@ -1,7 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml">
     <head>
-        <meta name="generator" content="HTML Tidy, see www.w3.org">
         <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
         <!--meta http-equiv="Content-Type" content="text/html; charset=utf-8"/--><title>Asset Detail</title>
         <link rel="stylesheet" type="text/css" href="http://slurl.com/_styles/MAIN.css">
@@ -15,7 +14,6 @@
                 border: 0;
                 background: #fff;
             }
-
             body {
                 height: 100%;
                 max-height: 100%;
@@ -70,6 +68,7 @@
         </script>
     </head>
     <body id="SLDoc" >
+    	<img alt="Ariadne4j" width="75" height="90" align="left" src="http://nosm-verse.googlecode.com/hg/VERSE/src/ariadne/server/ariadne.jpg"/> <br/>
         <div id="hidden_dummy_frm" class="hidden">
             <form id="hidden_dummy" name="hidden_dummy" method="POST" action="Ariadne">
                 mode: <input type="text" id="ariadneMode" name="ariadneMode" readonly="readonly" value="admin">
@@ -95,7 +94,7 @@
             schema. the links presented here do not auto-update. if
             you change them in OL, do it here as well.
             <br/>
-            - ditto for the player list (ie. all who have EVER
+            - ditto for the player list (note: everyone who has EVER
             registered will be listed)
             <br/>
             - assume the user is running a RestrainedLife
@@ -114,7 +113,6 @@
              <br/>
         </div>
         <br/>
-        <hr/>
         <br/>
         <h1>Asset Details</h1>
         <br/>
@@ -127,7 +125,7 @@
                     <option value="SLAnimation">Animate the avatar(s)</option>
                     <option value="SLAction">Make the avatar(s) do something</option>
                     <option disabled="" value="separator">-- Special Effects --</option>
-                    <option value="SLExtFeedObject">Configure a web-enabled prim (assumes it's rezzed)</option>
+                    <option value="SLExtFeedObject">Configure a web-enabled objects (assumes it's rezzed)</option>
                     <option value="SLParticleSystem">Trigger a particle manifestation</option>
                     <option value="SLSound">Play a sound</option>
                     <option disabled="" value="separator">-- Give avatar(s)/Rez --</option>
@@ -162,7 +160,7 @@
                     <option value="RLHud">use the HUD vision blocker</option>
                     <option value="RLSys">other RestrictedLife commands</option>
                 </select>
-                <!--a href='javascript:document.forms["hidden_dummy"].submit();'> Save Changes</a--><a href='javascript:submitIt();'>Save Changes</a>
+                <a href='javascript:submitIt();'>Save Changes</a>
 				<a id="help_ref" href='javascript:void(0);'>Help</a>
                 <div class="hidden" id="type_slanimation">
                         <br/>
@@ -197,7 +195,7 @@
                     <br/>
                     <br/>
 					<!--div-->
-                        <div id="animType_emote">
+                        <div id="animType_emote" class="hidden">
                             Built-in Second Life Emotes:
                             <select id="isle" name="isle">
                                 <option disabled="" value="separator"></option>
@@ -215,7 +213,7 @@
                                 <option value="express_worry_emote">worry</option>
                             </select>
                         </div>
-                        <div id="animType_canned">
+                        <div id="animType_canned" class="hidden">
                             Built-in Second Life Animations:
                             <select id="isla" name="isla">
                                 <option disabled="" value="separator"></option>
@@ -344,8 +342,8 @@
                                 <option value="yoga_float">yoga_float</option>
                             </select>
                         </div>
-                        <div id="animType_custom">
-                            custom Animations:
+                        <div id="animType_custom" class="hidden">
+                            custom VERSE Animations:
                             <select id="ainv_slanimation" name="ainv_slanimation">
                                 <option value=""></option>
                             </select>
@@ -386,7 +384,7 @@
                             <option value="Flying">Flying</option>
                             <option value="Hovering">Hovering</option>
                             <option value="Jumping">Jumping</option>
-                            <option value="PreJumping">PreJumping</option>
+                            <option value="PreJumping">Pre-Jumping</option>
                             <option value="Running">Running</option>
                             <option value="Turning Right">Turning Right</option>
                             <option value="Turning Left">Turning Left</option>
@@ -397,7 +395,8 @@
                     </div>
 				</div>
                 <div class="hidden" id="type_rlanimation">
-                    <input type="checkbox" id="recvemote" value="recvemote" name="recvemote">Allow seeing emotes <br/><input type="checkbox" value="true" id="recvemote_sec" name="recvemote_sec">Allow seeing emotes secure way
+                    <input type="checkbox" id="recvemote" value="recvemote" name="recvemote">Allow seeing emotes <br/>
+					<input type="checkbox" value="true" id="recvemote_sec" name="recvemote_sec">Allow seeing emotes secure way
                 </div>
                 <div class="hidden" id="type_slclothing">
                         <br/>
@@ -445,10 +444,11 @@
                     <h2>Bodypart type:</h2>
                     <div id="help_slbodypart">
                         <br/>
-                        -bodypart help
+                        -only in RLV mode can a bodypart be forcibly assigned<br/>
+						-
                         <br/>
                     </div>
-					<br/>Give clothing to:
+					<br/>Give bodypart to:
                     <select id="userlist_bodypart" name="userlist_bodypart">
                         <option value=""></option>
                     </select>
@@ -473,7 +473,8 @@
                     <h2>Chat </h2>
                     <div class="hidden" id="help_slchat">
                         <br/>
-                        -chat help
+                        - most of these web-enabled objects must be rezzed before sending them a chat command
+						-
                         <br/>
                     </div>
                     Chats, messages and commands can be sent on the
@@ -518,7 +519,7 @@
                             <option value="cmd|droid">droid: gives the owner a Rad Droid</option>
                             <option value="cmd|bcam|on">bcam: enables Multi Gadget Builders Camera</option>
                             <option value="cmd|bcam|off">bcam: disables Multi Gadget Builders Camera</option>
-                            <option value="cmd|dsd">dsd: gives the owner the DSD</option>
+                            <option value="cmd|dsd">dsd: gives the owner the Data Storage Device</option>
                             <option value="cmd|grapple">grapple: gives the owner the Multi Gadget Grapple Hook</option>
                             <option value="cmd|chair">chair: gives the owner a Multi Chair Coffee Table</option>
                             <option value="cmd|tuner|on">tuner: turns on the channel listener</option>
@@ -1581,8 +1582,7 @@
                 <div class="block-box">
                     <span class="block-helpicon"></span>
                     <h2>Particules generator 2</h2>
-                    <form name="data">
-                        <font face="arial, helvetica, sans-serif" size="3">
+                    <!--form name="data"-->
                             <input name="ftcname" size="60" value="Particle-viewer_area_edition" type="hidden"><hr>
                             <font size="5">
                                 <b>Particle definition:</b>
@@ -1692,7 +1692,7 @@
                                     <tbody>
                                         <tr valign="middle">
                                             <td>
-                                                <img src="angles.jpg" align="top" border="1" hspace="4">
+                                                <img src="angles.jpg" alt="" align="top" border="1" hspace="4">
                                             </td>
                                             <td>
                                                 <b>Begin Angle:</b>
@@ -1806,8 +1806,8 @@
                                 <br>
                             </blockquote>
                             <hr><input name="generatedcode" type="hidden">
-                            </form>
-                            <script language="javascript">
+                            <!--/form-->
+                            <script  type="text/javascript" language="javascript">
                                 valide_start_color();
                                 valide_end_color();
                             </script>
@@ -1820,6 +1820,7 @@
                     <br/>
                     <br/>
                 </div>
+				</div>
                 <div class="hidden" id="type_slsound">
                         <br/>
                     <h2>Sound </h2>
@@ -1911,7 +1912,7 @@
                     <br/>
 					 triggered by user controls? <input name="isctrlssnd" id="isctrlssnd" type="checkbox" value="1">
                     <br/>
-                    <div id="snd_ctls">
+                    <div id="snd_ctls" class='hidden'>
                         <br/>
                         <select multiple="multiple" name="snd_ao_ctrls" id="snd_ao_ctrls">
                             <option value="Sitting on Ground">Sitting on Ground</option>
@@ -1958,6 +1959,7 @@
                     <br/>
                     <br/>
                 </div>
+
                     <div class="hidden" id="type_rltexture">
                         <input type="checkbox" value="true" name="viewtexture">Allow opening textures
                     </div>
@@ -3002,10 +3004,10 @@ Google spreadsheet key (e.g. <em>rvWgEEGK9xuUQBR1EFcxHWA</em> ) or spreadsheet U
                     </div>
 
 
-					<!--
+
                     <input id="gmapaddr" name="gmapaddr" type="text" value="935 Ramsey Lake Road, Sudbury, Ontario, Canada" size="70">
                     <br/>
-                    <br/>
+                    <!--<br/>
                     Marker Type:
                     <select name="gmapclicktype" id="gmapclicktype">
                         <option selected="selected" value="Points">Points</option>
@@ -3153,17 +3155,11 @@ Google spreadsheet key (e.g. <em>rvWgEEGK9xuUQBR1EFcxHWA</em> ) or spreadsheet U
 
 
 <h2>Create a map with a marker and optional info window.</h2>
-  <p>
-  This wizard uses the <a href="http://code.google.com/apis/maps/documentation/staticmaps" target="_blank">Google Static Maps API v2</a>. It originally used Static Maps API v1, but that API is now deprecated. Please see the
-<a href="http://code.google.com/apis/maps/documentation/staticmaps/upgrade.html">upgrade guide</a>
-for information on upgrading.
-  </p>
 
 <h3><img src="http://www.google.com/uds/solutions/wizards/img/1b.gif"
 style="vertical-align:middle"/> Customize Map View, Marker Location, & Paths</h3>
 <br/>
   <p><b>To change the map view:</b></p>
-
   <p>
   Use the map control to zoom in/out to the desired zoom level.
   </p>
@@ -3189,7 +3185,7 @@ style="vertical-align:middle"/> Customize Map View, Marker Location, & Paths</h3
   </p>
 <br clear="all"/>
 
-<h3><img src="http://www.google.com/uds/solutions/wizards/img/2b.gif"
+<h3 alt=""><img src="http://www.google.com/uds/solutions/wizards/img/2b.gif"
 style="vertical-align:middle"/>Customize Size & Preview</h3>
   <p>
   <table>
@@ -3360,13 +3356,12 @@ Generated URL: <input tyep="text" id="staticMapURL" class="code">
                         -slamazonmapimage help
                         <br/>
                     </div>
-<table align="left" border="0" cellpadding="0" cellspacing="0" width="98%">
+<table summary="" align="left" border="0" cellpadding="0" cellspacing="0" width="98%">
 						<tbody><tr>
 							<td align="left" valign="bottom"></td>
 						</tr>
 						<tr>
 							<td align="left" valign="top">
-
 								<form>
 									<div class="c1">
 										<p class="header">Location data:</p>
@@ -3374,15 +3369,10 @@ Generated URL: <input tyep="text" id="staticMapURL" class="code">
 										<table>
 											<tbody><tr>
 												<th>Region</th>
-
 												<th>X</th>
-
 												<th>Y</th>
-
 												<th>Z</th>
-
 											</tr>
-
 											<tr>
 												<td><input value="nossum" id="region" type="text"></td>
 
@@ -3392,10 +3382,8 @@ Generated URL: <input tyep="text" id="staticMapURL" class="code">
 
 												<td><input value="128" id="z" size="3" type="text"></td>
 											</tr>
-
 										</tbody></table>
 									</div>
-
 									<br>
 						Zoom: <select id="zoom_level" title="zoom">
                         <option value="1">1</option>
@@ -3425,33 +3413,22 @@ Generated URL: <input tyep="text" id="staticMapURL" class="code">
 											<td><input value="lala" id="windowMessage" type="text"></td>
 										</tr>
 									</tbody></table>
-
 									<input id="u" value="" type="hidden">
-
 									<p><input onclick="document.getElementById('output').value = build_url();" value="Generate SLurl" type="button"> <input value="Clear form" type="reset"></p>
-
 									<div class="c1">
 										<span class="headline">Your SLurl:</span>
-										<p><input value="http://slurl.com/secondlife/nossum/128/128/128/?img=gla&amp;title=bla&amp;msg=lala" id="output" size="80" type="text"> <input onclick="window.open(document.getElementById('output').value);" value="Go!" type="button"></p>
+										<p><input value="http://slurl.com/secondlife/nossum/128/128/128/?img=gla&amp;title=bla&amp;msg=lala" id="output" size="80" type="text">
+										<input onclick="window.open(document.getElementById('output').value);" value="Go!" type="button"></p>
 									</div>
 								</form>
-
 									<div class="c1">
 										<p class="fineprint">*This SLurlBuilder form was originally created by <a href="http://engine-proceeding.blogspot.com/">Ordinal Malaprop</a> on 24 February 2006. Thanks Ordinal!</p>
 
 									</div>
-
 							</td>
 						</tr>
 					</tbody></table>
-
-
-
 				</div>
-
-
-
-
                 <div class="hidden" id="type_slaudio">
                     <div id="help_slaudio">
                         <br/>
@@ -3507,7 +3484,7 @@ Generated URL: <input tyep="text" id="staticMapURL" class="code">
                             <option value="205.188.215.225:8004">Classic Electronica</option>
                             <option value="130.166.72.1:8006">Classic Heartland</option>
                             <option value="213.73.255.244:2026">Classic Soul Network</option>
-                            <option value="205.234.179.203:80">Classical Minnesota&gt;</option>
+                            <option value="205.234.179.203:80">Classical Minnesota</option>
                             <option value="64.71.145.106:8004">Classical WGBH 89.7 HD2</option>
                             <option value="89.248.167.7:13000">COCORADIO.COM</option>
                             <option value="130.166.72.1:8006">Country-Heartland PUBRadio</option>
@@ -3515,13 +3492,13 @@ Generated URL: <input tyep="text" id="staticMapURL" class="code">
                             <option value="64.202.98.133:9130">CRC Hard Rocking 80s</option>
                             <option value="207.200.96.225:8022">Cryosleep&gt;</option>
                             <option value="81.26.214.146:6312">DanceRadio FreestyleFM</option>
-                            <option value="85.21.79.5:8040">Deep Mix Moscow Radio&gt;</option>
+                            <option value="85.21.79.5:8040">Deep Mix Moscow Radio</option>
                             <option value="85.12.7.2:8000">DEFJAY HIP-HOP AND RandB</option>
                             <option value="129.16.159.166:8000">DigitalGunfire-Hard Hitting</option>
                             <option value="205.188.215.228:8006">DIGITALLY IMPORTED</option>
                             <option value="64.92.199.69:8240">Dinner Jazz Excursion</option>
-                            <option value="88.191.16.70:10780">Diva Radio&gt;</option>
-                            <option value="207.200.96.229:8030">Drum and Bass&gt;</option>
+                            <option value="88.191.16.70:10780">Diva Radio</option>
+                            <option value="207.200.96.229:8030">Drum and Bass</option>
                             <option value="stream3.ebm-radio.com:8200">EBM Industrial Electro</option>
                             <option value="69.5.81.72:7550">ELVISMEN-SALSA</option>
                             <option value="205.188.215.228:8016">FLARESOUND</option>
