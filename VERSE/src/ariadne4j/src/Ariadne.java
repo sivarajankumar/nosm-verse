@@ -1,16 +1,18 @@
+
+
 import java.io.*;
-import javax.servlet.*;
+//import javax.servlet.*;
 import javax.servlet.http.*;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
+//import java.net.HttpURLConnection;
+//import java.net.URL;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
+//import javax.xml.parsers.DocumentBuilderFactory;
+//import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
@@ -22,8 +24,9 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 
+import org.apache.http.message.BasicNameValuePair;
 import org.w3c.dom.Document;
-import org.w3c.dom.Node;
+//import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 import com.nosm.elearning.ariadne.AriadneData;
@@ -31,21 +34,23 @@ import com.nosm.elearning.ariadne.AriadneData;
 import com.nosm.elearning.ariadne.XPathReader;
 
 import com.nosm.elearning.ariadne.model.Asset;
-import com.nosm.elearning.ariadne.model.AssetType;
-import com.nosm.elearning.ariadne.model.User;
+//import com.nosm.elearning.ariadne.model.AssetType;
+//import com.nosm.elearning.ariadne.model.User;
+import com.nosm.elearning.ariadne.util.Constants;
+import com.nosm.elearning.ariadne.util.HttpFetch;
+import com.nosm.elearning.ariadne.util.TestConstants;
+//import com.nosm.elearning.ariadne.util.Constants;
 
-import java.nio.charset.Charset;
+//import java.nio.charset.Charset;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashSet;
+//import java.util.HashSet;
 import java.util.Iterator;
-import java.util.StringTokenizer;
+//import java.util.StringTokenizer;
 
 public class Ariadne extends javax.servlet.http.HttpServlet implements
 javax.servlet.Servlet {
-
 	private static final long serialVersionUID = 7526471155622776147L;
-
 	HttpSession session;
 	static final String lineSep = System.getProperty ( "line.separator" );
 
@@ -64,8 +69,8 @@ javax.servlet.Servlet {
 		String strMNodeTitle ="";
 		String strMNodeContent = "";
 
-
 		try {
+
 			sessid = (String) request.getParameter("sessid");
 			mnodeid = (String) request.getParameter("mnodeid");
 			aMode = (String) request.getParameter("mode");
@@ -73,11 +78,9 @@ javax.servlet.Servlet {
 			if (aMode == null || aMode == "") {
 				reply.append("<error>Critical error: No mode or node has been defined in the request</error>");
 			} else {
-				// is empty for second life requests?
-				// (String) request.getParameter("USER_AGENT");
-				// if stats: assetusage by type, by sl_type
+				// TODO: if aMode=stats: asset usage by type, by sl_type
 				if (mnodeid == null || mnodeid == ""
-					&& (aMode.toLowerCase() == "slplay" || aMode.toLowerCase() == "admin")) {
+					&& (aMode.toLowerCase() == "admin")) {
 					reply.append("Missing required MNodeID in the request");
 				} else {
 					String action = (String)request.getParameter("action");
@@ -90,22 +93,33 @@ javax.servlet.Servlet {
 
 						PrintWriter out = response.getWriter();
 						out.println("<html><head><title></title></head><body onload='window.location=\"/ariadne4j/index2.html?mnodeid="
-								+mnodeid + "&mode=admin\"></body></html>");
+								+mnodeid + "&mode=admin\"></body></html>"); // use response.sendRedirect()?
 					}else{
 						session = request.getSession();
-						String OLAddress = "http://142.51.75.111/mnode.asp?mnode="+mnodeid+"&mode=remote";
-						if (sessid == "" || sessid == null) {
-							OLAddress += "mnode.asp?mode=remote&id=" + mnodeid;
+						String OLAddress = "";
+
+						if (sessid != null) {
+							// does it match the current session?
+							//if (!sessid.equals(session.getAttribute("ol-sessid"))){
+								//throw new RuntimeException("<error>Fatal Error: session id "+sessid+" returned does not match the current session id: "
+									//	+ session.getAttribute("ol-sessid")+"</error>");
+							//}
+							OLAddress = "/django/labyrinth/"+Constants.OL_GAME_ID+"/link/"+ mnodeid +"/data/classic/";
 						} else {
-							OLAddress += "mnode.asp?mode=remote&id=" + mnodeid + "&sessid="+ sessid;
+							// get a new one:
+							sessid = HttpFetch.getString4Url("/django/session/create/", new ArrayList(), false);
+							// (re)start at root node:
+							OLAddress = "/django/labyrinth/"+Constants.OL_GAME_ID+"/root/data/classic/";
+
 						}
-
+						System.out.println("calling OL3 with url "+OLAddress);
 						org.w3c.dom.Document OLResults = null;
-
 						try{
 							// GET OPENLABYRINTH XML
-							if (false){// testing switch
-								OLResults = loadXMLFrom(new URL(OLAddress).openStream());
+							if (true){// testing switch
+								ArrayList qparams = new ArrayList();
+								qparams.add(new BasicNameValuePair("sessionid", sessid));
+								OLResults = loadXMLFrom(HttpFetch.getString4Url(OLAddress, qparams, true)); // use Post
 							}else{
 								OLResults = loadXMLFrom(getTestXML(mnodeid));
 							}
@@ -117,16 +131,21 @@ javax.servlet.Servlet {
 							reply.append("<error>"+ioe.getMessage() + "</error>");
 						}
 
-						olXMLSess = extractNode("/labyrinth/mysession/text()",
+						olXMLSess = extractNode(Constants.XPATH_SESSION+ Constants.XPATH_VAL,
 								OLResults);
 
-						if (sessid == null || sessid == "") {
-							session.setAttribute("ol-sessid", olXMLSess);
+						if ((sessid == null || sessid == "") ) {
+							if (olXMLSess != null || olXMLSess != ""){
+
+								session.setAttribute("ol-sessid", olXMLSess);
+							}
 						} else {
+
 							session.setAttribute("ol-sessid", sessid);
 						}
 
-						strMNodeTitle = java.net.URLDecoder.decode(extractNode("/labyrinth/mnodetitle/text()", OLResults));
+						strMNodeTitle = java.net.URLDecoder.decode(
+								extractNode(Constants.XPATH_TITLE+ Constants.XPATH_VAL, OLResults));
 
 						// trim goofy OL title text brackets
 						if (strMNodeTitle.indexOf("]]]]") > -1){
@@ -134,7 +153,8 @@ javax.servlet.Servlet {
 									+ "]]]] - ".length(), strMNodeTitle.length());
 						}
 
-						strMNodeContent = java.net.URLDecoder.decode(extractNode("/labyrinth/message/text()", OLResults));
+						strMNodeContent = java.net.URLDecoder.decode(
+								extractNode(Constants.XPATH_CONTENT+ Constants.XPATH_VAL, OLResults));
 
 						//trim paragraph
 						if (strMNodeContent.indexOf("<p>") > -1){
@@ -145,18 +165,23 @@ javax.servlet.Servlet {
 						String thisNodeID = "";
 
 						try {
-							thisNodeID = extractNode("/labyrinth/mnodeid/text()",OLResults);
+							thisNodeID = extractNode(Constants.XPATH_ID+ Constants.XPATH_VAL,OLResults);
 						} catch (Exception e) {
 							reply.append(e.getMessage() + ", OLResults:" + OLResults);
 						}
 
-					/*	if (!thisNodeID.equals(mnodeid))
+					/*
+					 	if (!thisNodeID.equals(mnodeid))
 							throw new RuntimeException("<error>Critical Error: extracted returned node id: "
 									+thisNodeID+" from OL does not match ID requested: "
 									+ mnodeid+ " xml document: "+ xmlToString( OLResults)+"</error>"); // or is this normal? ie. how counters work?
 					 */
-
-						int intMNodeID = Integer.parseInt(thisNodeID);
+						int intMNodeID = -1;
+						try{
+							 intMNodeID = Integer.parseInt(thisNodeID);
+						}catch(NumberFormatException e){
+							reply.append(e.getMessage() + ", OLResults:" + OLResults);
+						}
 
 						// always add vpdtext
 						reply.append("<assets>"+lineSep+"<asset type=\"VPDText\" name=\"OL\" targettype=\"PIVOTE\" value=\""
@@ -171,10 +196,10 @@ javax.servlet.Servlet {
 							//}
 						//AriadneData.isUser(firstn, lastn) &&
 							if ( aMode.toLowerCase().equals("slplay")){ // if in SL mode, give short XML
+						 // if (request.getRemoteHost().toLowerCase().indexOf(".agni.") > 0){ // is from SL grid
 								ArrayList curAssets = (ArrayList) AriadneData.selectAssetsByMNodeId(intMNodeID, false);
 								Iterator iterator = curAssets.iterator();
 								// reply.append("<assets>");
-
 								while (iterator.hasNext()) {
 									Asset thisAsset = (Asset) iterator.next();
 									reply.append("<asset type=\"" + thisAsset.getType()
@@ -205,8 +230,7 @@ javax.servlet.Servlet {
 						reply.append("</assets>");
 
 						// links do we need conversion form utf-8?
-						reply.append(getLinkSetXML(java.net.URLDecoder.decode(extractNode(
-								"/labyrinth/linker/text()", OLResults))));
+						reply.append(getLinkSetXML(java.net.URLDecoder.decode(extractNode(Constants.XPATH_LINKS + " /text()", OLResults))));
 					}
 				}
 			}
@@ -227,12 +251,12 @@ javax.servlet.Servlet {
 		//throw new RuntimeException("<Error>in doPost</Error>");
 
 		Asset asset = new Asset(
-				(String) request.getParameter("assetNameOUT"),
-				(String) request.getParameter("assetType"),
-				(String) request.getParameter("assetValueIN"),
-				(String) request.getParameter("savedUIPairs"),
-				(String) request.getParameter("assetTargetIN"),
-				Integer.parseInt((String) request.getParameter("assetMapNodeid"))
+				(String) request.getParameter(Constants.UI_NAME),
+				(String) request.getParameter(Constants.UI_TYPE),
+				(String) request.getParameter(Constants.UI_VAL),
+				(String) request.getParameter(Constants.UI_PAIRS),
+				(String) request.getParameter(Constants.UI_TARGET),
+				Integer.parseInt((String) request.getParameter(Constants.UI_ID))
 		);
 
 		try {
@@ -242,7 +266,7 @@ javax.servlet.Servlet {
 				if(AriadneData.doesAssetExist(Integer.parseInt(mappedid))) {
 					asset.setId(Integer.parseInt(mappedid));
 					AriadneData.updateAsset(asset);
-					AriadneData.resetSeqForNode(asset, (String) request.getParameter("assetNameOUT"));
+					AriadneData.resetSeqForNode(asset, asset.getName());
 				} else {
 					AriadneData.insertAsset(asset);
 					AriadneData.addNode2Seq(asset);
@@ -251,7 +275,9 @@ javax.servlet.Servlet {
 			response.setContentType("text/html");
 
 			PrintWriter out = response.getWriter();
-			out.println("<html><head><title></title></head><body onload='window.location=\"/ariadne4j/index2.html?mnodeid="+asset.getNodeid() + "&mode=admin\"></body></html>");
+			out.println("<html><head><title></title></head><body "+
+					"onload='window.location=\"/ariadne4j/index2.html?mnodeid="
+					+asset.getNodeid() + "&mode=admin\"></body></html>");
 
 		} catch (SQLException sqe) {
 			sqe.printStackTrace(response.getWriter());
@@ -264,13 +290,13 @@ javax.servlet.Servlet {
 
 	private String extractNode(String nodePath, org.w3c.dom.Document doc)  throws XPathExpressionException, UnsupportedEncodingException {
 		//xml = new String(xml.getBytes(),"utf-8"); // is this correct?
+		 System.out.println("` document retrieved from OL3: "+ xmlToString(doc));
 		XPathReader reader = new XPathReader(doc);
 		return reader.read(nodePath, XPathConstants.STRING).toString();
 	}
 
 	private String buildXML(String sessionID, String nodeid, String title, StringBuffer xml){
-		String xmlout = "<?xml version=\"1.0\" encoding=\"utf-8\"?>"+lineSep+"<ariadne xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
-			+"xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">"+lineSep+"<session id=\"" + sessionID + "\" type=\"OL\" />"
+		String xmlout = Constants.XML_HEAD_ARIADNE +lineSep+"<session id=\"" + sessionID + "\" type=\"OL\" />"
 			+ lineSep+"<node id=\""+ nodeid +"\" label=\"" + title + "\" />"+lineSep+ xml.toString()+ "</ariadne>";
 		return xmlout;
 	}
@@ -279,14 +305,23 @@ javax.servlet.Servlet {
 		String xmlout = "";
 		strLinker = strLinker.toLowerCase();
 
-		while (strLinker.indexOf("asp?id=") != -1){
+		while (strLinker.indexOf("asp?id=") != -1){ // is v2
 			xmlout = xmlout + "<link label=\"" + strLinker.substring(strLinker.indexOf("]]]] - ")
 					+ "]]]] - ".length(), strLinker.indexOf("</a>")) + "\" ref=\"" + strLinker.substring(strLinker.indexOf("asp?id=")
 							+ "asp?id=".length(), strLinker.indexOf("mode=remote")-1) + "\" ></link>"+ lineSep;
 			strLinker = strLinker.substring(strLinker.indexOf("</p>") + "</p>".length(), strLinker.length() );
 		}
+
+		while (strLinker.indexOf("django") != -1){ // is v3, classic mode
+			xmlout = xmlout + "<link label=\"" + strLinker.substring(strLinker.indexOf("/data/'>")
+					+ "/data/'>".length(), strLinker.indexOf("</a>")) + "\" ref=\"" + strLinker.substring(strLinker.indexOf("/link/")
+							+ "/link/".length(), strLinker.indexOf("/data/'>")) + "\" ></link>"+ lineSep;
+			strLinker = strLinker.substring(strLinker.indexOf("</p>") + "</p>".length(), strLinker.length() );
+		}
+
 		return lineSep + "<links>" + lineSep + xmlout + "</links>" + lineSep;
 	}
+
 
 	private static String xmlToString(Document doc) {
 		try {
@@ -324,6 +359,7 @@ javax.servlet.Servlet {
 			builder = factory.newDocumentBuilder();
 		}
 		catch (javax.xml.parsers.ParserConfigurationException ex) {
+
 		}
 		org.w3c.dom.Document doc = builder.parse(is);
 		is.close();
@@ -333,58 +369,24 @@ javax.servlet.Servlet {
 	private static String getTestXML(String mnodeId){
 		String retXML = "";
 		if (mnodeId.equals("8336")){
-			retXML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"+
-			"<labyrinth>"+
-			"<mnodetitle>ID%3D%5B2%5D%5D%5D%5D+%2D+start+node:+sphere,+cube</mnodetitle>"+
-			"<mapname>Test+OL%2DPivote</mapname>"+
-			"<mapid>233</mapid>"+
-			"<mnodeid>8336</mnodeid>"+
-			"<message>%3Cp%3Emessage:+there+is+an+open+space%3C%2Fp%3E</message>"+
-			"<linker>%3Cp%3E%3Ca+href%3D%27mnode%5Fclient%2Easp%3Fid%3D8337%26mode%3Dremote%26sessid"+
-			"%3DE27A2972%2DDE2B%2D4995%2D8EE7%2D786115628B9E%27%3EID%3D%5B3%5D%5D%5D%5D+%2D+a+white+room+with+3+molecules+"+
-			"%2D+%3C%2Fa%3E%3C%2Fp%3E%3Cp%3E%3Ca+href%3D%27mnode%5Fclient%2Easp%3Fid%3D8338%26mode%3Dremote%26sessid%3DE27A2972"+
-			"%2DDE2B%2D4995%2D8EE7%2D786115628B9E%27%3EID%3D%5B5%5D%5D%5D%5D+%2D+a+dark+room+with+2+computer+screens%3C%2Fa%3E%3C%2Fp%3E</linker>"+
-			"<rootnode>8336</rootnode>"+
-			"<mysession>E27A2972-DE2B-4995-8EE7-786115628B9E</mysession>"+
-			"<maptype>maze</maptype>"+
-		"</labyrinth>";
+			retXML = TestConstants.NODE1;
 		}else{
 			if (mnodeId.equals("8337")){
-				retXML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"+
-				"<labyrinth>"+
-				"<mnodetitle>ID%3D%5B2%5D%5D%5D%5D+%2D+a+white+room+with+3+molecules</mnodetitle>"+
-				"<mapname>Test+OL%2DPivote</mapname>"+
-				"<mapid>233</mapid>"+
-				"<mnodeid>8337</mnodeid>"+
-				"<message>%3Cp%3Emessage:+there+is+an+open+space%3C%2Fp%3E</message>"+
-				"<linker>%3Cp%3E%3Ca+href%3D%27mnode%5Fclient%2Easp%3Fid%3D8336%26mode%3Dremote%26sessid"+
-				"%3DE27A2972%2DDE2B%2D4995%2D8EE7%2D786115628B9E%27%3EID%3D%5B3%5D%5D%5D%5D+%2D+back+to+start+node+"+
-				"%2D+%3C%2Fa%3E%3C%2Fp%3E%3Cp%3E%3Ca+href%3D%27mnode%5Fclient%2Easp%3Fid%3D8338%26mode%3Dremote%26sessid%3DE27A2972"+
-				"%2DDE2B%2D4995%2D8EE7%2D786115628B9E%27%3EID%3D%5B5%5D%5D%5D%5D+%2D+a+dark+room+with+2+computer+screens%3C%2Fa%3E%3C%2Fp%3E</linker>"+
-				"<rootnode>8336</rootnode>"+
-				"<mysession>E27A2972-DE2B-4995-8EE7-786115628B9E</mysession>"+
-				"<maptype>maze</maptype>"+
-			"</labyrinth>";
+				retXML = TestConstants.NODE2;
 			}else{
-				retXML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"+
-				"<labyrinth>"+
-				"<mnodetitle>ID%3D%5B2%5D%5D%5D%5D+%2D+a+dark+room+with+2+computers</mnodetitle>"+
-				"<mapname>Test+OL%2DPivote</mapname>"+
-				"<mapid>233</mapid>"+
-				"<mnodeid>8338</mnodeid>"+
-				"<message>%3Cp%3Emessage:+a+dark+room+with+2+computers%3C%2Fp%3E</message>"+
-				"<linker>%3Cp%3E%3Ca+href%3D%27mnode%5Fclient%2Easp%3Fid%3D8336%26mode%3Dremote%26sessid"+
-				"%3DE27A2972%2DDE2B%2D4995%2D8EE7%2D786115628B9E%27%3EID%3D%5B3%5D%5D%5D%5D+%2D+back+to+start+node+"+
-				"%2D+%3C%2Fa%3E%3C%2Fp%3E%3Cp%3E%3Ca+href%3D%27mnode%5Fclient%2Easp%3Fid%3D8337%26mode%3Dremote%26sessid%3DE27A2972"+
-				"%2DDE2B%2D4995%2D8EE7%2D786115628B9E%27%3EID%3D%5B5%5D%5D%5D%5D+%2D+a+white+room+with+3+molecules%3C%2Fa%3E%3C%2Fp%3E</linker>"+
-				"<rootnode>8336</rootnode>"+
-				"<mysession>E27A2972-DE2B-4995-8EE7-786115628B9E</mysession>"+
-				"<maptype>maze</maptype>"+
-			"</labyrinth>";
+				if (mnodeId.equals("8338")){
+					retXML = TestConstants.NODE3;
+				}
 			}
 		}
+		if (mnodeId.equals("6")){
+			retXML = TestConstants.NODE4;
+		}
+
+		if (mnodeId.equals("19")){
+			retXML = TestConstants.NODE5;
+		}
+
 		return retXML;
 	}
-
-
 }
