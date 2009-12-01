@@ -32,6 +32,9 @@ import com.nosm.elearning.ariadne.model.User;
 public class Inventory extends javax.servlet.http.HttpServlet implements
 javax.servlet.Servlet {
 	HttpSession session;
+	String xmlHEAD = "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
+		+"<ariadne xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
+		+"xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">";
 	public Inventory() {
 		super();
 	}
@@ -57,8 +60,7 @@ javax.servlet.Servlet {
 				}
 			}
 
-			String xmlout = "<?xml version=\"1.0\" encoding=\"utf-8\"?><ariadne xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
-				+"xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">"
+			String xmlout = xmlHEAD
 				+ reply.toString()+ "</ariadne>";
 			response.setContentType("text/html");
 
@@ -76,7 +78,7 @@ javax.servlet.Servlet {
 
 		// add / remove holodeck scenes and shells
 		// inventory count by type and by sl_type
-		// shell-scene %
+		// shell vs scene %
 
 		try{
 			StringTokenizer splitter = new StringTokenizer(
@@ -107,9 +109,9 @@ javax.servlet.Servlet {
 
 			response.setContentType("text/html");
 			PrintWriter out = response.getWriter();
-			String xmlout = "<?xml version=\"1.0\" encoding=\"utf-8\"?><ariadne xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
-				+"xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">"
-				+"<error>Ariadne has run the " + (String)request.getParameter("action") + "operation with the "
+			String xmlout = xmlHEAD
+				+"<error>Ariadne has run the " + (String)request.getParameter("action")
+				+ "operation with the "
 				+ (String) request.getParameter("inv_name")+ " object.</error></ariadne>";
 
 			out.println(xmlout);

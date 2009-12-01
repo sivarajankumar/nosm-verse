@@ -18,45 +18,48 @@ import org.apache.http.message.*;
 
 
 public abstract class HttpFetch {
-	public static String getString4Url(String apiUrl, String paramName, String paramVal) throws URISyntaxException, HttpResponseException, IOException {
+	public static String getString4Url(String apiUrl, ArrayList qparams, boolean usePost) throws URISyntaxException, HttpResponseException, IOException, Exception {
 
 		HttpClient httpclient = new DefaultHttpClient();
-		String returnedUrl = "";
+		StringBuffer sOut = new StringBuffer();
 
-		//temp
-		apiUrl = "tinyurl.com";
-		String apiPage = "api-create.php";
-		paramName = "url";
+		String pOut = "";
+		if (qparams != null || (!qparams.isEmpty())){
+			pOut = URLEncodedUtils.format(qparams, "UTF-8");
+		}
 
-		List qparams = new ArrayList();
-		qparams.add(new BasicNameValuePair(paramName, paramVal));
-		URI uri = URIUtils.createURI("http", apiUrl, -1, "/"+apiPage,
-				URLEncodedUtils.format(qparams, "UTF-8"), null);
-		HttpGet httpget = new HttpGet(uri);
-		HttpResponse response = httpclient.execute(httpget);
+		URI uri = URIUtils.createURI("http", Constants.OL_HOST, -1, apiUrl, pOut, null);
 
-		//ResponseHandler<String> responseHandler = new BasicResponseHandler();
-		//String responseBody = httpclient.execute(httpget, responseHandler);
-		//System.out.println(response.getStatusLine());
+		HttpRequestBase httpRequest = null;
+		HttpResponse response = null;
+		System.out.println(" HttpFetch, request: "+uri.toString());
+		if (usePost){
+			 response = httpclient.execute(new HttpPost(uri));
+		}else{
+			response = httpclient.execute(new HttpGet(uri));
+		}
+		if (response.getStatusLine().toString().toLowerCase().indexOf("internal server error") > 0)
+			throw new Exception("HttpFetch ERROR: URI "+uri+" returned remote server error: "+ response.getStatusLine().toString());
 
 		HttpEntity entity = response.getEntity();
 		if (entity != null) {
 			InputStream instream = entity.getContent();
 			try {
-				BufferedReader reader = new BufferedReader(
-						new InputStreamReader(instream));
-				returnedUrl = reader.readLine();
+				BufferedReader reader = new BufferedReader(new InputStreamReader(instream));
+			      String s;
+			      while((s = reader.readLine()) != null)
+			    	  sOut.append(s);
 			} catch (IOException ex) {
 				throw ex;
 			} catch (RuntimeException ex) {
-				httpget.abort();
+				httpRequest.abort();
 				throw ex;
 			} finally {
 				instream.close();
 			}
 			httpclient.getConnectionManager().shutdown();
 		}
-		return returnedUrl;
+		return sOut.toString();
 	}
 
 }

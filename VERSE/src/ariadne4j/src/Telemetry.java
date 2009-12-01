@@ -9,6 +9,9 @@ import javax.servlet.http.HttpServletResponse;
 
 public class Telemetry extends javax.servlet.http.HttpServlet implements
 javax.servlet.Servlet {
+	String xmlHEAD = "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
+		+"<ariadne xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
+		+"xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">";
 	public Telemetry() {
 		super();
 	}
@@ -23,7 +26,6 @@ javax.servlet.Servlet {
 				// avg duration
 				// selected % vs the rest (pie)
 				// most probable plots
-
 	}
 
 	protected void doPost(HttpServletRequest request,
@@ -31,9 +33,5 @@ javax.servlet.Servlet {
 		//TODO:
 		// if amode=admin:
 		// ?? add remotelistener, etc... see CS's dox
-
 	}
-
-
-
 }

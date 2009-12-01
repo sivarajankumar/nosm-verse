@@ -22,7 +22,7 @@ public class AriadneData {
 	private static SqlMapClient sqlMapper;
 
 	static {
-		try {
+		try { // maybe shouldn't be in static init, in case it fails
 			Reader reader = Resources.getResourceAsReader("com/nosm/elearning/ariadne/SqlMapConfig.xml");
 			sqlMapper = SqlMapClientBuilder.buildSqlMapClient(reader);
 			reader.close();
@@ -131,7 +131,7 @@ public class AriadneData {
 	public static void registerUser(User user)throws SQLException{
 		if(!AriadneData.isUser(user)){
 			// insertAvatarWithKey
-			sqlMapper.insert("insertKeylessAvatar", user);
+			sqlMapper.insert("insertAvatarWithKey", user);
 		}else{
 			sqlMapper.update("updateUserByKey", user);
 		}
@@ -179,21 +179,25 @@ public class AriadneData {
 	    	cnt++;
 	        String token = st.nextElement().toString();
 	        if (!token.equals(assetName)){ //will exclude current asset
-	        	if (new Integer(cnt).equals(new Integer(st.countTokens()))){
+	        	if (new Integer(cnt).equals(new Integer(st.countTokens()))){ // does this work?
 	        		delim = "";
 	        	}
-	        	newSeqBuff.append(token +delim);
+	        	newSeqBuff.append(token + delim);
 	        }
 	    }
 
-	    if (newSeqBuff.toString().length() > 1){
+	    if (newSeqBuff.toString().equals(",")){
+	    	newSeqBuff = new StringBuffer();
+	    }
+
+	    if (newSeqBuff.toString().length() > 0){
 		    // end trim hack:
-		    if (newSeqBuff.toString().lastIndexOf(",") == newSeqBuff.toString().length() - 1){
+		    if (newSeqBuff.toString().endsWith(",")){
 		    	newSeqBuff = new StringBuffer(newSeqBuff.toString().substring(0, newSeqBuff.toString().length() -1));
 		    }
 
 		    // front trim hack:
-		    if (newSeqBuff.toString().indexOf(",") == 0){
+		    if (newSeqBuff.toString().startsWith(",")){
 		    	newSeqBuff = new StringBuffer(newSeqBuff.toString().substring(1, newSeqBuff.toString().length()));
 		    }
 	    }

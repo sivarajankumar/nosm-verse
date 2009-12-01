@@ -1,3 +1,6 @@
+import static com.nosm.elearning.ariadne.util.Constants.XML_HEAD_ARIADNE;
+import static com.nosm.elearning.ariadne.util.Constants.XML_HEAD_USER;
+
 import java.io.*;
 
 import javax.servlet.*;
@@ -63,9 +66,7 @@ javax.servlet.Servlet {
 					reply.append("<user name=\""+ thisUser.getAvatarFirst()+ " " +thisUser.getAvatarLast()+ "\"></user>");
 				}
 
-				String xmlout = "<?xml version=\"1.0\" encoding=\"utf-8\"?><users xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
-					+"xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">"
-					+ reply.toString()+ "</users>";
+				String xmlout = XML_HEAD_USER + reply.toString()+ "</users>";
 				response.setContentType("text/html");
 
 				PrintWriter out = response.getWriter();
@@ -108,9 +109,7 @@ javax.servlet.Servlet {
 			}
 
 			PrintWriter out = response.getWriter();
-			out.println("<?xml version=\"1.0\" encoding=\"utf-8\"?><users xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
-					+"xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">"
-					+"<error>" +(String)request.getParameter("fname") +" "+(String)request.getParameter("lname") + " has been removed.</error></users>" );
+			out.println(XML_HEAD_USER +"<error>" +(String)request.getParameter("fname") +" "+(String)request.getParameter("lname") + " has been removed.</error></users>" );
 		} catch (Exception e) {
 			e.printStackTrace(response.getWriter());
 		}
