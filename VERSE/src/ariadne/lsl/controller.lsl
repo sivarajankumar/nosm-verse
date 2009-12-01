@@ -655,7 +655,7 @@ option_start(key id) {
 
 option_text() {
     sendChatCommand(gMediaCh, gQSParserPageURL + "?dtext="
-    + llGetSubString(llEscapeURL(localtext), 0, 66)+"&options=" /// **** truncating text to display in opensim
+    + llGetSubString(llEscapeURL(localtext), 0, 66)+"&doptions=" /// **** truncating text to display in opensim
     + llEscapeURL(llList2CSV(gOptions))); // page with doc.write() JS, presents QS params
 }
 
