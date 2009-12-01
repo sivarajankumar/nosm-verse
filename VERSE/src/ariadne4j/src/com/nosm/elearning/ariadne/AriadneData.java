@@ -176,14 +176,14 @@ public class AriadneData {
         int cnt = 0;
         String delim = ",";
 	    while (st.hasMoreElements()){
-	    	cnt++;
 	        String token = st.nextElement().toString();
 	        if (!token.equals(assetName)){ //will exclude current asset
-	        	if (new Integer(cnt).equals(new Integer(st.countTokens()))){ // does this work?
-	        		delim = "";
-	        	}
+	        	//if (new Integer(cnt).equals(new Integer(st.countTokens()))){ // does this work?
+	        		//delim = "";
+	        	//}
 	        	newSeqBuff.append(token + delim);
 	        }
+	        cnt++;
 	    }
 
 	    if (newSeqBuff.toString().equals(",")){

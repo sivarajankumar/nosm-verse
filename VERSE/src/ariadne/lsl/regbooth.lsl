@@ -43,8 +43,8 @@ default
                 // give id?
                 // give bracelet from inventory
 
-                llGiveInventory(currentSignupUserKey, "nossum regional hospital bracelet 0.2");
-                llInstantMessage(currentSignupUserKey, "nossum regional hospital bracelet 0.2 has been added to your inventory. "
+                llGiveInventory(currentSignupUserKey, "nossum regional hospital bracelet 0.4");
+                llInstantMessage(currentSignupUserKey, "nossum regional hospital bracelet 0.4 has been added to your inventory. "
                 +"Attach it to your LEFT hand to enable it. Note: you must has RestrainedLife enabled. The bracelet only works on nossum island!");
             }
 

@@ -271,8 +271,8 @@ assignSL(string type, string target, string name, string val, integer duration){
         jump out;
     }
     if (type == "SLChat"){
-        llSay(0, "chatting this: "+ val);
-        sendChatCommand((integer)target, val);
+       // llSay(0, "chatting this: "+ val);
+        sendChatCommand((integer)target, llList2String(llParseString2List(val, ["~"], []), 0));
         jump out;
     }
 
@@ -426,7 +426,7 @@ parseFeed(string body){
                     }else{
                         if (gSSID == ""){ // first timer
                             //llSay(0, "1st request for this session");
-                            llSay(0, "session ID: "+value);
+                          //  llSay(0, "session ID: "+value);
                             gSSID = value;
                         }else{
                             // llSay(0, "SSID present, but does not match current session. What happened?");
@@ -649,7 +649,7 @@ option_start(key id) {
     resetElementsFull();
     gSSID="";
     string url = cTestURL+"&mnodeid=6";
-    llSay(0, "start: "+ url);
+  //  llSay(0, "start: "+ url);
     Rq_getpage = llHTTPRequest(url, [HTTP_METHOD,"GET"], "");
 }
 
@@ -740,8 +740,8 @@ option_option(integer num) {
         if (gPage == "node") {
             nodeName = llEscapeURL(nodeName);
 
-            llSay(0, "sending URL"+urlroot+"&api=shownode&case="+gCase+
-            "&mnodeid="+nodeName+"&sessid="+gSSID);
+         //   llSay(0, "sending URL"+urlroot+"&api=shownode&case="+gCase+
+           // "&mnodeid="+nodeName+"&sessid="+gSSID);
 
             Rq_getnode = llHTTPRequest(urlroot+"&api=shownode&case="+gCase+
             "&mnodeid="+nodeName+"&sessid="+gSSID, [HTTP_METHOD,"GET"], "");
@@ -1026,7 +1026,7 @@ state active
     }
 
     http_response(key request_id, integer status, list metadata, string body) {
-        llSay(0, body);
+       // llSay(0, body);
         string errorTXT = "";
         parseFeed(body);
 
@@ -1054,7 +1054,7 @@ state active
       //  llSay(0, "number of items to run: "+(string)n);
         for(i = 0; i < n; i++){
             string name = llList2String(orderedAssets, i);
-             llSay(0, "name to run: "+name);
+          //   llSay(0, "name to run: "+name);
             string value = getAssetAttribValByName(name, "value");
             string type = getAssetAttribValByName(name, "type");
 
@@ -1070,7 +1070,7 @@ state active
             }
 
             if(llToLower(type)=="slanimation"){
-                llSay(0,"******** IN slanimation: "+value );
+            //    llSay(0,"******** IN slanimation: "+value );
             }
 
             if (dtext != "") {
@@ -1105,7 +1105,7 @@ state active
             }
 
             if(llGetSubString( llToLower(type), 0, 1 ) == "sl"){
-                llSay(0,"******** about to assign: "+type+value + name + getAssetAttribValByName(name, "target") );
+              //  llSay(0,"******** about to assign: "+type+value + name + getAssetAttribValByName(name, "target") );
                 assignSL(type, getAssetAttribValByName(name, "target"), name, value, 0 );
             }
 

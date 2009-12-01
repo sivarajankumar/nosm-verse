@@ -11,6 +11,7 @@ import java.util.List;
 
 import org.apache.http.*;
 import org.apache.http.client.*;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.*;
 import org.apache.http.client.utils.*;
 import org.apache.http.impl.client.*;
@@ -30,11 +31,14 @@ public abstract class HttpFetch {
 
 		URI uri = URIUtils.createURI("http", Constants.OL_HOST, -1, apiUrl, pOut, null);
 
-		HttpRequestBase httpRequest = null;
+		HttpEntityEnclosingRequestBase httpRequest = null;
 		HttpResponse response = null;
-		System.out.println(" HttpFetch, request: "+uri.toString());
+
 		if (usePost){
-			 response = httpclient.execute(new HttpPost(uri));
+			HttpPost hPost = new HttpPost(uri);
+			hPost.setEntity(new UrlEncodedFormEntity(qparams));
+			System.out.println(" HttpFetch, request method: "+hPost.getMethod()+": " +uri.toString()+", params:"+ hPost.getParams().getParameter("sessionid"));
+			 response = httpclient.execute(hPost);
 		}else{
 			response = httpclient.execute(new HttpGet(uri));
 		}

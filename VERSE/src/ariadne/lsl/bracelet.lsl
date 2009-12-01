@@ -15,89 +15,9 @@ float gSensorRange = 196.0;
 float gSoundVolume = 0.8;
 
 
-
-// YOUR PARTICLES FUNCTION ==============================
-
-Particle_viewer_area_edition (list aVal){
-	string Texture;
-    integer Interpolate_Scale = FALSE;
-    vector Start_Scale = <0.04,0.04, 0>;;
-    vector End_Scale = <0.04,0.04, 0>;
-    integer Interpolate_Colour = FALSE;
-    vector Start_Colour = < 1, 1, 1 >;
-    vector End_Colour = < 1, 1, 1 >;
-    float Start_Alpha = 1;
-    float End_Alpha =1;
-    integer Emissive = FALSE;
-    float Age = 1;
-    float Rate = 1;
-    integer Count = 50;
-    float Life = 0;
-    integer Pattern = PSYS_SRC_PATTERN_EXPLODE;
-    float Radius = 0;
-    float Begin_Angle = 0;
-    float End_Angle = 3.14159;
-    vector Omega = < 0, 0, 0 >;
-    integer Follow_Source = FALSE;
-    Follow_Velocity = FALSE;
-    integer Wind = FALSE;
-    integer Bounce = FALSE;
-    float Minimum_Speed = 1;
-    float Maximum_Speed = 1;
-    vector Acceleration = < 0, 0, 0 >;
-    integer Target = FALSE;
-    key Target_Key = NULL_KEY;
-
-list Parameters =
-[
-PSYS_PART_FLAGS,
-(
-(Emissive * PSYS_PART_EMISSIVE_MASK) |
-(Bounce * PSYS_PART_BOUNCE_MASK) |
-(Interpolate_Colour * PSYS_PART_INTERP_COLOR_MASK) |
-(Interpolate_Scale * PSYS_PART_INTERP_SCALE_MASK) |
-(Wind * PSYS_PART_WIND_MASK) |
-(Follow_Source * PSYS_PART_FOLLOW_SRC_MASK) |
-(Follow_Velocity * PSYS_PART_FOLLOW_VELOCITY_MASK) |
-(Target * PSYS_PART_TARGET_POS_MASK)
-),
-PSYS_PART_START_COLOR, Start_Colour,
-PSYS_PART_END_COLOR, End_Colour,
-PSYS_PART_START_ALPHA, Start_Alpha,
-PSYS_PART_END_ALPHA, End_Alpha,
-PSYS_PART_START_SCALE, Start_Scale,
-PSYS_PART_END_SCALE, End_Scale,
-PSYS_SRC_PATTERN, Pattern,
-PSYS_SRC_BURST_PART_COUNT, Count,
-PSYS_SRC_BURST_RATE, Rate,
-PSYS_PART_MAX_AGE, Age,
-PSYS_SRC_ACCEL, Acceleration,
-PSYS_SRC_BURST_RADIUS, Radius,
-PSYS_SRC_BURST_SPEED_MIN, Minimum_Speed,
-PSYS_SRC_BURST_SPEED_MAX, Maximum_Speed,
-PSYS_SRC_TARGET_KEY, Target_Key,
-PSYS_SRC_ANGLE_BEGIN, Begin_Angle,
-PSYS_SRC_ANGLE_END, End_Angle,
-PSYS_SRC_OMEGA, Omega,
-PSYS_SRC_MAX_AGE, Life,
-PSYS_SRC_TEXTURE, Texture
-];
-llParticleSystem (Parameters);
-integer Particles = (integer) (Age * (float) Count / Rate);
-if (4096 < Particles)
-{
-llOwnerSay ("Emitter creates too many particles!");
-}
-llOwnerSay ("Emitter produces " + (string) Particles + " concurrent particles.");
-}
-
-// SCRIPT BODY ==============================
-
-
 assignSL(string type, string name, string val){
 
 list valOpts = llParseString2List(val,["|"],[]);
-
     if (type == "SLAnimation"){
         //duration~isLoop~loopCount~loopCtrls
         integer foundstate = 0;
@@ -124,7 +44,6 @@ list valOpts = llParseString2List(val,["|"],[]);
         if (foundstate == 0){ // auto assign to default if no ctrls defined
             anims += name;
             states += "Standing";
-            // llSay(0,"we're gettin er done");
         }
 
         //llSay(0, "anim"+ llList2String(anims,0) + "state" +llList2String(states,0));
@@ -206,8 +125,13 @@ list valOpts = llParseString2List(val,["|"],[]);
     }
 
     if (type == "SLParticleSystem"){
-        llSay(0, "Particler sys str: " + llDumpList2String(valOpts, ",") );
-        Particle_viewer_area_edition(valOpts);
+       // llSay(0, "Particler sys str: :" +llDumpList2String(valOpts, ","));
+
+
+        // if start run:
+       // Particle_viewer_area_edition(valOpts);
+       // if stop, run:
+       // llParticleSystem ([]);
         jump out;
     }
 
@@ -229,7 +153,7 @@ list valOpts = llParseString2List(val,["|"],[]);
        llInstantMessage(llGetOwner(), "The " +name + " apparel item has been added to your inventory.");
     }
 
-     llParticleSystem ([]); // Stop the particles, just in case
+
      llResetScript();
     @out;
 
@@ -249,7 +173,7 @@ default
     state_entry()
 
     {
-     llListen( 603, "", NULL_KEY, "" );
+     llListen(603, "", NULL_KEY, "" );
      llListen(0, "", llGetOwner(), "" );
     }
     run_time_permissions(integer perms)
@@ -296,7 +220,7 @@ default
         if (ch == 603){
             if( llSubStringIndex(msg, "~") > -1){
 
-               // llSay(0, "bracelet heard ya: "+ msg);
+          //      llSay(0, "bracelet heard ya: "+ msg);
                 list parts = llParseString2List(msg, ["~"], []);
 
                 string iKey = llList2String(parts, 0);
@@ -310,7 +234,7 @@ default
                     //llSay(0,"ya?");
                     assignSL(itype, iname, ival);
                 }else{
-                     //llSay(0, "Doesn't apply to me: "+ iKey);
+                   //  llSay(0, "Doesn't apply to me: "+ iKey);
                 }
 
             }else{
@@ -334,7 +258,7 @@ default
         if (ch == 0){
             if( llSubStringIndex(msg, "chose:") == 0){
                 string thisOpt = llGetSubString(msg, 6, 7);
-                //llSay(0, thisOpt);
+                llSay(0, thisOpt);
                 llSay(687686, "option=" + thisOpt);
             }
 

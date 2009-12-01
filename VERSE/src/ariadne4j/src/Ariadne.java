@@ -136,11 +136,9 @@ javax.servlet.Servlet {
 
 						if ((sessid == null || sessid == "") ) {
 							if (olXMLSess != null || olXMLSess != ""){
-
 								session.setAttribute("ol-sessid", olXMLSess);
 							}
 						} else {
-
 							session.setAttribute("ol-sessid", sessid);
 						}
 

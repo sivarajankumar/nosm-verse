@@ -154,9 +154,27 @@ $(document).ready(function(){
 		if ($("select[name='selector']").getValue() != "") {
 			$("div[id=help_" + $("select[name='selector']").getValue().toLowerCase() + "]").show();
 		} else {
-			$("div[id=help_sldoc]").show();
+			$("div[id^=help_sldoc]").show();
 		}
     });
+
+	$("input[name='useRespChannel']").click(function(){
+		if ($("input[id='useRespChannel']").getValue() == '1'){
+			$("div[id^=use_resp_chatchannel]").show();
+		}else{
+			$("div[id^=use_resp_chatchannel]").hide();
+		}
+	});
+
+	$("select[name='sel_resp_chatchannel']").click(function(){
+		if ($("select[name='sel_resp_chatchannel']").getValue() == "-1"){
+			$("div[id^=resp_chatchannel_Other]").show();
+			$("input[id='resp_chatchannel_Other_text']").setValue($("select[name='sel_resp_chatchannel']").getValue()) ;
+		}else{
+			$("div[id^=resp_chatchannel_Other]").hide();
+		}
+	});
+
 
     $("#isctrlssnd").change(function(){
 		if ( $("input[id='isctrlssnd']").getValue() == 1){
@@ -281,13 +299,22 @@ function submitIt(){
     // params built here MUST match the controller LSL switch statement in assignSL():
     switch (curType) {
         case 'SLChat':
+
 			var curChan = $("select[name='chatchannel']").getValue();
 			if (curChan == '9993') { //HOLODECK
 				outgoingVal = $("select[name='Holodeck_chat_cmds']").getValue();
 				if (outgoingVal.indexOf('run') == 0 || outgoingVal.indexOf('end') == 0) {
-					outgoingVal = outgoingVal + ' ' + $("select[id^=ainv_slchat]").getValue();
+					if (outgoingVal.indexOf('run shell') > -1 || outgoingVal.indexOf('end shell') > -1) {
+						outgoingVal = outgoingVal + ' ' + $("select[id^=ainv_slchat]").getValue().replace("SHELL ", "");
+						outgoingName = $("select[id^=ainv_slchat]").getValue().replace("SHELL ", "");
+					}
+					else {
+						outgoingName = $("select[id^=ainv_slchat]").getValue();
+						outgoingVal = outgoingVal + ' ' + $("select[id^=ainv_slchat]").getValue();
+					}
+				}else{
+					outgoingName = $("select[id^=ainv_slchat]").getValue();
 				}
-				outgoingName = $("select[id^=ainv_slchat]").getValue();
             }
             else {
                 if (curChan == "687686") { //PIVOTE
@@ -298,22 +325,32 @@ function submitIt(){
                 }
                 else {
                     if (curChan == "7051674") { //MANNEQUIN
-                        if ($("input[name='manq_int']").getValue() != 'manq_talk') {
+                        if ($("input[name='manq_int']").getValue() == 'manq_talk') {
                             outgoingVal = $("select[name='mannequin_cmds']").getValue();
-                        }
-                        else {
-                            outgoingVal = $("select[name='mannequin_parts']").getValue();
-                        }
+                        }else{
+							outgoingVal = $("select[name='mannequin_parts']").getValue();
+						}
+						outgoingName = $("select[name='linklist_manq']").getValue();
                     }
                     else {
-                        //get textfield
-                        outgoingVal = $("input[name='chatChannelMsg']").getValue();
+						if (curChan == "23") { //Multigadget_Multicast
+							outgoingName = $("select[name='mg_cmd']").getValue();
+							outgoingVal = $("select[name='mg_cmd']").getValue();
+						}else{
+							if (curChan == "0") {//Public
+								outgoingName = $("input[name='chatChannelPubMsg']").getValue();
+								outgoingVal = $("select[name='chatChannelPubMsg']").getValue();
+							}else{
+									outgoingName = $("input[name='chatChannelMsg']").getValue(); // other
+									outgoingVal = $("select[name='chatChannelMsg']").getValue();
+							}
+						}
                     }
                 }
             }
 
+			outgoingTarget = curChan;
             outgoingVal = outgoingVal + '~' + $("input[id='csm']").getValue();
-            outgoingTarget = $("select[name='chatchannel']").getValue();
             //outgoingTarget = $("select[name='linklist_manq']").getValue(); // node link
 
 			//outgoingName = $("#chatchannel :selected").text();
@@ -453,7 +490,7 @@ function submitIt(){
                 outgoingName = $("select[name='ainv_slsound']").getValue();
             }
 
-			outgoingVal = "~" + $("select[sv']").getValue(); // volume
+			outgoingVal = "~" + $("select[name='sv']").getValue(); // volume
 
 			if ($("input[name='sloop']").getValue() != "1") { //isLoop
 				outgoingVal = outgoingVal + "~1";

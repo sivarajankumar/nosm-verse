@@ -787,23 +787,23 @@
                         <br/>
                         Loudness/Range:
                         <br/>
-                        whisper: <input id="csm" name="csm" value="whisper" type="radio"><i>(can only be heard within
+                        whisper: <input id="whisper" name="csm" value="whisper" type="radio"><i>(can only be heard within
                             10 meters of the speaker)</i>
                         <br/>
-                        say it normally: <input id="csm" name="csm" checked="checked" value="say" type="radio"><i>(can only be heard within 20 meters of
+                        say it normally: <input id="say" name="csm" checked="checked" value="say" type="radio"><i>(can only be heard within 20 meters of
                             the speaker)</i>
                         <br/>
-                        shout it: <input id="csm" name="csm" value="shout" type="radio"><i>(can only be heard within
+                        shout it: <input id="shout" name="csm" value="shout" type="radio"><i>(can only be heard within
                             100 meters of the speaker)</i>
 						<br/>
-                        region-wide: <input id="csm" name="csm" value="region" type="radio"><i>(can be heard
+                        region-wide: <input id="region" name="csm" value="region" type="radio"><i>(can be heard
                             within the entire region)</i>
                         <br/>
                         <br/>
                         Response should be heard on the same
-                        channel: <input type="checkbox" checked="checked" name="useRespChannel" id="useRespChannel">
+                        channel: <input type="checkbox" checked="checked" value="1" name="useRespChannel" id="useRespChannel">
                         <br/>
-                        <div>
+                        <div id="use_resp_chatchannel" class='hidden'>
                             <select name="sel_resp_chatchannel" id="sel_resp_chatchannel">
                                 <option disabled="" value=""></option>
                                 <option value="0">Public</option>
@@ -817,10 +817,10 @@
                                 <option value="7051674">PIVOTE_Mannequin</option>
                                 <option value="55">Lite_Prim_Animator</option>
                                 <option value="56">PrimPuppeteer</option>
-                                <option value="">Other</option>
+                                <option value="-1">Other</option>
                             </select>
-                            <div id="resp_chatchannel_Other">
-                                <input type="text" name="resp_chatchannel_Other_text" size="7">
+                            <div id="resp_chatchannel_Other" class='hidden'>
+                                <input type="text" name="resp_chatchannel_Other_text" size="9">
                             </div>
                             <br/>
                             <br/>
