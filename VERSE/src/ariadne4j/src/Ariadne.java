@@ -31,7 +31,6 @@ import java.util.Iterator;
 public class Ariadne extends javax.servlet.http.HttpServlet implements
 javax.servlet.Servlet {
 	private static final long serialVersionUID = 7526471155622776147L;
-	HttpSession session;
 	String lineSep = Constants.lineSep;
 	public Ariadne() {
 		super();
@@ -43,26 +42,44 @@ javax.servlet.Servlet {
 		StringBuffer reply = new StringBuffer();
 		String sessid = "";
 		String mnodeid = "";
-		String linkid = "";
+		//String linkid = "";
 		String aMode = ""; // admin gets you uipairs and id, slplay gets you short sl xml
 		GameNode thisNode = null;
+		boolean isLive = true;
+
 		try {
-			sessid = (String) request.getParameter("sessid");
-			mnodeid = (String) request.getParameter("mnodeid");
-			linkid = (String) request.getParameter("linkid");
+
+			if ((String) request.getParameter("mnodeid") != null){
+				mnodeid = (String) request.getParameter("mnodeid");
+			}
+			if ((String) request.getParameter("mnodeid") != null){
+				mnodeid = (String) request.getParameter("mnodeid");
+			}
+			if ((String) request.getParameter("sessid") != null){
+				sessid = (String) request.getParameter("sessid");
+			}
 			aMode = (String) request.getParameter("mode");
 
-			 if (sessid != null){
-				 if (!sessid.equals(session.getAttribute("ol-sessid"))){  // does it match the current session?
-			      throw new RuntimeException("<error>Fatal Error: session id "+sessid+" returned does not match the current session id: "
-				       + session.getAttribute("ol-sessid")+"</error>");
-			   }
-			 }
+			if (aMode.equals("test")){
+				isLive = false;
+				aMode = "admin";
+			}
+
+			if (sessid != null || sessid != ""){
+				String savedSSID = (String)request.getSession().getAttribute("game-sessid");
+				if (savedSSID != null){  // does it match the current session?
+					if (sessid.equals(savedSSID)){
+						throw new RuntimeException("<error>Fatal Error: session id "+sessid+" returned does not match the current session id: "
+								+ request.getSession().getAttribute("game-sessid")+"</error>");
+					}
+				}
+			}
 			if (aMode == null || aMode == "") {
-				reply.append("<error>Critical error: No mode or node has been defined in the request</error>");
+				reply.append("<error>Critical error: No mode has been defined in the request</error>");
 			} else {
 				// TODO: if aMode=stats: asset usage by type, by sl_type
-				if ((aMode.toLowerCase() == "admin") && (mnodeid == null || mnodeid == "")) {
+				if ( (mnodeid == null || mnodeid == "")) {
+					//if (aMode.toLowerCase() == "admin"){
 					reply.append("Missing required MNodeID in the request");
 				} else {
 					String action = (String)request.getParameter("action");
@@ -71,36 +88,51 @@ javax.servlet.Servlet {
 						if (a2rem.equals(""))throw new Exception("<error>no asset id defined, cannot remove</error>");
 						AriadneData.removeAssetFromSeq(Integer.parseInt(a2rem));
 						AriadneData.deleteAsset(Integer.parseInt(a2rem)) ;
-						reply.append("<html><head><title></title></head><body onload='window.location=\"/ariadne4j/index2.html?mnodeid="
+						reply.append("<html><head><title></title></head>"+
+								"<body onload='window.location=\"/ariadne4j/index2.html?mnodeid="
 								+mnodeid + "&mode=admin\"></body></html>"); // use response.sendRedirect()?
 					}else{
-						session = request.getSession();
-						String gameAddress = Constants.GAME_URL_BASE_PATH3+"/link/"+ linkid + Constants.GAME_URL_PATH_SUFFIX3;
-						if (linkid.equals("start") ) {
+						String gameAddress = Constants.GAME_URL_PATH3 + Constants.GAME_GAME_ID +
+							Constants.GAME_URL_LINK_PREFIX3+ mnodeid + Constants.GAME_URL_PATH_SUFFIX3;
+						if (mnodeid.equals(Constants.GAME_URL_LINK_START) ) {
 							sessid = HttpFetch.getString4Url("/django/session/create/", new ArrayList(), false);
-							session.setAttribute("ol-sessid", sessid);
+							request.getSession().setAttribute("game-sessid", sessid);
 							// (re)start at root node:
-							gameAddress = Constants.GAME_URL_BASE_PATH3+"/root/"+Constants.GAME_URL_PATH_SUFFIX3 ;
+							gameAddress = Constants.GAME_URL_PATH3 + Constants.GAME_GAME_ID +"/root"+Constants.GAME_URL_PATH_SUFFIX3 ;
 						}
 						//System.out.println("calling OL3 with url "+gameAddress);
 						org.w3c.dom.Document gameResults = null;
 						try{
-							if (true){// testing switch
-								ArrayList qparams = new ArrayList();
-								qparams.add(new BasicNameValuePair("sessionid", sessid));
-								gameResults = XPathReader.loadXMLFrom(HttpFetch.getString4Url(gameAddress, qparams, true)); // use Post
+							if (isLive){// testing switch
+								if ( sessid != null || sessid != "" ){
+									ArrayList qparams = new ArrayList();
+									qparams.add(new BasicNameValuePair("sessionid", sessid));
+									gameResults = XPathReader.loadXMLFrom(HttpFetch.getString4Url(gameAddress, qparams, true));// use Post
+								}else{
+									gameResults = XPathReader.loadXMLFrom(HttpFetch.getString4Url(gameAddress, null, false));
+								}
 							}else{
 								gameResults = XPathReader.loadXMLFrom(getTestXML(mnodeid));
 							}
-							Game thisGame = new Game(gameResults);
-							thisNode = new GameNode(gameResults);
 
-							if (!sessid.equals(thisGame.getSession())){  // does it match the current session?
-							      throw new RuntimeException("<error>Fatal Error: session id "+thisGame.getSession()+" returned does not match the current session id: "
-								       + sessid +"</error>");
-							   }
-							thisGame.addNode(thisNode);
-							thisNode.setParentGame(thisGame);
+							Game thisGame = new Game(gameResults);
+							thisNode = new GameNode(thisGame, gameResults);
+							thisNode.setAssets((ArrayList)AriadneData.selectAssetsByMNodeId(thisNode.getId(), false));
+							//thisGame.addNode(thisNode);
+							if (sessid != null ){
+								if (!isLive){
+									sessid = TestConstants.NODE_SSID;
+								}
+
+								if (!sessid.equals(thisGame.getSession())){  // does it match the current session?
+								      throw new RuntimeException("<error>Fatal Error: session id "+thisGame.getSession()+" returned does not match the current session id: "
+									       + sessid +"</error>");
+								   }
+							}else{
+								sessid = thisGame.getSession();
+								request.getSession().setAttribute("game-sessid", sessid);
+							}
+
 						}catch (SAXException se) {
 							se.printStackTrace(response.getWriter());
 						}

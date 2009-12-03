@@ -140,7 +140,7 @@ public class XPathReader {
 			builder = factory.newDocumentBuilder();
 		}
 		catch (javax.xml.parsers.ParserConfigurationException ex) {
-
+			
 		}
 		org.w3c.dom.Document doc = builder.parse(is);
 		is.close();

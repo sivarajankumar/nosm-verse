@@ -20,6 +20,14 @@ public class GameNode {
 	private org.w3c.dom.Document ariadnexml;
 	private Game parentGame;
 
+
+	public GameNode(Game pGame, org.w3c.dom.Document xml) {
+		super();
+		this.setParentGame(pGame);
+		this.setGameXml(xml);
+		transform(xml);
+	}
+
 	public GameNode(org.w3c.dom.Document xml) {
 		super();
 		this.setGameXml(xml);
@@ -59,7 +67,7 @@ public class GameNode {
 				reply.append(Constants.lineSep +"</assets>"+ Constants.lineSep );
 
 				reply.append("<links>");
-				Iterator j = this.getAssets().iterator();
+				Iterator j = this.getLinks().iterator();
 				while (j.hasNext()) {
 					String lnk = (String)j.next();
 					reply.append("<link label=\"" + lnk + "\" ref=\"" + Integer.toString(this.getAssets().indexOf(lnk))  + "\" ></link>" + Constants.lineSep);

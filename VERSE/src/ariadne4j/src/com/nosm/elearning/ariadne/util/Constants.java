@@ -18,7 +18,9 @@ public final class Constants {
 	  public static final String XPATH_GAME_ID= "/labyrinth/mapid";
 	  public static final String XPATH_VAL = "/text()";
 
+
 	  // headers for service responses
+
 	  public static final String XML_HEAD_ARIADNE = "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
 			+"<ariadne xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
 			+"xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">";
@@ -26,6 +28,12 @@ public final class Constants {
 	  public static final String XML_HEAD_USER = "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
 			+"<users xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
 			+"xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">";
+
+
+	  //public static final String XML_HEAD_ARIADNE = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" +"<ariadne>";
+
+	  //public static final String XML_HEAD_USER = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" +"<users>";
+
 
 	  // misc
 	  public static final String GAME_HOST3 = "142.51.75.11";
@@ -43,7 +51,7 @@ public final class Constants {
 	  public static final String GAME_URL_ID_PREFIX = "asp?id=";
 	  public static final String GAME_URL_ID_SUFFIX = "&mode=remote";
 
-	  public static final String GAME_URL_BASE_PATH3 = GAME_URL_PATH3 + GAME_GAME_ID;
+	  //public static final String GAME_URL_BASE_PATH3 = GAME_URL_PATH3 + GAME_GAME_ID;
 
 
 	  public static final String GAME_URL_NAME_SUFFIX = "</a>";
@@ -52,7 +60,14 @@ public final class Constants {
 	  public static final String GAME_URL_NAME_PREFIX3 = "/data/'>";
 
 	  public static final String GAME_URL_ID_SUFFIX3 = "/data/";
-	  public static final String GAME_URL_ID_PREFIX3 = GAME_GAME_ID+ "/link/";
+	  public static final String GAME_URL_LINK_PREFIX3 = "/node/";
+	  //public static final String GAME_URL_LINK_PREFIX3 = "/link/";
+
+	  public static final String GAME_URL_LINK_START = "start";
+
+
+
+	  public static final String GAME_URL_ID_PREFIX3 = GAME_GAME_ID+ GAME_URL_LINK_PREFIX3 ;
 
 	  //UI
 	  public static final String UI_NAME = "assetNameOUT";

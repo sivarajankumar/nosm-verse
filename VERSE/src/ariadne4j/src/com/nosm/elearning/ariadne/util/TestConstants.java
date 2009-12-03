@@ -2,7 +2,7 @@ package com.nosm.elearning.ariadne.util;
 
 public final class TestConstants {
 	  private TestConstants() {}  // can't construct
-
+	  public static final String NODE_SSID ="31456703fb877d3db43a4bcef72b3fec";
 	  // XPATH expressions to retrieve OL content
 	  public static final String NODE1 = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"+
 		"<labyrinth>"+
@@ -16,7 +16,7 @@ public final class TestConstants {
 		"%2D+%3C%2Fa%3E%3C%2Fp%3E%3Cp%3E%3Ca+href%3D%27mnode%5Fclient%2Easp%3Fid%3D8338%26mode%3Dremote%26sessid%3DE27A2972"+
 		"%2DDE2B%2D4995%2D8EE7%2D786115628B9E%27%3EID%3D%5B5%5D%5D%5D%5D+%2D+also+complains+of+backache%3C%2Fa%3E%3C%2Fp%3E</linker>"+
 		"<rootnode>8336</rootnode>"+
-		"<mysession>E27A2972-DE2B-4995-8EE7-786115628B9E</mysession>"+
+		"<mysession>31456703fb877d3db43a4bcef72b3fec</mysession>"+
 		"<maptype>maze</maptype>"+
 	"</labyrinth>";
 
@@ -33,7 +33,7 @@ public final class TestConstants {
 		"%2D+%3C%2Fa%3E%3C%2Fp%3E%3Cp%3E%3Ca+href%3D%27mnode%5Fclient%2Easp%3Fid%3D8338%26mode%3Dremote%26sessid%3DE27A2972"+
 		"%2DDE2B%2D8338%2D8EE7%2D786115628B9E%27%3EID%3D%5B5%5D%5D%5D%5D+%2D+a+dark+room+with+2+computer+screens%3C%2Fa%3E%3C%2Fp%3E</linker>"+
 		"<rootnode>8336</rootnode>"+
-		"<mysession>E27A2972-DE2B-4995-8EE7-786115628B9E</mysession>"+
+		"<mysession>31456703fb877d3db43a4bcef72b3fec</mysession>"+
 		"<maptype>maze</maptype>"+
 	"</labyrinth>";
 
@@ -49,7 +49,7 @@ public final class TestConstants {
 		"%2D+%3C%2Fa%3E%3C%2Fp%3E%3Cp%3E%3Ca+href%3D%27mnode%5Fclient%2Easp%3Fid%3D8337%26mode%3Dremote%26sessid%3DE27A2972"+
 		"%2DDE2B%2D4995%2D8EE7%2D786115628B9E%27%3EID%3D%5B5%5D%5D%5D%5D+%2D+a+white+room+with+3+molecules%3C%2Fa%3E%3C%2Fp%3E</linker>"+
 		"<rootnode>8336</rootnode>"+
-		"<mysession>E27A2972-DE2B-4995-8EE7-786115628B9E</mysession>"+
+		"<mysession>31456703fb877d3db43a4bcef72b3fec</mysession>"+
 		"<maptype>maze</maptype>"+
 	"</labyrinth>";
 
