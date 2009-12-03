@@ -19,7 +19,8 @@ import org.apache.http.message.*;
 
 
 public abstract class HttpFetch {
-	public static String getString4Url(String apiUrl, ArrayList qparams, boolean usePost) throws URISyntaxException, HttpResponseException, IOException, Exception {
+	public static String getString4Url(String apiUrl, ArrayList qparams, boolean usePost)
+		throws URISyntaxException, HttpResponseException, IOException, Exception {
 
 		HttpClient httpclient = new DefaultHttpClient();
 		StringBuffer sOut = new StringBuffer();
@@ -29,7 +30,7 @@ public abstract class HttpFetch {
 			pOut = URLEncodedUtils.format(qparams, "UTF-8");
 		}
 
-		URI uri = URIUtils.createURI("http", Constants.OL_HOST, -1, apiUrl, pOut, null);
+		URI uri = URIUtils.createURI("http", Constants.GAME_HOST3, -1, apiUrl, pOut, null);
 
 		HttpEntityEnclosingRequestBase httpRequest = null;
 		HttpResponse response = null;
@@ -37,13 +38,15 @@ public abstract class HttpFetch {
 		if (usePost){
 			HttpPost hPost = new HttpPost(uri);
 			hPost.setEntity(new UrlEncodedFormEntity(qparams));
-			System.out.println(" HttpFetch, request method: "+hPost.getMethod()+": " +uri.toString()+", params:"+ hPost.getParams().getParameter("sessionid"));
+			System.out.println(" HttpFetch, request method: "+hPost.getMethod()+": " +
+					uri.toString()+", params:"+ hPost.getParams().getParameter("sessionid"));
 			 response = httpclient.execute(hPost);
 		}else{
 			response = httpclient.execute(new HttpGet(uri));
 		}
 		if (response.getStatusLine().toString().toLowerCase().indexOf("internal server error") > 0)
-			throw new Exception("HttpFetch ERROR: URI "+uri+" returned remote server error: "+ response.getStatusLine().toString());
+			throw new Exception("HttpFetch ERROR: URI "+uri+
+					" returned remote server error: "+ response.getStatusLine().toString());
 
 		HttpEntity entity = response.getEntity();
 		if (entity != null) {
