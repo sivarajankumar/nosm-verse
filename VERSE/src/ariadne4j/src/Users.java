@@ -32,11 +32,11 @@ import org.xml.sax.SAXException;
 
 import com.nosm.elearning.ariadne.AriadneData;
 //import com.nosm.elearning.ariadne.AriadneJdbc;
-import com.nosm.elearning.ariadne.XPathReader;
 
 import com.nosm.elearning.ariadne.model.Asset;
 import com.nosm.elearning.ariadne.model.AssetType;
 import com.nosm.elearning.ariadne.model.User;
+import com.nosm.elearning.ariadne.util.XPathReader;
 
 import java.nio.charset.Charset;
 import java.sql.SQLException;

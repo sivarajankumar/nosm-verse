@@ -3,11 +3,11 @@ package com.nosm.elearning.ariadne.model;
 public class Asset {
 
 	private int id;
-	private String name;
-	private String type;
-	private String value;
-	private String UIPairs;
-	private String target;
+	private String name = "";
+	private String type= "";
+	private String value= "";
+	private String UIPairs= "";
+	private String target= "";
 	private int nodeid;
 
 	public int getId() {
@@ -96,5 +96,18 @@ public class Asset {
 		this.target = target;
 		this.nodeid = nodeid;
 	}
+
+	public String getXML(){
+
+		return "<asset type=\"" + this.getType()
+		+ "\" iid=\"" + this.getId()
+		+ "\" name=\"" + this.getName()
+		+ "\" targettype=\"" + this.getTarget()
+		+ "\" value=\"" + this.getValue()
+		+ "\" uipairs=\"" + this.getEncodedUIPairs()
+		+ "\" ></asset>";
+
+	}
+
 
 }
