@@ -85,20 +85,17 @@ public class Asset {
 		this.UIPairs = pairs;
 		this.target = target;
 		this.nodeid = nodeid;
+
+
 	}
 
 	public Asset(int id, String name, String type, String value, String pairs, String target, int nodeid) {
+		this(name, type, value,  pairs,  target,  nodeid);
 		this.id = id;
-		this.name = name;
-		this.type = type;
-		this.value = value;
-		this.UIPairs = pairs;
-		this.target = target;
-		this.nodeid = nodeid;
+
 	}
 
 	public String getXML(){
-
 		return "<asset type=\"" + this.getType()
 		+ "\" iid=\"" + this.getId()
 		+ "\" name=\"" + this.getName()
@@ -106,8 +103,14 @@ public class Asset {
 		+ "\" value=\"" + this.getValue()
 		+ "\" uipairs=\"" + this.getEncodedUIPairs()
 		+ "\" ></asset>";
-
 	}
 
-
+	public String getXML(boolean isAdmin){
+		String oXML = "<asset type=\"" + this.getType();
+		if(isAdmin)oXML = oXML + "\" iid=\"" + this.getId();
+		oXML = oXML + "\" name=\"" + this.getName()+ "\" targettype=\"" + this.getTarget()+ "\" value=\"" + this.getValue();
+		if(isAdmin)oXML = oXML + "\" uipairs=\"" + this.getEncodedUIPairs();
+		oXML = oXML + "\" ></asset>";
+		return oXML;
+	}
 }

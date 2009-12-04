@@ -23,6 +23,7 @@ import com.nosm.elearning.ariadne.model.game.uri.GameUri;
 import com.nosm.elearning.ariadne.model.game.uri.OL3GameUri;
 import com.nosm.elearning.ariadne.model.game.uri.OLGameUri;
 import com.nosm.elearning.ariadne.util.Constants;
+import com.nosm.elearning.ariadne.util.ErrorConstants;
 import com.nosm.elearning.ariadne.util.HttpFetch;
 import com.nosm.elearning.ariadne.util.TestConstants;
 import com.nosm.elearning.ariadne.util.XPathReader;
@@ -51,7 +52,6 @@ javax.servlet.Servlet {
 		boolean isLive = true;
 
 		try {
-
 			if ((String) request.getParameter("mnodeid") != null){
 				mnodeid = (String) request.getParameter("mnodeid");
 			}
@@ -72,36 +72,34 @@ javax.servlet.Servlet {
 				String savedSSID = (String)request.getSession().getAttribute("game-sessid");
 				if (savedSSID != null){  // does it match the current session?
 					if (sessid.equals(savedSSID)){
-						throw new RuntimeException("<error>Fatal Error: session id "+sessid+" returned does not match the current session id: "
-								+ request.getSession().getAttribute("game-sessid")+"</error>");
+						throw new RuntimeException(cc(sessid, ErrorConstants.XML_SSID_PREFIX, ErrorConstants.XML_SSID_SUFFIX ) +
+								request.getSession().getAttribute("game-sessid")+ErrorConstants.XML_ET );
 					}
 				}
 			}
 			if (aMode == null || aMode == "") {
-				reply.append("<error>Critical error: No mode has been defined in the request</error>");
+				reply.append(ErrorConstants.XML_NO_MODE);
 			} else {
 				// TODO: if aMode=stats: asset usage by type, by sl_type
 				if ( (mnodeid == null || mnodeid == "")) {
 					//if (aMode.toLowerCase() == "admin"){
-					reply.append("Missing required MNodeID in the request");
+					reply.append(ErrorConstants.XML_NO_NODE);
 				} else {
 					String action = (String)request.getParameter("action");
 					if (action != null && action.equals("del")){
 						String a2rem = (String)request.getParameter("asset");
-						if (a2rem.equals(""))throw new Exception("<error>no asset id defined, cannot remove</error>");
+						if (a2rem.equals(""))throw new Exception(ErrorConstants.XML_NO_ASSET);
 						AriadneData.removeAssetFromSeq(Integer.parseInt(a2rem));
 						AriadneData.deleteAsset(Integer.parseInt(a2rem)) ;
-						reply.append("<html><head><title></title></head>"+
-								"<body onload='window.location=\"/ariadne4j/index2.html?mnodeid="
-								+mnodeid + "&mode=admin\"></body></html>"); // use response.sendRedirect()?
+						reply.append(cc(mnodeid, ErrorConstants.XML_REDIR_PREFIX ,
+								ErrorConstants.XML_REDIR_SUFFIX)); // use response.sendRedirect()?
 					}else{
 
-						GameUri gameUrl = new OL3GameUri();
+						GameUri gameUrl = new OL3GameUri(Integer.parseInt(mnodeid));
 						String versionStr = (String)request.getParameter("v");
 						if (versionStr!=null && (versionStr).equals("2")){
-							gameUrl = new OLGameUri();
+							gameUrl = new OLGameUri(Integer.parseInt(mnodeid));
 						}
-
 						String gameAddress = gameUrl.getPath() + gameUrl.getGameId() +
 						gameUrl.getLinkPrefix()+ mnodeid + gameUrl.getPathSuffix() ;
 						//System.out.println("calling OL3 with url "+gameAddress);
@@ -113,8 +111,7 @@ javax.servlet.Servlet {
 									sessid = HttpFetch.getString4Url("/django/session/create/", new ArrayList(), false).trim();
 									request.getSession().setAttribute("game-sessid", sessid);
 									// (re)start at root node:
-									gameAddress = gameUrl.getPath() + gameUrl.getGameId() +"/root"+
-									gameUrl.getPathSuffix() ;
+									gameAddress = gameUrl.getPath() + gameUrl.getGameId() +"/root"+ gameUrl.getPathSuffix() ;
 									ArrayList qparams = new ArrayList();
 									qparams.add(new BasicNameValuePair(gameUrl.getLinkSsid(), sessid));
 									gameResults = XPathReader.loadXMLFrom(HttpFetch.getString4Url(gameAddress, qparams, true));// use Post
@@ -122,9 +119,8 @@ javax.servlet.Servlet {
 									gameResults = XPathReader.loadXMLFrom(HttpFetch.getString4Url(gameAddress, null, false));
 								}
 							}else{
-								gameResults = XPathReader.loadXMLFrom(getTestXML(mnodeid));
+								gameResults = XPathReader.loadXMLFrom(getTestXML(gameUrl.getNodeId()));
 							}
-
 							Game thisGame = new Game(gameResults);
 							thisNode = new GameNode(thisGame, gameResults);
 							thisNode.setAssets((ArrayList)AriadneData.selectAssetsByMNodeId(thisNode.getId(), false));
@@ -133,16 +129,14 @@ javax.servlet.Servlet {
 								if (!isLive){
 									sessid = TestConstants.NODE_SSID;
 								}
-
 								if (!sessid.equals(thisGame.getSession())){  // does it match the current session?
-								      throw new RuntimeException("<error>Fatal Error: session id "+thisGame.getSession()+" returned does not match the current session id: "
-									       + sessid +"</error>");
+								      throw new RuntimeException(cc(thisGame.getSession(), ErrorConstants.XML_SSID_PREFIX , ErrorConstants.XML_SSID_SUFFIX )+
+									        sessid +ErrorConstants.XML_ET );
 								   }
 							}else{
 								sessid = thisGame.getSession();
 								request.getSession().setAttribute("game-sessid", sessid);
 							}
-
 						}catch (SAXException se) {
 							se.printStackTrace(response.getWriter());
 						}
@@ -157,10 +151,9 @@ javax.servlet.Servlet {
 			}else{
 				out.println(XPathReader.xmlToString(thisNode.getAriadneXml()));
 			}
-
 		} catch (Exception e) {
 			e.printStackTrace(response.getWriter());
-			//response.getWriter().println("<Error>AriadneControllerException: "+e.getMessage()+ e."</Error>");
+			//response.getWriter().println(ErrorConstants.XML_BASIC_PREFIX  +e.getMessage()+ErrorConstants.XML_ET );
 		}
 	}
 
@@ -183,9 +176,6 @@ javax.servlet.Servlet {
 			if (mappedid != null){
 				if (mappedid.equals("")) mappedid = "0"; //hack to avoid nulls
 				if(AriadneData.doesAssetExist(Integer.parseInt(mappedid))) {
-
-					//String thisID = (String) request.getParameter(Constants.UI_ID);
-
 					asset.setId(Integer.parseInt(mappedid));
 					AriadneData.updateAsset(asset);
 					AriadneData.resetSeqForNode(asset, asset.getName());
@@ -196,38 +186,45 @@ javax.servlet.Servlet {
 			}
 			response.setContentType("text/html");
 			PrintWriter out = response.getWriter();
-			out.println("<html><head><title></title></head><body "+
-					"onload='window.location=\"/ariadne4j/index2.html?mnodeid="
-					+asset.getNodeid() + "&mode=admin\"></body></html>");
+			out.println(cc(asset.getNodeid(), ErrorConstants.XML_REDIR_PREFIX,
+					ErrorConstants.XML_REDIR_SUFFIX));
 
 		} catch (SQLException sqe) {
 			sqe.printStackTrace(response.getWriter());
-			//response.getWriter().println("<Error>AriadneDataException: "+sqe.getMessage()+"</Error>");
+			//response.getWriter().println(ErrorConstants.XML_BASIC_PREFIX  +sqe.getMessage()+ErrorConstants.XML_ET );
 		}catch (Exception e) {
-			//response.getWriter().println("<Error>AriadneControllerException: "+e.getMessage()+"</Error>");
+			//response.getWriter().println(ErrorConstants.XML_BASIC_PREFIX  +e.getMessage()+ErrorConstants.XML_ET );
 			e.printStackTrace(response.getWriter());
 		}
 	}
 
-	private static String getTestXML(String mnodeId){
+	private static String getTestXML(int mnodeId){
 		String retXML = "";
-		if (mnodeId.equals("8336")){
+		if (mnodeId== 8336){
 			retXML = TestConstants.NODE1;
 		}else{
-			if (mnodeId.equals("8337")){
+			if (mnodeId == 8337){
 				retXML = TestConstants.NODE2;
 			}else{
-				if (mnodeId.equals("8338")){
+				if (mnodeId == 8338){
 					retXML = TestConstants.NODE3;
 				}
 			}
 		}
-		if (mnodeId.equals("8")){
+		if (mnodeId == 8){
 			retXML = TestConstants.NODE4;
 		}
-		if (mnodeId.equals("9")){
+		if (mnodeId == 9){
 			retXML = TestConstants.NODE5;
 		}
 		return retXML;
+	}
+
+	private static String cc(int id, String prefix, String suffix){
+		return prefix + Integer.toString(id) + suffix;
+	}
+
+	private static String cc(String id, String prefix, String suffix){
+		return prefix + id + suffix;
 	}
 }

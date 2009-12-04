@@ -5,7 +5,8 @@ import com.nosm.elearning.ariadne.util.Constants;
 public abstract class GameUri {
 	private  String host = Constants.GAME_HOST3;
 
-	private  String gameId = "2"; // hard-coded until picking Lab from list is supported
+	private  int gameId = 2; // hard-coded until picking Lab from list is supported
+	private int nodeId;
 
 	private  String user = Constants.GAME_USER;
 	private  String password = Constants.GAME_PASSWORD;
@@ -23,10 +24,20 @@ public abstract class GameUri {
 
 	private String idSuffix = Constants.GAME_URL_ID_SUFFIX3;
 	private String idPrefix = this.gameId + this.linkPrefix ;
-	public String getGameId() {
+
+	public GameUri(){
+		super();
+	}
+
+	public GameUri(int nodeId){
+		this();
+		this.setNodeId(nodeId);
+	}
+
+	public int getGameId() {
 		return gameId;
 	}
-	public void setGameId(String gameId) {
+	public void setGameId(int gameId) {
 		this.gameId = gameId;
 	}
 	public String getHost() {
@@ -106,6 +117,12 @@ public abstract class GameUri {
 	}
 	public void setUser(String user) {
 		this.user = user;
+	}
+	public int getNodeId() {
+		return nodeId;
+	}
+	public void setNodeId(int nodeId) {
+		this.nodeId = nodeId;
 	}
 
 
