@@ -37,6 +37,7 @@ public final class Constants {
 
 	  // misc
 	  public static final String GAME_HOST3 = "142.51.75.11";
+	  public static final String GAME_HOST = "142.51.75.17";
 
 
 
@@ -44,6 +45,12 @@ public final class Constants {
 
 	  public static final String GAME_USER = "olremote";
 	  public static final String GAME_PASSWORD = "s3cr3t";
+
+	  public static final String game_id = "2"; // hard-coded until picking Lab from list is supported
+
+	  public static final String GAME_URL_PATH = "/mnode.asp?";
+	  public static final String GAME_URL_PATH_SUFFIX = "&mode=remote";
+
 
 
 	  public static final String GAME_URL_PATH3 = "/django/labyrinth/";
@@ -61,11 +68,13 @@ public final class Constants {
 
 	  public static final String GAME_URL_ID_SUFFIX3 = "/data/";
 	  public static final String GAME_URL_LINK_PREFIX3 = "/node/";
+	  public static final String GAME_URL_LINK_SUFFIX = "</p>";
+	  public static final String GAME_URL_LINK_PREFIX = "<p>";
 	  //public static final String GAME_URL_LINK_PREFIX3 = "/link/";
 
 	  public static final String GAME_URL_LINK_START = "start";
 
-
+	  public static final String GAME_URL_LINK_SSID =  "sessionid";
 
 	  public static final String GAME_URL_ID_PREFIX3 = GAME_GAME_ID+ GAME_URL_LINK_PREFIX3 ;
 

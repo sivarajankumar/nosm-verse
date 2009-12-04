@@ -24,7 +24,7 @@ public abstract class HttpFetch {
 		StringBuffer sOut = new StringBuffer();
 
 		String pOut = "";
-		if (qparams != null || (!qparams.isEmpty())) {
+		if (qparams != null && (!qparams.isEmpty())) {
 			pOut = URLEncodedUtils.format(qparams, "UTF-8");
 		}
 
@@ -37,12 +37,16 @@ public abstract class HttpFetch {
 		if (usePost) {
 			HttpPost hPost = new HttpPost(uri);
 			hPost.setEntity(new UrlEncodedFormEntity(qparams));
-			System.out.println(" HttpFetch, request method: "
+			System.out.println(" HttpFetch, request method should be post: "
 					+ hPost.getMethod() + ": " + uri.toString() + ", params:"
 					+ hPost.getParams().getParameter("sessionid"));
 			response = httpclient.execute(hPost);
 		} else {
-			response = httpclient.execute(new HttpGet(uri));
+			HttpGet hGet = new HttpGet(uri);
+			System.out.println(" HttpFetch, request method should be get: "
+					+ hGet.getMethod() + ": " + uri.toString() + ", params:"
+					+ hGet.getParams().getParameter("sessionid"));
+			response = httpclient.execute(hGet);
 		}
 		if (response.getStatusLine().toString().toLowerCase().indexOf(
 				"internal server error") > 0)

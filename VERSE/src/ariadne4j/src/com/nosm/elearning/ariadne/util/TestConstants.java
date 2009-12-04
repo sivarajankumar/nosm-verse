@@ -54,32 +54,34 @@ public final class TestConstants {
 	"</labyrinth>";
 
 
-	  public static final String NODE4 = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"+
+	  public static final String NODE4 =
+	"<?xml version=\"1.0\" encoding=\"UTF-8\"?>"+
 	  "<labyrinth>"+
 	      "<mnodetitle>Briefing</mnodetitle>"+
 	      "<mapname>ariadne1</mapname>"+
 	      "<mapid>2</mapid>"+
-	      "<mnodeid>6</mnodeid>"+
+	      "<mnodeid>8</mnodeid>"+
 	      "<message>%3Cp%3EWelcome%20to%20the%20briefing%20room%3C/p%3E</message>"+
-	      "<linker>%3Cp%3E%3Ca%20href%3D'/django/labyrinth%2F2%2Flink%2F6%2Fdata%2F'%3EExam%20Room%3C%2Fa%3E%3C%2Fp%3E%3Cp%3E%3Ca%20href%3D'/django/labyrinth%2F2%2Flink%2F19%2Fdata%2F'%3EAnims%20Demo%3C%2Fa%3E%3C%2Fp%3E"+
+	      "<linker>%3Cp%3E%3Ca%20href%3D'/django/labyrinth%2F2%2Flink%2F8%2Fdata%2F'%3EExam%20Room%3C%2Fa%3E%3C%2Fp%3E%3Cp%3E%3Ca%20href%3D'/django/labyrinth%2F2%2Flink%2F9%2Fdata%2F'%3EAnims%20Demo%3C%2Fa%3E%3C%2Fp%3E"+
 	      "</linker>"+
 	      "<rootnode>8</rootnode>"+
 	      "<mysession>31456703fb877d3db43a4bcef72b3fec</mysession>"+
 	      "<maptype>game</maptype>"+
 	  "</labyrinth>";
 
-	  public static final String NODE5 = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"+
+	  public static final String NODE5 =
+	"<?xml version=\"1.0\" encoding=\"UTF-8\"?>"+
 	  "<labyrinth>"+
 	      "<mnodetitle>I%20Agree</mnodetitle>"+
 	      "<mapname>ariadne1</mapname>"+
 	      "<mapid>2</mapid>"+
-	      "<mnodeid>19</mnodeid>"+
+	      "<mnodeid>9</mnodeid>"+
 	      "<message>%3Cp%3Ethe%20%27yes_happy%27%20animation%3C/p%3E</message>"+
-	      "<linker>%3Cp%3E%3Ca%20href%3D'/django/labyrinth%2F2%2Flink%2F6%2Fdata%2F'%3EBack%20to%20briefing%3C%2Fa%3E%3C%2Fp%3E" +
+	      "<linker>%3Cp%3E%3Ca%20href%3D'/django/labyrinth%2F2%2Flink%2F8%2Fdata%2F'%3EBack%20to%20briefing%3C%2Fa%3E%3C%2Fp%3E" +
 	      "</linker>"+
 	      "<rootnode>8</rootnode>"+
 	      "<mysession>31456703fb877d3db43a4bcef72b3fec</mysession>"+
 	      "<maptype>game</maptype>"+
-		  "</labyrinth>";
+	  "</labyrinth>";
 
 	}
