@@ -17,8 +17,11 @@ import org.xml.sax.SAXException;
 import com.nosm.elearning.ariadne.AriadneData;
 
 import com.nosm.elearning.ariadne.model.Asset;
-import com.nosm.elearning.ariadne.model.Game;
-import com.nosm.elearning.ariadne.model.GameNode;
+import com.nosm.elearning.ariadne.model.game.Game;
+import com.nosm.elearning.ariadne.model.game.GameNode;
+import com.nosm.elearning.ariadne.model.game.uri.GameUri;
+import com.nosm.elearning.ariadne.model.game.uri.OL3GameUri;
+import com.nosm.elearning.ariadne.model.game.uri.OLGameUri;
 import com.nosm.elearning.ariadne.util.Constants;
 import com.nosm.elearning.ariadne.util.HttpFetch;
 import com.nosm.elearning.ariadne.util.TestConstants;
@@ -92,21 +95,28 @@ javax.servlet.Servlet {
 								"<body onload='window.location=\"/ariadne4j/index2.html?mnodeid="
 								+mnodeid + "&mode=admin\"></body></html>"); // use response.sendRedirect()?
 					}else{
-						String gameAddress = Constants.GAME_URL_PATH3 + Constants.GAME_GAME_ID +
-							Constants.GAME_URL_LINK_PREFIX3+ mnodeid + Constants.GAME_URL_PATH_SUFFIX3;
-						if (mnodeid.equals(Constants.GAME_URL_LINK_START) ) {
-							sessid = HttpFetch.getString4Url("/django/session/create/", new ArrayList(), false);
-							request.getSession().setAttribute("game-sessid", sessid);
-							// (re)start at root node:
-							gameAddress = Constants.GAME_URL_PATH3 + Constants.GAME_GAME_ID +"/root"+Constants.GAME_URL_PATH_SUFFIX3 ;
+
+						GameUri gameUrl = new OL3GameUri();
+						String versionStr = (String)request.getParameter("v");
+						if (versionStr!=null && (versionStr).equals("2")){
+							gameUrl = new OLGameUri();
 						}
+
+						String gameAddress = gameUrl.getPath() + gameUrl.getGameId() +
+						gameUrl.getLinkPrefix()+ mnodeid + gameUrl.getPathSuffix() ;
 						//System.out.println("calling OL3 with url "+gameAddress);
 						org.w3c.dom.Document gameResults = null;
 						try{
 							if (isLive){// testing switch
-								if ( sessid != null || sessid != "" ){
+								if (mnodeid.equals(gameUrl.getLinkStart()))  {
+									// if ( sessid == null || sessid.equals("") ){
+									sessid = HttpFetch.getString4Url("/django/session/create/", new ArrayList(), false).trim();
+									request.getSession().setAttribute("game-sessid", sessid);
+									// (re)start at root node:
+									gameAddress = gameUrl.getPath() + gameUrl.getGameId() +"/root"+
+									gameUrl.getPathSuffix() ;
 									ArrayList qparams = new ArrayList();
-									qparams.add(new BasicNameValuePair("sessionid", sessid));
+									qparams.add(new BasicNameValuePair(gameUrl.getLinkSsid(), sessid));
 									gameResults = XPathReader.loadXMLFrom(HttpFetch.getString4Url(gameAddress, qparams, true));// use Post
 								}else{
 									gameResults = XPathReader.loadXMLFrom(HttpFetch.getString4Url(gameAddress, null, false));
@@ -158,6 +168,7 @@ javax.servlet.Servlet {
 			HttpServletResponse response) throws ServletException, IOException {
 		//implicitly admin mode?
 		//throw new RuntimeException("<Error>in doPost</Error>");
+
 		Asset asset = new Asset(
 				(String) request.getParameter(Constants.UI_NAME),
 				(String) request.getParameter(Constants.UI_TYPE),
@@ -166,11 +177,15 @@ javax.servlet.Servlet {
 				(String) request.getParameter(Constants.UI_TARGET),
 				Integer.parseInt((String) request.getParameter(Constants.UI_ID))
 		);
+
 		try {
 			String mappedid = request.getParameter("assetid");
 			if (mappedid != null){
 				if (mappedid.equals("")) mappedid = "0"; //hack to avoid nulls
 				if(AriadneData.doesAssetExist(Integer.parseInt(mappedid))) {
+
+					//String thisID = (String) request.getParameter(Constants.UI_ID);
+
 					asset.setId(Integer.parseInt(mappedid));
 					AriadneData.updateAsset(asset);
 					AriadneData.resetSeqForNode(asset, asset.getName());
@@ -207,10 +222,10 @@ javax.servlet.Servlet {
 				}
 			}
 		}
-		if (mnodeId.equals("6")){
+		if (mnodeId.equals("8")){
 			retXML = TestConstants.NODE4;
 		}
-		if (mnodeId.equals("19")){
+		if (mnodeId.equals("9")){
 			retXML = TestConstants.NODE5;
 		}
 		return retXML;
