@@ -2,7 +2,8 @@ $(document).ready(function(){
     mnode = $(document).getUrlParam("mnodeid");
     $.get("Ariadne?mnodeid=" + mnode + "&mode=admin", {}, function(xml){//&mode=admin will return assetTypeattrib xml
         //$.get("asset.xml", {}, function(xml){ // testing xml
-        mnode = $('node', xml).attr("id");
+       // mnode = $('node', xml).attr("id");
+		// 'mnodeid';  // labyrinth
         $("input[name='assetMapNodeid']").setValue(mnode);
 
         // assets
@@ -250,8 +251,8 @@ $(document).ready(function(){
         }
     });
 
-    $("#manq_int").click(function(){
-        if ($("input[name='manq_int']").getValue() == " manq_talk") {
+    $("#manq_int").change(function(){
+        if ($("select[name='manq_int']").getValue() == "talk") {
             $("div[id^=mannequin_talk]").show();
             $("div[id^=mannequin_part]").hide();
         } else {
@@ -259,6 +260,7 @@ $(document).ready(function(){
             $("div[id^=mannequin_part]").show();
         }
     });
+
 });
 
 function processXml(responseXML){
@@ -301,6 +303,7 @@ function submitIt(){
         case 'SLChat':
 
 			var curChan = $("select[name='chatchannel']").getValue();
+
 			if (curChan == '9993') { //HOLODECK
 				outgoingVal = $("select[name='Holodeck_chat_cmds']").getValue();
 				if (outgoingVal.indexOf('run') == 0 || outgoingVal.indexOf('end') == 0) {
@@ -312,42 +315,87 @@ function submitIt(){
 						outgoingName = $("select[id^=ainv_slchat]").getValue();
 						outgoingVal = outgoingVal + ' ' + $("select[id^=ainv_slchat]").getValue();
 					}
-				}else{
+				}
+				else {
 					outgoingName = $("select[id^=ainv_slchat]").getValue();
 				}
-            }
-            else {
-                if (curChan == "687686") { //PIVOTE
-                    outgoingVal = $("select[name='controller_cmds']").getValue();
-                    if (outgoingVal == 'option') {
-                        outgoingVal = outgoingVal + ' ' + $("select[name='controller_opt']").getValue();
-                    }
-                }
-                else {
-                    if (curChan == "7051674") { //MANNEQUIN
-                        if ($("input[name='manq_int']").getValue() == 'manq_talk') {
-                            outgoingVal = $("select[name='mannequin_cmds']").getValue();
-                        }else{
-							outgoingVal = $("select[name='mannequin_parts']").getValue();
-						}
-						outgoingName = $("select[name='linklist_manq']").getValue();
-                    }
-                    else {
-						if (curChan == "23") { //Multigadget_Multicast
-							outgoingName = $("select[name='mg_cmd']").getValue();
-							outgoingVal = $("select[name='mg_cmd']").getValue();
-						}else{
-							if (curChan == "0") {//Public
-								outgoingName = $("input[name='chatChannelPubMsg']").getValue();
-								outgoingVal = $("select[name='chatChannelPubMsg']").getValue();
-							}else{
-									outgoingName = $("input[name='chatChannelMsg']").getValue(); // other
-									outgoingVal = $("select[name='chatChannelMsg']").getValue();
-							}
-						}
-                    }
-                }
-            }
+			}
+			if (curChan == "687686") { //PIVOTE
+				outgoingVal = $("select[name='controller_cmds']").getValue();
+				if (outgoingVal == 'option') {
+					outgoingVal = outgoingVal + ' ' + $("select[name='controller_opt']").getValue();
+				}
+			}
+
+			if (curChan == "7051674") { //MANNEQUIN
+				if ($("select[name='manq_int']").getValue() == "talk") {
+					outgoingVal = $("select[name='mannequin_cmds']").getValue();
+				}
+				else {
+					outgoingVal = $("select[name='mannequin_parts']").getValue();
+				}
+				outgoingName = outgoingVal;
+				outgoingVal = "set " + outgoingVal + ":" + $("select[name='linklist_manq']").getValue()+ ":" + $("#linklist_manq :selected").text();
+			}
+
+			if (curChan == "23") { //Multigadget_Multicast
+				outgoingName = $("select[name='mg_cmd']").getValue();
+				outgoingVal = "cmd|" + $("select[name='mg_cmd']").getValue();
+			}
+
+
+			if (curChan == "-8787") { //Registration_Booth-viewer_area_edition
+				outgoingName = $("input[name='chatChannelBoothMsg']").getValue();
+				outgoingVal = $("input[name='chatChannelBoothMsg']").getValue();
+			}
+
+			if (curChan == "-63342") { //Controller_Media_Relay-viewer_area_edition
+				outgoingName = $("input[name='chatChannelRelayMsg']").getValue();
+				outgoingVal = $("input[name='chatChannelRelayMsg']").getValue();
+			}
+
+			if (curChan == "603") { //NOSM_Bracelet_Multicast
+				outgoingName = $("input[name='chatChannelBraceletMsg']").getValue();
+				outgoingVal = $("input[name='chatChannelBraceletMsg']").getValue();
+			}
+
+			if (curChan == "-3857343") { //Sloodle_Object
+				//sloodle_name, lesson_id, page_id
+				outgoingName = $("select[name='sloodle_api']").getValue();
+				outgoingVal = $("select[name='sloodle_api']").getValue();
+			}
+
+			if (curChan == "1001") { //Sloodle_Player_Multicast
+				outgoingName = $("input[name='Sloodle_Player_msg']").getValue();
+				outgoingVal = $("input[name='Sloodle_Player_msg']").getValue();
+			}
+
+			if (curChan == "55") { //Lite_Prim_Animator
+				// chatChannelLite_Prim_Animator
+				outgoingName = $("select[name='prim_anim_cmd']").getValue();
+				outgoingVal = $("select[name='prim_anim_cmd']").getValue();
+			}
+
+			if (curChan == "56") { //PrimPuppeteer
+				outgoingVal = $("select[name='prim_pup_cmd']").getValue();
+				outgoingName = outgoingVal;
+				if (outgoingName == "show") {
+					outgoingVal = outgoingVal + " " +
+					$("select[name='chatChannelLite_PrimPuppeteer + ").getValue();
+				}
+			}
+
+			if (curChan == "0") {//Public
+				outgoingName = $("input[name='chatChannelPubMsg']").getValue();
+				outgoingVal = $("input[name='chatChannelPubMsg']").getValue();
+			}
+
+			if (curChan == ""){
+				outgoingName = $("input[name='chatChannelMsg']").getValue(); // other
+				curChan = $("input[name='chatChannelValue']").getValue();
+				outgoingVal = $("input[name='chatChannelMsg']").getValue();
+			}
+
 
 			outgoingTarget = curChan;
             outgoingVal = outgoingVal + '~' + $("input[id='csm']").getValue();
@@ -533,6 +581,7 @@ function submitIt(){
 			outgoingName = $("input[name='chart_name']").getValue();
 
         case 'SLGoogleAPIHTML':
+		    outgoingVal = $("input[name='staticMapURL']").getValue();
 			outgoingTarget = 'PIVOTE';
 
         case 'SLAmazonMapImage':
@@ -541,7 +590,7 @@ function submitIt(){
             outgoingName = '';
             break;
 
-        case 'VPMannequin':
+       /* case 'VPMannequin':
 			var mAction = $("input[name='manq_int']").getValue();
 			if (mAction == " manq_talk") {
 				outgoingName = $("select[name='mannequin_cmds']").getValue();
@@ -551,7 +600,7 @@ function submitIt(){
 			outgoingTarget = $("select[name='linklist_manq']").getValue();
             outgoingVal = mAction.substring('manq_'.length, mAction.length);
             break;
-
+*/
         default:
             alert('oops... did not get the current type');
             //break;

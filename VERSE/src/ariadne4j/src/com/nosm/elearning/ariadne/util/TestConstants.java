@@ -62,8 +62,10 @@ public final class TestConstants {
 	      "<mapid>2</mapid>"+
 	      "<mnodeid>8</mnodeid>"+
 	      "<message>%3Cp%3EWelcome%20to%20the%20briefing%20room%3C/p%3E</message>"+
-	      "<linker>%3Cp%3E%3Ca%20href%3D'/django/labyrinth%2F2%2Flink%2F8%2Fdata%2F'%3EExam%20Room%3C%2Fa%3E%3C%2Fp%3E%3Cp%3E%3Ca%20href%3D'/django/labyrinth%2F2%2Flink%2F9%2Fdata%2F'%3EAnims%20Demo%3C%2Fa%3E%3C%2Fp%3E"+
-	      "</linker>"+
+	      "<linker>"+
+          "<p><a href='/django/labyrinth/2/link/6/data/'>Exam Room</a></p>"+
+          "<p><a href='/django/labyrinth/2/link/12/data/'>Anims Demo</a></p>"+
+      "</linker>"+
 	      "<rootnode>8</rootnode>"+
 	      "<mysession>31456703fb877d3db43a4bcef72b3fec</mysession>"+
 	      "<maptype>game</maptype>"+

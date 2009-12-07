@@ -1,5 +1,10 @@
 package com.nosm.elearning.ariadne.model;
 
+import java.util.Iterator;
+
+import com.nosm.elearning.ariadne.util.Constants;
+import com.nosm.elearning.ariadne.util.XConstants;
+
 public class Asset {
 
 	private int id;
@@ -95,22 +100,47 @@ public class Asset {
 
 	}
 
-	public String getXML(){
-		return "<asset type=\"" + this.getType()
-		+ "\" iid=\"" + this.getId()
-		+ "\" name=\"" + this.getName()
-		+ "\" targettype=\"" + this.getTarget()
-		+ "\" value=\"" + this.getValue()
-		+ "\" uipairs=\"" + this.getEncodedUIPairs()
-		+ "\" ></asset>";
+	public Asset(Asset asset) {
+		super();
+		reset( asset);
 	}
 
-	public String getXML(boolean isAdmin){
-		String oXML = "<asset type=\"" + this.getType();
-		if(isAdmin)oXML = oXML + "\" iid=\"" + this.getId();
-		oXML = oXML + "\" name=\"" + this.getName()+ "\" targettype=\"" + this.getTarget()+ "\" value=\"" + this.getValue();
-		if(isAdmin)oXML = oXML + "\" uipairs=\"" + this.getEncodedUIPairs();
-		oXML = oXML + "\" ></asset>";
+
+	public void reset(Asset asset){
+		this.setName( asset.getName());
+		this.setType(asset.getType());
+		this.setTarget(asset.getTarget());
+		this.setValue(asset.getValue());
+		this.setId(asset.getId());
+		this.setNodeid(asset.getNodeid());
+		this.setUIPairs(asset.getUIPairs());
+	}
+
+
+	public String getXML(Asset asset, boolean isAdmin){
+		reset(asset);
+		return getXML(isAdmin);
+	}
+
+	public String getXML(Asset asset){
+		reset(asset);
+		return getXML(true);
+	}
+
+	public String getXML( boolean isAdmin){
+		String oXML = "<"+XConstants.XML_ASSET+" "+XConstants.XML_ASSET_TYPE+"=\"" + this.getType();
+
+		if(isAdmin)oXML = oXML + "\" "+
+			XConstants.XML_ASSET_ID+"=\"" + this.getId();
+
+		oXML = oXML + "\" "+XConstants.XML_ASSET_NAME+"=\"" + this.getName()+
+			"\" "+XConstants.XML_ASSET_TARGET+"=\"" + this.getTarget()+ "\" "+
+			XConstants.XML_ASSET_VALUE+"=\"" + this.getValue();
+
+		if(isAdmin)oXML = oXML + "\" "+XConstants.XML_ASSET_PAIRS+"=\"" + this.getEncodedUIPairs();
+
+		oXML = oXML + "\" ></"+XConstants.XML_ASSET+">" + Constants.lineSep;
 		return oXML;
 	}
+
 }

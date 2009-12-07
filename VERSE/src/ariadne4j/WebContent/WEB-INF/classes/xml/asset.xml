@@ -7,6 +7,7 @@
 	<typeAlias alias="Asset" type="com.nosm.elearning.ariadne.model.Asset" />
 
 	<resultMap id="AssetResult" class="Asset">
+		<result property="nodeid" column="mnodeid" />
 		<result property="type" column="aname" />
 		<result property="name" column="name" />
 		<result property="target" column="target" />
@@ -39,7 +40,7 @@
 	</select>
 	<select id="selectAssetsSLByMNodeId" parameterClass="int"
 		resultMap="AssetResult">
-		SELECT mapped.id, aname, name, target, val
+		SELECT mnodeid, aname, name, target, val
 		FROM assetmapnode
 		mapped, assettype types
 		where types.id = mapped.type_id
@@ -82,10 +83,10 @@
 
 	<insert id="insertAsset" parameterClass="Asset">
 		INSERT INTO
-		assetmapnode ( id, mnodeid, type_id, name, target,
+		assetmapnode (mnodeid, type_id, name, target,
 		val, ui_pairs  )
 		VALUES (
-		#id#, #nodeid#,
+		#nodeid#,
 		( select id from assettype where aname = #type# ),
 		#name#, #target#, #value#, '')
 	</insert>

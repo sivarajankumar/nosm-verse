@@ -6,6 +6,7 @@ import com.ibatis.common.resources.Resources;
 import com.nosm.elearning.ariadne.model.Asset;
 import com.nosm.elearning.ariadne.model.AssetType;
 import com.nosm.elearning.ariadne.model.User;
+import com.nosm.elearning.ariadne.util.ErrorConstants;
 
 import java.io.Reader;
 import java.io.IOException;
@@ -27,7 +28,7 @@ public class AriadneData {
 			sqlMapper = SqlMapClientBuilder.buildSqlMapClient(reader);
 			reader.close();
 		} catch (IOException e) {
-			throw new RuntimeException("<error>Ariadne: Error while building the SqlMapClient instance." + e + "</error>", e);
+			throw new RuntimeException("<error>Ariadne: Error while building the SqlMapClient instance." + e + ErrorConstants.XML_ET, e);
 		}
 	}
 
@@ -166,7 +167,9 @@ public class AriadneData {
 		Asset thisAsset = AriadneData.getAssetById(assetID);
 		Asset thisSeq = AriadneData.getSeqbyNodeID(thisAsset.getNodeid());
 		if (thisSeq == null || thisAsset == null){
-			throw new Exception("NoAssetOrSeqException: tried with id: " + Integer.toString(assetID)+ ", gets this node ID: " +thisAsset.getNodeid() + ", seq:" + Integer.toString(thisSeq.getId()));
+			throw new Exception("<error>NoAssetOrSeqException: tried with id: " +
+					Integer.toString(assetID)+ ", gets this node ID: " +thisAsset.getNodeid() +
+					", seq:" + Integer.toString(thisSeq.getId())+ErrorConstants.XML_ET);
 		}
 
 		String assetName = thisAsset.getName();
@@ -191,15 +194,26 @@ public class AriadneData {
 	    }
 
 	    if (newSeqBuff.toString().length() > 0){
+
+		    // double comma trim hack:
+		    if (newSeqBuff.toString().indexOf(",,") > -1){
+		    	System.out.println("Ariadne: Sequence edit alert "+newSeqBuff.toString());
+		    	newSeqBuff = new StringBuffer(newSeqBuff.toString().replaceFirst(",,", ","));
+		    	//newSeqBuff = new StringBuffer(newSeqBuff.toString().replace(",,", ","));
+		    }
+
 		    // end trim hack:
 		    if (newSeqBuff.toString().endsWith(",")){
+		    	System.out.println("Ariadne: Sequence edit alert "+newSeqBuff.toString());
 		    	newSeqBuff = new StringBuffer(newSeqBuff.toString().substring(0, newSeqBuff.toString().length() -1));
 		    }
 
 		    // front trim hack:
 		    if (newSeqBuff.toString().startsWith(",")){
+		    	System.out.println("Ariadne: Sequence edit alert "+newSeqBuff.toString());
 		    	newSeqBuff = new StringBuffer(newSeqBuff.toString().substring(1, newSeqBuff.toString().length()));
 		    }
+
 	    }
 		thisSeq.setValue(newSeqBuff.toString());
 		sqlMapper.update("resetSequence", thisSeq);
@@ -229,10 +243,10 @@ public class AriadneData {
 				}
 				sqlMapper.update("resetSequence", thisSeq);
 			}catch (NullPointerException npe) {
-				if (thisSeq == null) throw new Exception("<error>: no sequence found for node: "+nonSeqAsset.getNodeid() +".</error>");
+				if (thisSeq == null) throw new Exception("<error>: no sequence found for node: "+nonSeqAsset.getNodeid() +ErrorConstants.XML_ET);
 			}
 		}else{
-			throw new Exception("<error>Cannot add an SLInnerSequence to this sequence: "+nonSeqAsset.getName()+"</error>");
+			throw new Exception("<error>Cannot add an SLInnerSequence to this sequence: "+nonSeqAsset.getName()+ErrorConstants.XML_ET);
 		}
 	}
 }

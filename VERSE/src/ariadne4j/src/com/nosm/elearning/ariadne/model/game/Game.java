@@ -8,8 +8,10 @@ import java.util.Iterator;
 import javax.xml.xpath.XPathExpressionException;
 
 import com.nosm.elearning.ariadne.AriadneData;
+import com.nosm.elearning.ariadne.XPathReader;
+import com.nosm.elearning.ariadne.model.game.uri.GameUri;
 import com.nosm.elearning.ariadne.util.Constants;
-import com.nosm.elearning.ariadne.util.XPathReader;
+import com.nosm.elearning.ariadne.util.XConstants;
 
 public class Game {
 	private int id = Integer.parseInt(Constants.GAME_GAME_ID); // current nossum island viewer labyrinth
@@ -37,18 +39,18 @@ public class Game {
 			XPathReader xR = new XPathReader(xml);
 
 			this.setRootNode(java.net.URLDecoder.decode(
-					xR.extractNode("/labyrinth/mapname"+ Constants.XPATH_VAL, xml)));
+					xR.extractNode(XConstants.XPATH_GAME_NAME+ XConstants.XPATH_VAL, xml)));
 
 			this.setSession(java.net.URLDecoder.decode(
-					xR.extractNode(Constants.XPATH_SESSION+ Constants.XPATH_VAL, xml)));
+					xR.extractNode(XConstants.XPATH_SESSION+ XConstants.XPATH_VAL, xml)));
 
 			this.setName(java.net.URLDecoder.decode(
-					xR.extractNode(Constants.XPATH_GAME_NAME+ Constants.XPATH_VAL, xml)));
+					xR.extractNode(XConstants.XPATH_GAME_NAME+ XConstants.XPATH_VAL, xml)));
 
 			this.setType(java.net.URLDecoder.decode(
-					xR.extractNode(Constants.XPATH_GAME_TYPE+ Constants.XPATH_VAL, xml)));
+					xR.extractNode(XConstants.XPATH_GAME_TYPE+ XConstants.XPATH_VAL, xml)));
 
-			this.setId(xR.extractNode(Constants.XPATH_GAME_ID + Constants.XPATH_VAL,xml));
+			this.setId(xR.extractNode(XConstants.XPATH_GAME_ID + XConstants.XPATH_VAL,xml));
 
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();

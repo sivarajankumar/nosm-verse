@@ -234,6 +234,39 @@ integer IsAlphanumeric(string a){
 
 assignSL(string type, string target, string name, string val, integer duration){
 
+    //  Show patient text , a dynamic chart, real-life map, Second Life region on parcel viewer(s)
+     if (type == "SLAudio" || type == "VPDImage" || type == "VPDMedia" ||
+        type == "VPDText" || type == "SLGoogleAPIImage" || type == "SLGoogleAPIHTML" ||
+            type == "SLAmazonMapImage"){  //  Stream radio or sound into parcel
+        sendChatCommand(gMediaCh, llList2String(llParseString2List(val, ["~"], []), 0));
+        llSleep(4.0); // show this url for a while at least...
+        jump out;
+    }
+
+    if (type == "VPDImage"){ //  Show an external patient image on parcel viewer(s)
+        gNodeImage = llList2String(llParseString2List(val, ["~"], []), 0);
+        option_media();
+        llSleep(4.0); // show this url for a while at least...
+        jump out;
+
+    }
+
+    if (type == "VPDMedia"){ //  Show an external patient movie on parcel viewer(s)
+        gNodeMedia = llList2String(llParseString2List(val, ["~"], []), 0);
+        option_media();
+        llSleep(4.0); // show this url for a while at least...
+        jump out;
+
+    }
+
+    if (type == "SLAnimation"){
+        //target = "27811330-3bb6-447e-a2b7-dffd322279a3"; // hard coded key for openSim
+        sendChatCommand(gPlayerTrackingObjChannel, target+"~"+type+"~"+name+"~"+ val + "|gla3");
+        jump out;
+
+    }
+
+
     if (type == "SLAnimation"){
         //target = "27811330-3bb6-447e-a2b7-dffd322279a3"; // hard coded key for openSim
         sendChatCommand(gPlayerTrackingObjChannel, target+"~"+type+"~"+name+"~"+ val + "|gla3");
@@ -290,12 +323,10 @@ assignSL(string type, string target, string name, string val, integer duration){
         sendChatCommand(gPlayerTrackingObjChannel, target+"~"+ type +"~"+ name);
         //sendChatCommand (-11674, "The " +name + "crate has been added to your inventory. "
         //+"Drag it to the ground to rez it, and right-click to open it.");
-
         jump out;
     }
     if (type == "SLAction"){
         sendChatCommand(gPlayerTrackingObjChannel, target+"~"+val);
-        jump out;
     }
 
     @out;
@@ -310,29 +341,9 @@ resetParserConstants(){
 }
 
 resetElementsFull(){
-    //gSSID = ""; // do we wanna do this?
-    gServerType = "";
-
-    gNode = "";
-    gNodeLabel = "";
-    gScene = "";
-    gShell = "";
-
-    assetTypes = [];
-    assetNames = [];
-    assetTargets = [];
-    assetValues = [];
-
+    resetElements();
     linkLabels = [];
     linkRefs = [];
-
-   // orderedAssets = [];
-
-    gNodeDesc= "";
-    gNodeImage= "";
-    gNodeMedia= "";
-    gNodeOptions= "";
-
 }
 
 
@@ -345,6 +356,8 @@ resetElements(){
     gScene = "";
     gShell = "";
 
+    //gOptions = [];
+
     assetTypes = [];
     assetNames = [];
     assetTargets = [];
@@ -357,15 +370,11 @@ resetElements(){
 
 }
 
-
-
-
-
 string ampSepChar = "&amp;";
 
 parseFeed(string body){
 
-    list lines = llParseString2List(body, ["/>","<", ">", "\n"], []);
+    list lines = llParseString2List(body, ["\"/>", "/>", "<", ">", "\n"], []);
     // loop through elements
     integer n = llGetListLength(lines);
     integer i;
@@ -422,14 +431,14 @@ parseFeed(string body){
             if(element == cSIDName){
                 if(name == cSSID) {
                     if (gSSID == value){
-                        //llSay(0, "SSIDs match. All is fine");
+                        llSay(0, "SSIDs match: "+gSSID+". Continuing session...");
                     }else{
                         if (gSSID == ""){ // first timer
-                            //llSay(0, "1st request for this session");
-                          //  llSay(0, "session ID: "+value);
+                        //llSay(0, "1st request for this session");
+                        // node must be == start
                             gSSID = value;
                         }else{
-                            // llSay(0, "SSID present, but does not match current session. What happened?");
+                            llSay(0, "SSIDx present: "+value+","+ gSSID+", but does not match. What happened?");
                         }
                     }
                 }
@@ -447,7 +456,7 @@ parseFeed(string body){
         }
 
     }
-  //   llSay(0, "in linkLabels " + llList2CSV(linkLabels));
+   // llSay(0, "in linkLabels " + llList2CSV(linkLabels));
    // llSay(0, "in linkRefs " + llList2CSV(linkRefs));
    // llSay(0, "in assetTypes " + llList2CSV(assetTypes));
    // llSay(0, "in assetValues " + llList2CSV(assetValues));
@@ -648,14 +657,14 @@ option_start(key id) {
     sendChatCommand(gPIVOTEChannel, gResetCommands);
     resetElementsFull();
     gSSID="";
-    string url = cTestURL+"&mnodeid=6";
+    string url = cTestURL+"&mnodeid=start"; // /root/data/classic
   //  llSay(0, "start: "+ url);
     Rq_getpage = llHTTPRequest(url, [HTTP_METHOD,"GET"], "");
 }
 
 option_text() {
     sendChatCommand(gMediaCh, gQSParserPageURL + "?dtext="
-    + llGetSubString(llEscapeURL(localtext), 0, 66)+"&doptions=" /// **** truncating text to display in opensim
+    + llGetSubString(llEscapeURL(localtext), 0, 66)+"&doptions=" /// **** truncating text to display in opensim/SL
     + llEscapeURL(llList2CSV(gOptions))); // page with doc.write() JS, presents QS params
 }
 
@@ -691,7 +700,7 @@ option_back() {
 
     if (canGoBack){
 
-        Rq_getnode = llHTTPRequest(urlroot+"&mnodeid="+oldNode+
+        Rq_getnode = llHTTPRequest(urlroot+"&linkid="+oldNode+
         "&sessid="+gSSID, [HTTP_METHOD,"GET"], "");
     }else{
         llSay(0, "You cannot go back to the "+oldNode+" node from this one (" + gNode + " node)");
@@ -1012,10 +1021,14 @@ state active
             if (gUseNewParser) urlroot = cTestURL;
 
             resetElementsFull();
-            if (gSSID == "" ) gSSID = "y";
+            string stxt = "";
+            if (gSSID != "" ) {
+                stxt = "&sessid="+gSSID;
+            }
+
             key thisowner = llGetOwner();
             string avname = llKey2Name(thisowner);
-            Rq_getnode = llHTTPRequest(urlroot+"&mnodeid="+msg+"&av="+avname+"&sessid="+gSSID, [HTTP_METHOD,"GET"], "");
+            Rq_getnode = llHTTPRequest(urlroot+"&mnodeid="+msg+"&av="+avname+stxt, [HTTP_METHOD,"GET"], "");
         }
 
         if (channel==gHolodeckChatChannel){
@@ -1026,13 +1039,14 @@ state active
     }
 
     http_response(key request_id, integer status, list metadata, string body) {
-       // llSay(0, body);
+        llSay(0, body);
         string errorTXT = "";
         parseFeed(body);
 
         gPage = "node";
         gNodeMedia = "";
         gNodeImage = "";
+        gOptions = [];
 
         integer nAssets = llGetListLength(assetTypes);
 

@@ -474,7 +474,7 @@
                     <div class="hidden" id="help_slchat">
                         <br/>
                         - most of these web-enabled objects must be rezzed before sending them a chat command
-						-
+						- region-wide will not work for public channel
                         <br/>
                     </div>
                     Chats, messages and commands can be sent on the
@@ -487,7 +487,7 @@
                         <option value="-8787">Registration_Booth-viewer_area_edition</option>
                         <option value="687686">Main_Parcel_Game_Controller-viewer_area_edition</option>
                         <option value="-63342">Controller_Media_Relay-viewer_area_edition</option>
-                        <option value="687687">NOSM_Bracelet_Multicast</option>
+                        <option value="603">NOSM_Bracelet_Multicast</option>
                         <option value="-3857343">Sloodle_Object</option>
                         <option value="1001">Sloodle_Player_Multicast</option>
                         <option value="23">Multigadget_Multicast</option>
@@ -498,9 +498,27 @@
                     </select>
                     <br/>
 
+                    <div class="hidden" id="chatchannel_NOSM_Bracelet_Multicast">
+                    	<br/>
+                        Command to be chatted to all bracelets within range: <input id="chatChannelBraceletMsg" name="chatChannelBraceletMsg" type="text" size="50">
+                        <br/>
+                    </div>
+
+                    <div class="hidden" id="chatchannel_Controller_Media_Relay-viewer_area_edition">
+                    	<br/>
+                        URL to send to the Media relay Object: <input id="chatChannelRelayMsg" name="chatChannelRelayMsg" type="text" size="50">
+                        <br/>
+                    </div>
+
+                    <div class="hidden" id="chatchannel_Registration_Booth-viewer_area_edition">
+                    	<br/>
+                        Command to send to the Registration Booth: <input id="chatChannelBoothMsg" name="chatChannelBoothMsg" type="text" size="50">
+                        <br/>
+                    </div>
+
                     <div class="hidden" id="chatchannel_Public">
                     	<br/>
-                        Message to be chatted : <input id="chatChannelPubMsg" name="chatChannelPubMsg" type="text" size="50">
+                        Message to be chatted to everybody within range: <input id="chatChannelPubMsg" name="chatChannelPubMsg" type="text" size="50">
                         <br/>
                     </div>
                     <div class="hidden" id="channelType_Other">
@@ -512,56 +530,56 @@
                     <div class="hidden" id="channelType_Multigadget_Multicast">
                     	Command to send the Multi-Gadget:
                         <select id="mg_cmd" name="mg_cmd">
-                            <option value="cmd|jump">jump2cam: create clickable swirl that moves user to current camera</option>
-                            <option value="cmd|trike">glider: click to sit on it, arrow keys to drive</option>
-                            <option value="cmd|buggy">buggy: click to sit on it, arrow keys to drive</option>
-                            <option value="cmd|parachute">parachute wear it and touch the pack for dialog menu</option>
-                            <option value="cmd|droid">droid: gives the owner a Rad Droid</option>
-                            <option value="cmd|bcam|on">bcam: enables Multi Gadget Builders Camera</option>
-                            <option value="cmd|bcam|off">bcam: disables Multi Gadget Builders Camera</option>
-                            <option value="cmd|dsd">dsd: gives the owner the Data Storage Device</option>
-                            <option value="cmd|grapple">grapple: gives the owner the Multi Gadget Grapple Hook</option>
-                            <option value="cmd|chair">chair: gives the owner a Multi Chair Coffee Table</option>
-                            <option value="cmd|tuner|on">tuner: turns on the channel listener</option>
-                            <option value="cmd|tuner|off">tuner: turns off the channel listener (default state is off)</option>
-                            <option value="cmd|tuner|chan|23">tuner: reset the tuner to listen to channel 23</option>
-                            <option value="cmd|bubble|afk|on">bubble: enable the AFK thought bubble (default)</option>
-                            <option value="cmd|bubble|scripting|on">bubble: enable the scripting thought bubble</option>
-                            <option value="cmd|bubble|busy|on">bubble: enable the busy thought bubble</option>
-                            <option value="cmd|bubble|teleporting|on">bubble: enable the teleporting thought bubble</option>
-                            <option value="cmd|bubble|teleport">bubble: display the teleport thought bubble</option>
-                            <option value="cmd|flare|rez">flare: rezzes a flare</option>
-                            <option value="cmd|gas|rez">gas: rezzes a tear gas canister</option>
-                            <option value="cmd|light|rez">light: rezzes a light unit</option>
-                            <option value="cmd|visible|on">visible: makes the Multi Gadget visible</option>
-                            <option value="cmd|visible|off">visible: makes the Multi Gadget invisible</option>
-                            <option value="cmd|keygetter|near">key: lists all avs and their keys who are in range</option>
-                            <option value="cmd|reset">reset: reloads the configuration notecard</option>
-                            <option value="cmd|platform|sky">platform: rez a Sky Station (see '/mg sky')</option>
-                            <option value="cmd|platform|catcher">platform: rez a temporary catcher (catches you and holds you)</option>
-                            <option value="cmd|platform|bridge">platform: rez a temporary bridge</option>
-                            <option value="cmd|platform|up">platform: rez a temporary bridge going upwards</option>
-                            <option value="cmd|platform|down">platform: rez a temporary bridge going downwards</option>
-                            <option value="cmd|platform|gate">platform: rez a swing gate which get you through walls</option>
-                            <option value="cmd|platform|platform">platform: rez a permanent platform</option>
-                            <option value="cmd|platform|storm">platform: rez a temporary hectic light storm</option>
-                            <option value="cmd|platform|clear">platform: clears up all temporary platforms</option>
-                            <option value="cmd|platform|mat">platform: rez a Scripter's Zen Mat to sit on</option>
-                            <option value="cmd|platform|woodbridge">platform: rez a temporary wooden bridge</option>
-                            <option value="cmd|platform|woodup">platform: rez a temporary wooden bridge going upwards</option>
-                            <option value="cmd|platform|wooddown">platform: rez a temporary wooden bridge going downwards</option>
-                            <option value="cmd|platform|pose">platform: rez a pose block</option>
+                            <option value="jump">jump2cam: create clickable swirl that moves user to current camera</option>
+                            <option value="trike">glider: click to sit on it, arrow keys to drive</option>
+                            <option value="buggy">buggy: click to sit on it, arrow keys to drive</option>
+                            <option value="parachute">parachute wear it and touch the pack for dialog menu</option>
+                            <option value="droid">droid: gives the owner a Rad Droid</option>
+                            <option value="bcam|on">bcam: enables Multi Gadget Builders Camera</option>
+                            <option value="bcam|off">bcam: disables Multi Gadget Builders Camera</option>
+                            <option value="dsd">dsd: gives the owner the Data Storage Device</option>
+                            <option value="grapple">grapple: gives the owner the Multi Gadget Grapple Hook</option>
+                            <option value="chair">chair: gives the owner a Multi Chair Coffee Table</option>
+                            <option value="tuner|on">tuner: turns on the channel listener</option>
+                            <option value="tuner|off">tuner: turns off the channel listener (default state is off)</option>
+                            <option value="tuner|chan|23">tuner: reset the tuner to listen to channel 23</option>
+                            <option value="bubble|afk|on">bubble: enable the AFK thought bubble (default)</option>
+                            <option value="bubble|scripting|on">bubble: enable the scripting thought bubble</option>
+                            <option value="bubble|busy|on">bubble: enable the busy thought bubble</option>
+                            <option value="bubble|teleporting|on">bubble: enable the teleporting thought bubble</option>
+                            <option value="bubble|teleport">bubble: display the teleport thought bubble</option>
+                            <option value="flare|rez">flare: rezzes a flare</option>
+                            <option value="gas|rez">gas: rezzes a tear gas canister</option>
+                            <option value="light|rez">light: rezzes a light unit</option>
+                            <option value="visible|on">visible: makes the Multi Gadget visible</option>
+                            <option value="visible|off">visible: makes the Multi Gadget invisible</option>
+                            <option value="keygetter|near">key: lists all avs and their keys who are in range</option>
+                            <option value="reset">reset: reloads the configuration notecard</option>
+                            <option value="platform|sky">platform: rez a Sky Station (see '/mg sky')</option>
+                            <option value="platform|catcher">platform: rez a temporary catcher (catches you and holds you)</option>
+                            <option value="platform|bridge">platform: rez a temporary bridge</option>
+                            <option value="platform|up">platform: rez a temporary bridge going upwards</option>
+                            <option value="platform|down">platform: rez a temporary bridge going downwards</option>
+                            <option value="platform|gate">platform: rez a swing gate which get you through walls</option>
+                            <option value="platform|platform">platform: rez a permanent platform</option>
+                            <option value="platform|storm">platform: rez a temporary hectic light storm</option>
+                            <option value="platform|clear">platform: clears up all temporary platforms</option>
+                            <option value="platform|mat">platform: rez a Scripter's Zen Mat to sit on</option>
+                            <option value="platform|woodbridge">platform: rez a temporary wooden bridge</option>
+                            <option value="platform|woodup">platform: rez a temporary wooden bridge going upwards</option>
+                            <option value="platform|wooddown">platform: rez a temporary wooden bridge going downwards</option>
+                            <option value="platform|pose">platform: rez a pose block</option>
                             <option value="cmd|flight|on">flight: turns on flight assist (default is on)</option>
-                            <option value="cmd|flight|off">flight: turns off flight assist</option>
-                            <option value="cmd|flight|speed">flight: IMs the owner with the current flight assist speed settings</option>
-                            <option value="cmd|flight|slow">flight: flies at slow speed (default)</option>
-                            <option value="cmd|flight|fast">flight: flies at faster speed for long distances</option>
-                            <option value="cmd|flight|god">flight: crazy lightning god speed</option>
-                            <option value="cmd|movelock|on">movelock: turns on the mild movelock</option>
-                            <option value="cmd|movelock|off">movelock: turns off the mild movelock</option>
-                            <option value="cmd|memo">browse previously-recorded memo entries using the dialog user interface</option>
-                            <option value="cmd|agent_sensor|off">sensor: turns off agent sensing</option>
-                            <option value="cmd|agent_sensor|on">sensor: turns on agent sensing (default)</option>
+                            <option value="flight|off">flight: turns off flight assist</option>
+                            <option value="flight|speed">flight: IMs the owner with the current flight assist speed settings</option>
+                            <option value="flight|slow">flight: flies at slow speed (default)</option>
+                            <option value="flight|fast">flight: flies at faster speed for long distances</option>
+                            <option value="flight|god">flight: crazy lightning god speed</option>
+                            <option value="movelock|on">movelock: turns on the mild movelock</option>
+                            <option value="movelock|off">movelock: turns off the mild movelock</option>
+                            <option value="memo">browse previously-recorded memo entries using the dialog user interface</option>
+                            <option value="agent_sensor|off">sensor: turns off agent sensing</option>
+                            <option value="agent_sensor|on">sensor: turns on agent sensing (default)</option>
                         </select>
                     </div>
                     <div class="hidden" id="channelType_Lite_Prim_Animator">
@@ -587,17 +605,13 @@
                             <option value="loop">notify of the LOOP status (TRUE orFALSE)</option>
                             <option value="play">notify of the playback SPEED (in tenths of a second)</option>
                         </select>
-                        <div class="hidden" id="chatchannel_Lite_Prim_Animator_param">
-                            Message to be chatted : <input name="chatChannelLite_Prim_Animator" id="chatChannelLite_Prim_Animator" type="text" size="30">
-                            <br/>
-                        </div>
 						</div>
                     <div class="hidden" id="channelType_PrimPuppeteer">
                             Command to send the Prim Puppeteer:
                             <select id="prim_pup_cmd" name="prim_pup_cmd">
                                 <option value="menu">menu</option>
                                 <option value="record">record</option>
-                                <option value="show">show (number)</option>
+                                <option value="show">show (frame number)</option>
                                 <option value="publish">publish</option>
                                 <option value="play loop">play loop</option>
                                 <option value="play 0.5">play half speed</option>
@@ -609,6 +623,35 @@
                                 <option value="export">export</option>
                                 <option value="purge">purge</option>
                             </select>
+	                        <div class="hidden" id="chatchannel_PrimPuppeteer_param">
+	                           Number <select name="chatChannelLite_PrimPuppeteer" id="chatChannelLite_PrimPuppeteer">
+		                           	<option value="1">1</option>
+									<option value="2">2</option>
+									<option value="3">3</option>
+									<option value="4">4</option>
+									<option value="5">5</option>
+									<option value="6">6</option>
+									<option value="7">7</option>
+									<option value="8">8</option>
+									<option value="9">9</option>
+									<option value="10">10</option>
+									<option value="11">11</option>
+									<option value="12">12</option>
+									<option value="13">13</option>
+									<option value="14">14</option>
+									<option value="15">15</option>
+									<option value="16">16</option>
+									<option value="17">17</option>
+									<option value="18">18</option>
+									<option value="19">19</option>
+									<option value="20">20</option>
+									<option value="21">21</option>
+									<option value="22">22</option>
+									<option value="23">23</option>
+									<option value="24">24</option>
+	                           	</select>
+	                            <br/>
+	                        </div>
                      </div>
                     <div class="hidden" id="channelType_Sloodle_Object">
                         <br/>
@@ -659,51 +702,55 @@
                         <br/>
                         when a player:
                         <br/><br/>
-                        attaches to it: <input type="radio" id="manq_attach" value="attach" name="manq_int">
-                        <br/>
-                        clicks it: <input type="radio" id="manq_click" value="click" name="manq_int">
-                        <br/>
-                        chats with: <input type="radio" id="manq_talk" value="talk" name="manq_int">
+						<select name="manq_int" id="manq_int">
+							<option disabled="" value=""></option>
+							<option value="attach"> attaches to it</option>
+							<option value="click"> clicks it</option>
+							<option value="talk"> chats with</option>
+						</select>
                         <br/><br/>
-                        <div class="hidden" id="mannequin_part">
+                        <div class="hidden" id="mannequin_part">on this part of the mannequin body:
                             <br/>
                             	<select name="mannequin_parts" id="mannequin_parts">
                                 <option disabled="" value=""></option>
-                                <option value="head">head</option>
-                                <option value="right pupil">right pupil</option>
-                                <option value="left pupil">left pupil</option>
-                                <option value="breathing">breathing</option>
-                                <option value="neck">neck</option>
-                                <option value="right arm">right arm</option>
-                                <option value="left arm">left arm</option>
-                                <option value="chest">chest</option>
-                                <option value="abdomen">abdomen</option>
-                                <option value="pelvis">pelvis</option>
-                                <option value="right leg">right leg</option>
-                                <option value="left leg">left leg</option>
+                                <option value="Head">head</option>
+                                <option value="Right Pupil">right pupil</option>
+                                <option value="Left Pupil">left pupil</option>
+                                <option value="Breathing">breathing</option>
+								<option value="Airway">airway</option>
+                                <option value="Neck">neck</option>
+                                <option value="Right Arm">right arm</option>
+                                <option value="Left Arm">left arm</option>
+                                <option value="Chest">chest</option>
+                                <option value="Abdominal">abdomen</option>
+                                <option value="Pelvic Spring">pelvis</option>
+                                <option value="Right Wrist">right wrist</option>
+                                <option value="Left Wrist">left wrist</option>
+                                <option value="Right Leg">right leg</option>
+                                <option value="Left Leg">left leg</option>
                             </select><br/>
                         </div>
-                        <div class="hidden" id="mannequin_talk">
-                            speak to the mannequin:
+                        <div class="hidden" id="mannequin_talk"> says the following, within range of the mannequin:
+                            <br/>
                             <select name="mannequin_cmds" id="mannequin_cmds">
                                 <option disabled="" value=""></option>
-                                <option value="ask: can you hear me">Ask the patient Can You Hear Me</option>
-                                <option value="ask: history full">Ask the patient their history, as detailed as possible</option>
-                                <option value="ask: history brief previous">Ask the patient their history, in brief</option>
-                                <option value="ask: pain score">Ask the patient about their pain</option>
-                                <option value="ask: pain where">Ask the patient where it hurts</option>
-                                <option value="ask: pain describe">Ask the patient to describe the pain</option>
-                                <option value="ask: pain duration">Ask the patient how long the pain lasts</option>
-                                <option value="ask: pain change">Ask the patient if the pain has changed</option>
-                                <option value="ask: walk to the ambulance">Ask the patient if they can walk to the ambulance</option>
-                                <option value="ask: how are you">Ask the patient how they are</option>
-                                <option value="ask: happened">Ask the patient what happened</option>
-                                <option value="ask: medication">Ask the patient if they have taken medication</option>
-                                <option value="ask: allergy">Ask the patient if they have allergies</option>
-                                <option value="ask: name">Ask the patient their name</option>
-                                <option value="ask: age">Ask the patient their age</option>
-                                <option value="ask: stand">Ask the patient to stand</option>
-                                <option value="ask: move">Ask the patient to move</option>
+                                <option value="ask can you hear me">Ask the patient Can You Hear Me</option>
+                                <option value="ask history full">Ask the patient their history, as detailed as possible</option>
+                                <option value="ask history brief previous">Ask the patient their history, in brief</option>
+                                <option value="ask pain score">Ask the patient about their pain</option>
+                                <option value="ask pain where">Ask the patient where it hurts</option>
+                                <option value="ask pain describe">Ask the patient to describe the pain</option>
+                                <option value="ask pain duration">Ask the patient how long the pain lasts</option>
+                                <option value="ask pain change">Ask the patient if the pain has changed</option>
+                                <option value="ask walk to the ambulance">Ask the patient if they can walk to the ambulance</option>
+                                <option value="ask how are you">Ask the patient how they are</option>
+                                <option value="ask happened">Ask the patient what happened</option>
+                                <option value="ask medication">Ask the patient if they have taken medication</option>
+                                <option value="ask allergy">Ask the patient if they have allergies</option>
+                                <option value="ask name">Ask the patient their name</option>
+                                <option value="ask age">Ask the patient their age</option>
+                                <option value="ask stand">Ask the patient to stand</option>
+                                <option value="ask move">Ask the patient to move</option>
                                 <option value="show attach">Show attachment points on the mannequin</option>
                                 <option value="hide attach">Hide attachment points on the mannequin</option>
                                 <option value="show touch">Show touch points on the mannequin</option>
@@ -742,30 +789,30 @@
                             <option value="show floor">Makes the shell floor visible (in supported shells)</option>
                             <option value="exit">Rez a holodeck arch for easy access to the control panel</option>
                         </select>
-					<div class="hidden" id="sceneName">
-                        <br/>
-                        Scene/Shell to use:
-                        <select id="ainv_slchat" name="ainv_slchat">
-                            <option value=""></option>
-                        </select>
-                    </div>
+						<div class="hidden" id="sceneName">
+	                        <br/>
+	                        Scene/Shell to use:
+	                        <select id="ainv_slchat" name="ainv_slchat">
+	                            <option value=""></option>
+	                        </select>
+	                    </div>
                     </div>
 
                     <div class="hidden" id="channelType_Main_Parcel_Game_Controller-viewer_area_edition">
-                            Controller Commands:
-                            <select name="controller_cmds" id="controller_cmds">
-                                <option disabled="" value=""></option>
-                                <option value="start">Start the Labyrinth</option>
-                                <option value="reset">Reset the Controller</option>
-                                <option value="options">Show Options on viewer</option>
-                                <option value="option">Select an Option Button</option>
-                                <option value="text">Show VPD text on viewer</option>
-                                <option value="media">Show Any VPDMedia/Image (if more than one, display a list</option>
-                                <option value="back">Use Back Button (if supported)</option>
-                                <option value="menu">Show Main Menu (supported?)</option>
-                                <option value="help">Show Help Text</option>
-                                <option value="hardreset">Reset scripts for controller (if crashes)</option>
-                            </select>
+                        Controller Commands:
+                        <select name="controller_cmds" id="controller_cmds">
+                            <option disabled="" value=""></option>
+                            <option value="start">Start the Labyrinth</option>
+                            <option value="reset">Reset the Controller</option>
+                            <option value="options">Show Options on viewer</option>
+                            <option value="option">Select an Option Button</option>
+                            <option value="text">Show VPD text on viewer</option>
+                            <option value="media">Show Any VPDMedia/Image (if more than one, display a list</option>
+                            <option value="back">Use Back Button (if supported)</option>
+                            <option value="menu">Show Main Menu (supported?)</option>
+                            <option value="help">Show Help Text</option>
+                            <option value="hardreset">Reset scripts for controller (if crashes)</option>
+                        </select>
 
                         <div class="hidden" id="linkopt_option">
                             <br/>
@@ -1580,7 +1627,6 @@
                 <!-- START OF CONTENT AREA --><a name="content-start" id="content-start"></a>
                 <!--for screenreaders --><!-- End of header.thtml -->
                 <div class="block-box">
-                    <span class="block-helpicon"></span>
                     <h2>Particules generator 2</h2>
                     <!--form name="data"-->
                             <input name="ftcname" size="60" value="Particle-viewer_area_edition" type="hidden"><hr>
@@ -1973,7 +2019,7 @@
                         -vpdimage help
                         <br/>
                     </div>
-                    <table width="826" border="0" summary="">
+                    <table summary="" width="826" border="0">
                         <tr>
                             <td>
                                 Note: Content Type
@@ -2304,7 +2350,7 @@
                         -vpdmedia help
                         <br/>
                     </div>
-                    <table width="826" border="0" summary="">
+                    <table summary="" width="826" border="0">
                         <tr>
                             <td>
                                 Content Type
@@ -2349,7 +2395,7 @@
                     <br/>
                     <input type="checkbox" value="wado_useVPD" name="useExtText">
                     <div id="vpdtext_params">
-                        <table width="826" border="0" summary="">
+                        <table summary="" width="826" border="0">
                             <tr>
                                 <td>
                                     Virtual Patient
@@ -2561,11 +2607,11 @@
                         -charts help
                         <br/>
                     </div>
-                    <table border="0" summary="">
+                    <table summary="" border="0">
                         <tbody>
                             <tr>
                                 <td valign="top">
-                                    <table border="0" summary="">
+                                    <table summary="" border="0">
                                         <tbody>
                                             <tr>
                                                 <td colspan="3">
@@ -2752,7 +2798,7 @@
                                             </tr>
                                             <tr id="pieLabelsColorsContainer1" style="display: none;">
                                                 <td width="33%">
-                                                    <table border="0" cellpadding="0" cellspacing="2" summary="">
+                                                    <table summary="" border="0" cellpadding="0" cellspacing="2">
                                                         <tbody>
                                                             <tr>
                                                                 <td>
@@ -2767,7 +2813,7 @@
                                                     </table>
                                                 </td>
                                                 <td width="33%">
-                                                    <table border="0" cellpadding="0" cellspacing="2" summary="">
+                                                    <table summary="" border="0" cellpadding="0" cellspacing="2">
                                                         <tbody>
                                                             <tr>
                                                                 <td>
@@ -2782,7 +2828,7 @@
                                                     </table>
                                                 </td>
                                                 <td width="33%">
-                                                    <table border="0" cellpadding="0" cellspacing="2" summary="">
+                                                    <table summary="" border="0" cellpadding="0" cellspacing="2">
                                                         <tbody>
                                                             <tr>
                                                                 <td>
@@ -2799,7 +2845,7 @@
                                             </tr>
                                             <tr id="pieLabelsColorsContainer2" style="display: none;">
                                                 <td width="33%">
-                                                    <table border="0" cellpadding="0" cellspacing="2" summary="">
+                                                    <table summary="" border="0" cellpadding="0" cellspacing="2">
                                                         <tbody>
                                                             <tr>
                                                                 <td>
@@ -2814,7 +2860,7 @@
                                                     </table>
                                                 </td>
                                                 <td width="33%">
-                                                    <table border="0" cellpadding="0" cellspacing="2" summary="">
+                                                    <table summary="" border="0" cellpadding="0" cellspacing="2">
                                                         <tbody>
                                                             <tr>
                                                                 <td>
@@ -2829,7 +2875,7 @@
                                                     </table>
                                                 </td>
                                                 <td width="33%">
-                                                    <table border="0" cellpadding="0" cellspacing="2" summary="">
+                                                    <table summary="" border="0" cellpadding="0" cellspacing="2">
                                                         <tbody>
                                                             <tr>
                                                                 <td>
@@ -2846,7 +2892,7 @@
                                             </tr>
                                             <tr id="pieLabelsColorsContainer3" style="display: none;">
                                                 <td width="33%">
-                                                    <table border="0" cellpadding="0" cellspacing="2" summary="">
+                                                    <table summary="" border="0" cellpadding="0" cellspacing="2">
                                                         <tbody>
                                                             <tr>
                                                                 <td>
@@ -2861,7 +2907,7 @@
                                                     </table>
                                                 </td>
                                                 <td width="33%">
-                                                    <table border="0" cellpadding="0" cellspacing="2" summary="">
+                                                    <table summary="" border="0" cellpadding="0" cellspacing="2">
                                                         <tbody>
                                                             <tr>
                                                                 <td>
@@ -2876,7 +2922,7 @@
                                                     </table>
                                                 </td>
                                                 <td width="33%">
-                                                    <table border="0" cellpadding="0" cellspacing="2" summary="">
+                                                    <table summary="" border="0" cellpadding="0" cellspacing="2">
                                                         <tbody>
                                                             <tr>
                                                                 <td>
@@ -2895,7 +2941,7 @@
                                     </table>
                                 </td>
                                 <td align="left" valign="top">
-                                    <table border="0" summary="">
+                                    <table summary="" border="0">
                                         <tbody>
                                             <tr>
                                                 <td>
@@ -2927,7 +2973,8 @@
 					<!--/div-->
 					<!--/form-->
                     <form name="config">
-Google spreadsheet key (e.g. <em>rvWgEEGK9xuUQBR1EFcxHWA</em> ) or spreadsheet URL <input type="text" size=30 id='gsKey'  /> Sheet number* (optional): <input type="text" size=3 id='gsSheet'  /> <input type="button" value="Preview table headings" onclick="preview()" /><br/>
+Google spreadsheet key (e.g. <em>rvWgEEGK9xuUQBR1EFcxHWA</em> ) or spreadsheet URL <input type="text" size=30 id='gsKey'  /> Sheet number* (optional): <input type="text" size=3 id='gsSheet'  />
+<input type="button" value="Preview table headings" onclick="preview()" /><br/>
 
 <p>* The number of the first sheet in a spreadsheet (which is used by default) is 0. To select thesecond sheet, add: 1; for the third sheet, add 2, and so on.</p>
 <p>Alternatively, grab an entire sheet: <select name="dList" id="datastore"></select>
@@ -2963,7 +3010,7 @@ Google spreadsheet key (e.g. <em>rvWgEEGK9xuUQBR1EFcxHWA</em> ) or spreadsheet U
 </table>
 <br/>
 <p>Try out some visualisation queries here...</p>
-<table id='colLookup' border='1'></table>
+<table summary="" id='colLookup' border='1'></table>
 <br/>
 <p>Select the columns from the list box (ctrl+click for multiple selections in IE, command+click on a Mac) or type the elements directly into the appropriate text box.</p><br/>
 <div><tt>select</tt> <span id='boxes'></span> <input type="text" id="gqc" size=20  /><br/>
@@ -3066,7 +3113,8 @@ Google spreadsheet key (e.g. <em>rvWgEEGK9xuUQBR1EFcxHWA</em> ) or spreadsheet U
                     Polygon style<input name="gpolystyle" value="1" id="gpolystyle" type="checkbox"> Use for
                     new and changed polygons
                     <br/>
-                    Stroke color: #<input maxlength="6" name="gpolystrokecolor" id="gpolystrokecolor" size="6" value="000000" type="text"> Stroke weight:<input maxlength="3" name="gpolystrokeweight" id="gpolystrokeweight" size="3" value="3" type="text">px Thickness of line, in pixels.
+                    Stroke color: #<input maxlength="6" name="gpolystrokecolor" id="gpolystrokecolor" size="6" value="000000" type="text">
+					Stroke weight:<input maxlength="3" name="gpolystrokeweight" id="gpolystrokeweight" size="3" value="3" type="text">px Thickness of line, in pixels.
                     <br/>
                     Stroke opacity: <input maxlength="3" name="gpolystrokeopacity" id="gpolystrokeopacity" size="3" value="25" type="text">%
                     <br/>
@@ -3152,201 +3200,192 @@ Google spreadsheet key (e.g. <em>rvWgEEGK9xuUQBR1EFcxHWA</em> ) or spreadsheet U
                 </div>
 
 				-->
+                <h2>Create a map with a marker and optional info window.</h2>
+                <h3><img alt="" src="http://www.google.com/uds/solutions/wizards/img/1b.gif" style="vertical-align:middle"/> Customize Map View, Marker Location, and Paths</h3>
+                <br/>
+                <p>
+                    <b>To change the map view:</b>
+                </p>
+                <p>
+                    Use the map control to zoom in/out to the desired zoom level.
+                </p>
+                <br/>
+                <p>
+                    <b>To create a marker:</b>
+                </p>
+                <p>
+                    Enter the desired address/location in the box and press the button. If the marker is a little off, drag it around to where it should be.
+                    <br/>
+                    <input type="text" size="30" id="addressTEXT" value="Mountain View, CA" /><input type="button" value="Create Marker Here" onclick="showAddress()"/>
+                </p>
+                <br/>
+                <p>
+                    <b>To add a path:</b>
+                </p>
+                <p>
+                    You can optionally click on the map to indicate a starting point for a path. Clicking multiple times afterwards builds out the path.
+                </p>
+                <br/>
+                <div id="map" style="width: 500px; margin-left: 20px; height: 300px"></div>
 
+                <p>
+                    <input type="button" value="Clear Marker" onclick="clearMarkers()"/>
+					<input type="button" value="Clear Poly" onclick="clearPolys()"/>
+                </p>
+                <br clear="all"/>
+                <h3 alt=""><img alt="" src="http://www.google.com/uds/solutions/wizards/img/2b.gif" style="vertical-align:middle"/>Customize Size and Preview</h3>
+                <p>
+                    <table>
+                        <tr>
+                            <td>
+                                <b>Map</b>
+                            </td>
+                            <td>
+                                width:<input type="text" size="3" id="mapWidthTEXT" value="500" onkeyup="updateImage();" onkeypress="updateImage();"/>
+                            </td>
+                            <td>
+                                height:<input type="text" size="3" id="mapHeightTEXT" value="300" onkeyup="updateImage();" onkeypress="updateImage();"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <b>Marker</b>
+                            </td>
+                            <td>
+                                size:
+                                <select id="markerSizeSELECT" onchange="disableSelects(); updateImage();">
+                                    <option value="" SELECTED>normal</option>
+                                    <option value="size:mid">mid</option>
+                                    <option value="size:small">small</option>
+                                    <option value="size:tiny">tiny</option>
+                                </select>
+                            </td>
+                            <td>
+                                Color:
+                                <select id="markerColorSELECT" onchange="updateImage();">
+                                    <option value="" SELECTED>normal</option>
+                                    <option value="color:black">black</option>
+                                    <option value="color:brown">brown</option>
+                                    <option value="color:green">green</option>
+                                    <option value="color:purple">purple</option>
+                                    <option value="color:yellow">yellow</option>
+                                    <option value="color:blue">blue</option>
+                                    <option value="color:gray">gray</option>
+                                    <option value="color:orange">orange</option>
+                                    <option value="color:red">red</option>
+                                    <option value="color:white">white</option>
+                                </select>
+                            </td>
+                            <td>
+                                Letter:
+                                <select id="markerLetterSELECT" onchange="updateImage();">
+                                    <option value="">None</option>
+                                    <option value="label:A">A</option>
+                                    <option value="label:B">B</option>
+                                    <option value="label:C">C</option>
+                                    <option value="label:D">D</option>
+                                    <option value="label:E">E</option>
+                                    <option value="label:F">F</option>
+                                    <option value="label:G">G</option>
+                                    <option value="label:H">H</option>
+                                    <option value="label:I">I</option>
+                                    <option value="label:J">J</option>
+                                    <option value="label:K">K</option>
+                                    <option value="label:L">L</option>
+                                    <option value="label:M">M</option>
+                                    <option value="label:N">N</option>
+                                    <option value="label:O">O</option>
+                                    <option value="label:P">P</option>
+                                    <option value="label:Q">Q</option>
+                                    <option value="label:R">R</option>
+                                    <option value="label:S">S</option>
+                                    <option value="label:T">T</option>
+                                    <option value="label:U">U</option>
+                                    <option value="label:V">V</option>
+                                    <option value="label:W">W</option>
+                                    <option value="label:X">X</option>
+                                    <option value="label:Y">Y</option>
+                                    <option value="label:Z">Z</option>
+                                    <option value="label:0">0</option>
+                                    <option value="label:1">1</option>
+                                    <option value="label:2">2</option>
+                                    <option value="label:3">3</option>
+                                    <option value="label:4">4</option>
+                                    <option value="label:5">5</option>
+                                    <option value="label:6">6</option>
+                                    <option value="label:7">7</option>
+                                    <option value="label:8">8</option>
+                                    <option value="label:9">9</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <b>Path</b>
+                            </td>
+                            <td>
+                                Color:
+                                <select id="polyColorSELECT" onchange="updateImage();">
+                                    <option value="000000">black</option>
+                                    <option value="8B4513">brown</option>
+                                    <option value="008000">green</option>
+                                    <option value="800080">purple</option>
+                                    <option value="FFCC00">yellow</option>
+                                    <option value="0000FF" SELECTED>blue</option>
+                                    <option value="808080">gray</option>
+                                    <option value="ffa500">orange</option>
+                                    <option value="ff0000">red</option>
+                                    <option value="ffffff">white</option>
+                                </select>
+                            </td>
+                            <td>
+                                Alpha:
+                                <select id="polyAlphaSELECT" onchange="updateImage();">
+                                    <option value="19">10%</option>
+                                    <option value="33">20%</option>
+                                    <option value="4d">30%</option>
+                                    <option value="66">40%</option>
+                                    <option value="80" SELECTED>50% </option>
+                                    <option value="99">60%</option>
+                                    <option value="b3">70%</option>
+                                    <option value="cc">80%</option>
+                                    <option value="e6">90%</option>
+                                    <option value="ff">100%</option>
+                                </select>
+                            </td>
+                            <td>
+                                Weight:
+                                <select id="polyWeightSELECT" onchange="updateImage();">
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5" SELECTED>5 </option>
+                                    <option value="6">6</option>
+                                    <option value="7">7</option>
+                                    <option value="8">8</option>
+                                    <option value="9">9</option>
+                                    <option value="10">10</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="4">
+                                <input id="markerTypeCHECKBOX" type="checkbox" onchange="updateImage();">Store markers as addresses, not coordinates.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="4">
+                                <input id="mapFitCHECKBOX" type="checkbox" onchange="updateImage();">Automatically zoom to fit all overlays.
+                            </td>
+                        </tr>
+                    </table>
+                </p>
+                <div id="staticMapIMG" style="width: 500px; margin-left: 20px; height: 300px"></div>
+                <br clear="all"/>
+                Generated URL: <input type="text" name="staticMapURL" id="staticMapURL" class="code">
 
-<h2>Create a map with a marker and optional info window.</h2>
-
-<h3><img src="http://www.google.com/uds/solutions/wizards/img/1b.gif"
-style="vertical-align:middle"/> Customize Map View, Marker Location, & Paths</h3>
-<br/>
-  <p><b>To change the map view:</b></p>
-  <p>
-  Use the map control to zoom in/out to the desired zoom level.
-  </p>
-<br/>
-   <p><b>To create a marker:</b></p>
-  <p>Enter the desired address/location in the box and press the button. If the marker is a little off, drag it around to where it should be.
-  <br/>
-  <input type="text" size="30" id="addressTEXT" value="Mountain View, CA" />
-  <input type="button" value="Create Marker Here" onclick="showAddress()"/>
-  </p>
-
-<br/>
-  <p><b>To add a path:</b></p>
-  <p>
-  You can optionally click on the map to indicate a starting point for a path. Clicking multiple times afterwards builds out the path.
-  </p>
-  <br/>
-  <div id="map" style="width: 500px; margin-left: 20px; height: 300px"></div>
-  <p>
-  <input type="button" value="Clear Marker" onclick="clearMarkers()"/>
-
-  <input type="button" value="Clear Poly" onclick="clearPolys();"/>
-  </p>
-<br clear="all"/>
-
-<h3 alt=""><img src="http://www.google.com/uds/solutions/wizards/img/2b.gif"
-style="vertical-align:middle"/>Customize Size & Preview</h3>
-  <p>
-  <table>
-  <tr>
-  <td><b>Map</b></td>
-
-  <td>width:
-  <input type="text" size="3" id="mapWidthTEXT" value="500" onkeyup="updateImage();" onkeypress="updateImage();" />
-  </td>
-  <td>height:
-  <input type="text" size="3" id="mapHeightTEXT" value="300" onkeyup="updateImage();" onkeypress="updateImage();" />
-  </td>
-  </tr>
-  <tr>
-  <td><b>Marker</b></td>
-  <td>size:
-  <select id="markerSizeSELECT" onchange="disableSelects(); updateImage();">
-
-    <option value="" SELECTED>normal</option>
-    <option value="size:mid">mid</option>
-    <option value="size:small">small</option>
-    <option value="size:tiny">tiny</option>
-  </select>
-  </td>
-  <td>Color:
-  <select id="markerColorSELECT" onchange="updateImage();">
-
-    <option value="" SELECTED>normal</option>
-    <option value="color:black">black</option>
-    <option value="color:brown">brown</option>
-    <option value="color:green">green</option>
-    <option value="color:purple">purple</option>
-    <option value="color:yellow">yellow</option>
-
-    <option value="color:blue">blue</option>
-    <option value="color:gray">gray</option>
-    <option value="color:orange">orange</option>
-    <option value="color:red">red</option>
-    <option value="color:white">white</option>
-  </select>
-
-  </td>
-  <td>Letter:
-  <select id="markerLetterSELECT" onchange="updateImage();">
-    <option value="">None</option>
-    <option value="label:A">A</option>
-    <option value="label:B">B</option>
-    <option value="label:C">C</option>
-
-    <option value="label:D">D</option>
-    <option value="label:E">E</option>
-    <option value="label:F">F</option>
-    <option value="label:G">G</option>
-    <option value="label:H">H</option>
-    <option value="label:I">I</option>
-
-    <option value="label:J">J</option>
-    <option value="label:K">K</option>
-    <option value="label:L">L</option>
-    <option value="label:M">M</option>
-    <option value="label:N">N</option>
-    <option value="label:O">O</option>
-
-    <option value="label:P">P</option>
-    <option value="label:Q">Q</option>
-    <option value="label:R">R</option>
-    <option value="label:S">S</option>
-    <option value="label:T">T</option>
-    <option value="label:U">U</option>
-
-    <option value="label:V">V</option>
-    <option value="label:W">W</option>
-    <option value="label:X">X</option>
-    <option value="label:Y">Y</option>
-    <option value="label:Z">Z</option>
-    <option value="label:0">0</option>
-
-    <option value="label:1">1</option>
-    <option value="label:2">2</option>
-    <option value="label:3">3</option>
-    <option value="label:4">4</option>
-    <option value="label:5">5</option>
-    <option value="label:6">6</option>
-
-    <option value="label:7">7</option>
-    <option value="label:8">8</option>
-    <option value="label:9">9</option>
-  </select>
-  </td>
-  </tr>
-  <tr>
-
-  <td><b>Path</b></td>
-  <td>Color:
-  <select id="polyColorSELECT" onchange="updateImage();">
-    <option value="000000">black</option>
-    <option value="8B4513">brown</option>
-    <option value="008000">green</option>
-    <option value="800080">purple</option>
-
-    <option value="FFCC00">yellow</option>
-    <option value="0000FF" SELECTED>blue</option>
-    <option value="808080">gray</option>
-    <option value="ffa500">orange</option>
-    <option value="ff0000">red</option>
-    <option value="ffffff">white</option>
-
-  </select>
-  </td>
-  <td>
-  Alpha:
-  <select id="polyAlphaSELECT" onchange="updateImage();">
-    <option value="19">10%</option>
-    <option value="33">20%</option>
-    <option value="4d">30%</option>
-
-    <option value="66">40%</option>
-    <option value="80" SELECTED>50%</option>
-    <option value="99">60%</option>
-    <option value="b3">70%</option>
-    <option value="cc">80%</option>
-    <option value="e6">90%</option>
-
-    <option value="ff">100%</option>
-  </select>
-  </td>
-  <td>
-  Weight:
-  <select id="polyWeightSELECT" onchange="updateImage();">
-    <option value="1">1</option>
-    <option value="2">2</option>
-
-    <option value="3">3</option>
-    <option value="4">4</option>
-    <option value="5" SELECTED>5</option>
-    <option value="6">6</option>
-    <option value="7">7</option>
-    <option value="8">8</option>
-
-    <option value="9">9</option>
-    <option value="10">10</option>
-  </select>
-  </td>
-  </tr>
-  <tr>
-  <td colspan="4"><input id="markerTypeCHECKBOX" type="checkbox" onchange="updateImage();">Store markers as addresses, not coordinates.</td>
-
-  </tr>
-  <tr>
-  <td colspan="4"><input id="mapFitCHECKBOX" type="checkbox" onchange="updateImage();">Automatically zoom to fit all overlays.</td>
-  </tr>
-  </table>
-  </p>
-  <div id="staticMapIMG" style="width: 500px; margin-left: 20px; height: 300px"></div>
-<br clear="all"/>
-
-Generated URL: <input tyep="text" id="staticMapURL" class="code">
-
-                </div>
-
-				</div>
+           </div>
 
 
 
@@ -3366,7 +3405,7 @@ Generated URL: <input tyep="text" id="staticMapURL" class="code">
 									<div class="c1">
 										<p class="header">Location data:</p>
 
-										<table>
+										<table summary="">
 											<tbody><tr>
 												<th>Region</th>
 												<th>X</th>

@@ -8,6 +8,8 @@ public abstract class GameUri {
 	private  int gameId = 2; // hard-coded until picking Lab from list is supported
 	private int nodeId;
 
+	private  String session;
+
 	private  String user = Constants.GAME_USER;
 	private  String password = Constants.GAME_PASSWORD;
 
@@ -17,16 +19,32 @@ public abstract class GameUri {
 	private String nameSuffix = Constants.GAME_URL_NAME_SUFFIX;
 	private String namePrefix = Constants.GAME_URL_NAME_PREFIX3;
 
-	private String linkPrefix = Constants.GAME_URL_LINK_PREFIX3;
-	private String linkSuffix = Constants.GAME_URL_LINK_SUFFIX;
+	private String linkPrefix = Constants.GAME_URL_LINKER_PREFIX;
+	private String linkSuffix = Constants.GAME_URL_LINKER_SUFFIX;
+
 	private String linkStart = Constants.GAME_URL_LINK_START;
 	private String linkSsid = Constants.GAME_URL_LINK_SSID;
 
 	private String idSuffix = Constants.GAME_URL_ID_SUFFIX3;
-	private String idPrefix = this.gameId + this.linkPrefix ;
+	private String nodePath = Constants.GAME_URL_NODE_PATH3;
+	private String idPrefix = this.getGameId() + Constants.GAME_URL_ID_PREFIX3 ;
 
 	public GameUri(){
 		super();
+	}
+
+	public String getAddress(){
+		return this.getPath() + this.getGameId() +"/"+
+		this.getNodePath()+"/"+ Integer.toString(this.getNodeId())  + this.getPathSuffix();
+	}
+
+	public String getAddress(boolean uselinks){
+		if (uselinks)
+		{
+			return this.getPath() +  this.getIdPrefix()+ Integer.toString(this.getNodeId())  + this.getPathSuffix();
+		}else{
+			return getAddress(); // use node syntax
+		}
 	}
 
 	public GameUri(int nodeId){
@@ -64,6 +82,7 @@ public abstract class GameUri {
 	public void setLinkPrefix(String linkPrefix) {
 		this.linkPrefix = linkPrefix;
 	}
+
 	public String getLinkSsid() {
 		return linkSsid;
 	}
@@ -123,6 +142,22 @@ public abstract class GameUri {
 	}
 	public void setNodeId(int nodeId) {
 		this.nodeId = nodeId;
+	}
+
+	public String getNodePath() {
+		return nodePath;
+	}
+
+	public void setNodePath(String nodePath) {
+		this.nodePath = nodePath;
+	}
+
+	public String getSession() {
+		return session;
+	}
+
+	public void setSession(String session) {
+		this.session = session;
 	}
 
 
