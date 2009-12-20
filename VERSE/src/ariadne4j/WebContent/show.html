@@ -7,7 +7,7 @@
 "text/html; charset=UTF-8" />
 <title>OL-SL</title>
 </head>
-<body>
+<body bgcolor="#666666" text="#FFFFFF">
 <script type="text/javascript">
 
 /* Client-side access to querystring name=value pairs
@@ -54,7 +54,7 @@ Querystring.prototype.contains = function(key) {
 
 var qs = new Querystring();
 if (qs.contains("dtext")){
-    document.write("<br/><h4 style='font-size:80px'>"+ qs.get("dtext")+"<\/h4><hr/><br/>");
+    document.write("<br/><h4 style='font-size:80px'>"+ unescape(String(qs.get("dtext")).replace(/\+/g, " "))+"<\/h4><hr/><br/>");
 }
 if (qs.contains("dimage")){
     document.write("<img src='http://"+qs.get("dimage")+"'/>");
@@ -62,8 +62,11 @@ if (qs.contains("dimage")){
 var optList = qs.get("doptions").split(",");
 var displayStr = "<ol> ";
 for ( var i=0, len=optList.length; i<len; ++i ){
-	displayStr += "<li style='font-size:60px'><h1 style='font-size:80px'>"+optList[i]+"<\/h1><\/li>";
+	if (String(optList[i]) != null && String(optList[i]).length >0){
+		displayStr += "<li style='font-size:60px'><h1 style='font-size:80px'>"+unescape(String(optList[i]).replace(/\+/g, " "))+"<\/h1><\/li>";
+	}
 }
+
 displayStr += "<\/ol> ";
 document.write(displayStr);
 </script>

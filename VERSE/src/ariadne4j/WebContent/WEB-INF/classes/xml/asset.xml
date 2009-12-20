@@ -29,6 +29,19 @@
 		assettype types
 		where types.id = mapped.type_id
 	</select>
+
+	<select id="getIdforAsset" parameterClass="Asset" resultClass="int">
+		SELECT mapped.id
+		FROM assetmapnode mapped,
+		assettype types
+		where types.aname = #type#
+		and types.id = mapped.type_id
+		and mapped.mnodeid = #nodeid#
+		and mapped.name = #name#
+		and mapped.target = #target#
+		and mapped.val = #value#
+	</select>
+
 	<select id="selectAssetsAdminByMNodeId" parameterClass="int"
 		resultMap="AssetResultFull">
 		SELECT mapped.id, mnodeid, aname, name, target, val, ui_pairs

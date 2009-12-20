@@ -1,5 +1,5 @@
 integer gUseNewParser = TRUE;
-string cTestURL = "http://142.51.75.11/ariadne4j/Ariadne?mode=slplay";
+string cTestURL = "http://142.51.75.11/ariadne4j/Ariadne?v=2&mode=slplay";
 
 string cRootNode= "ariadne";
 
@@ -15,6 +15,7 @@ string cAsset = "asset";
 string cAssetType = "type";
 string cAssetName = "name";
 string cAssetTarget = "target";
+string cAssetId = "iid";
 
 string cLink = "link";
 string cLinkLabel = "label";
@@ -86,6 +87,7 @@ list assetTypes;
 list assetNames;
 list assetTargets;
 list assetValues;
+list assetIds;
 list linkLabels;
 list linkRefs;
 
@@ -151,18 +153,22 @@ string str_replace(string src, string from, string to){
     return llDumpList2String(llParseStringKeepNulls((src = "") + src, [from], []), to);
 }
 
-string getAssetAttribValByName(string assetName, string attrib){
-    integer nAssets = llGetListLength(assetNames);
+string getAssetAttribValById(string assetId, string attrib){
+    integer nAssets = llGetListLength(assetIds);
     integer i;
     for (i = 0; i < nAssets; i++) {
-        if (assetName == llList2String(assetNames,i)){
+        if (assetId == llList2String(assetIds,i)){
             if (attrib == "target"){
                 return llList2String(assetTargets,i);
             }else{
                 if (attrib == "value"){
                     return llList2String(assetValues,i);
                 }else{
-                    return llList2String(assetTypes,i);
+                    if (attrib == "name"){
+                        return llList2String(assetNames,i);
+                    }else{
+                        return llList2String(assetTypes,i);
+                    }
                 }
             }
         }
@@ -235,9 +241,8 @@ integer IsAlphanumeric(string a){
 assignSL(string type, string target, string name, string val, integer duration){
 
     //  Show patient text , a dynamic chart, real-life map, Second Life region on parcel viewer(s)
-     if (type == "SLAudio" || type == "VPDImage" || type == "VPDMedia" ||
-        type == "VPDText" || type == "SLGoogleAPIImage" || type == "SLGoogleAPIHTML" ||
-            type == "SLAmazonMapImage"){  //  Stream radio or sound into parcel
+     if (type == "SLAudio" || type == "VPDImage" || type == "VPDMedia"  || type == "SLGoogleAPIImage" || type == "SLGoogleAPIHTML" ||
+       type == "SLAmazonMapImage"){
         sendChatCommand(gMediaCh, llList2String(llParseString2List(val, ["~"], []), 0));
         llSleep(4.0); // show this url for a while at least...
         jump out;
@@ -266,43 +271,19 @@ assignSL(string type, string target, string name, string val, integer duration){
 
     }
 
+    if (type == "SLBodypart" || type == "SLHud" || type == "SLTexture" || type == "SLPackage"
+            || type == "SLLandmark" || type == "SLNotecard" || type == "SLClothing"){
 
-    if (type == "SLAnimation"){
-        //target = "27811330-3bb6-447e-a2b7-dffd322279a3"; // hard coded key for openSim
-        sendChatCommand(gPlayerTrackingObjChannel, target+"~"+type+"~"+name+"~"+ val + "|gla3");
-        jump out;
-
-    }
-
-    if (type == "SLBodypart"){
-        sendChatCommand(gPlayerTrackingObjChannel, target+"~"+ type+"~"+name);
-        //sendChatCommand (-11674, name + " has been added to your inventory. "
-       // +"Drag it to appropriate area on your avatar to wear it. ");
-
+        sendChatCommand(gPlayerTrackingObjChannel, target+"~"+ type+"~"+name); // target=avatar, name should be llGetObjectName()
         jump out;
     }
 
-    if (type == "SLSound"){
-        sendChatCommand(gPlayerTrackingObjChannel, target+"~"+ type +"~"+ name);
-        jump out;
-
-    }
-
-    if (type == "SLObject"){
-        sendChatCommand(gPlayerTrackingObjChannel, target+"~"+ type +"~"+ name);
-        //sendChatCommand (-11674, name + " has been added to your inventory. "
-        //+"Drag it to the ground to rez it");
-
-        //llAttachToAvatar(integer);
+    if (type == "SLSound" || type == "SLObject" || type == "SLExtFeedObject" || type == "SLParticleSystem"){
+            sendChatCommand(gPlayerTrackingObjChannel,
+                target +"~" + type +"~" + name + "~" +  val); // targets aren't nec avs, could be: vector<x,y,z>, objectName
         jump out;
     }
-    if (type == "SLHud"){
-        sendChatCommand(gPlayerTrackingObjChannel, target+"~"+ type +"~"+ name);
-        //sendChatCommand (-11674, "The "+ name +" HUD has been added to your inventory. "
-       // +"Please attach it to the " + val + "of your display.");
 
-        jump out;
-    }
     if (type == "SLChat"){
        // llSay(0, "chatting this: "+ val);
         sendChatCommand((integer)target, llList2String(llParseString2List(val, ["~"], []), 0));
@@ -310,34 +291,34 @@ assignSL(string type, string target, string name, string val, integer duration){
     }
 
     if (type == "SLIM"){
-        sendChatCommand (-11674, val);
+        sendChatCommand (-11674, target+"~"+val);
         jump out;
-    }
-    if (type == "SLTexture"){
-        sendChatCommand(gPlayerTrackingObjChannel, target+"~"+ type +"~"+ name);
-        jump out;
-
     }
 
-    if (type == "SLPackage"){
-        sendChatCommand(gPlayerTrackingObjChannel, target+"~"+ type +"~"+ name);
-        //sendChatCommand (-11674, "The " +name + "crate has been added to your inventory. "
-        //+"Drag it to the ground to rez it, and right-click to open it.");
-        jump out;
-    }
+
     if (type == "SLAction"){
         sendChatCommand(gPlayerTrackingObjChannel, target+"~"+val);
     }
 
-    @out;
+    if (type == "RLAnimation"|| type == "RLObject"|| type == "RLChat"|| type == "RLAction"|| type == "RLNotecard"
+    ||  type == "RLTexture"|| type == "RLClothing"|| type == "RLIM"|| type == "RLHud"|| type == "RLSys"){
 
+       // sendChatCommand(gPlayerTrackingObjChannel, target+"~"+val);
+       // sendChatCommand(gPlayerTrackingObjChannel, target+"~"+ type+"~"+name+"~"+ val); // targets aren't nec avs
+       // sendChatCommand(gPlayerTrackingObjChannel, target+"~"+ type+"~"+name);
+
+        sendChatCommand((integer)target, llList2String(llParseString2List(val, ["~"], []), 0));
+
+    }
+
+    @out;
 }
 
 resetParserConstants(){
     cNodeId= cSSID;
     cLinkLabel = cNodeLabel;
     knownItems = [cSSID, cNodeName];
-    knownSets = [cAsset, cLink];
+    knownSets = [cAsset, cLink, cNodeName, cSIDName ];
 }
 
 resetElementsFull(){
@@ -362,6 +343,7 @@ resetElements(){
     assetNames = [];
     assetTargets = [];
     assetValues = [];
+    assetIds = [];//cAssetId
 
     gNodeDesc= "";
     gNodeImage= "";
@@ -402,6 +384,8 @@ parseFeed(string body){
                 //stridedAssetsList  = (stridedAssetsList=[]) + stridedAssetsList + [value];
                 //if(name == cAssetType) assetTypes = (assetTypes=[]) + assetTypes + [value];
 
+                if(name == cAssetId) assetIds += [value];
+
                 if(name == cAssetType) assetTypes += [value];
 
                 //if(name == cAssetName) assetNames = (assetNames=[]) + assetNames + [value];
@@ -433,11 +417,13 @@ parseFeed(string body){
                     if (gSSID == value){
                         llSay(0, "SSIDs match: "+gSSID+". Continuing session...");
                     }else{
-                        if (gSSID == ""){ // first timer
+                        if (gSSID != ""){ // first timer
                         //llSay(0, "1st request for this session");
                         // node must be == start
+                             llSay(0, "SSID 1st set: "+gSSID);
                             gSSID = value;
                         }else{
+                            //llSay(0,"gSSID"+gSSID);
                             llSay(0, "SSIDx present: "+value+","+ gSSID+", but does not match. What happened?");
                         }
                     }
@@ -466,7 +452,7 @@ parseFeed(string body){
 
 sendChatCommand (integer channel, string cmd) {
     if (channel == -11674){
-        llInstantMessage(PlayerAgentKey, cmd);
+        llInstantMessage(llList2String(llParseString2List(cmd, ["~"], []), 0), llList2String(llParseString2List(cmd, ["~"], []), 1));
     }else{
         if (channel == gPIVOTEChannel && gPIVOTEPrefix != ""){
             cmd = gPIVOTEPrefix+":"+ cmd;
@@ -657,7 +643,7 @@ option_start(key id) {
     sendChatCommand(gPIVOTEChannel, gResetCommands);
     resetElementsFull();
     gSSID="";
-    string url = cTestURL+"&mnodeid=start"; // /root/data/classic
+    string url = cTestURL+"&mnodeid="; // /root/data/classic
   //  llSay(0, "start: "+ url);
     Rq_getpage = llHTTPRequest(url, [HTTP_METHOD,"GET"], "");
 }
@@ -727,6 +713,7 @@ option_options(key id) {
     } else {
         sendChatCommand(gMediaCh, gQSParserPageURL + "?options="+ llEscapeURL(llList2CSV(gOptions)));
     }
+    //gOptions = [];
 }
 
 option_option(integer num) {
@@ -741,7 +728,7 @@ option_option(integer num) {
 
         string nodeName = llList2String(o, 1);
 
-        if (gUseNewParser) nodeName = llList2String(linkRefs, num-1); // is it that easy? must we subt by 1
+        if (gUseNewParser) nodeName = llList2String(linkRefs, num); // is it that easy? must we subt by 1
         //llSay(0, "nodeName: "+nodeName + " - "+(string)llGetListLength(linkRefs) + " - "+ llList2CSV(linkRefs));
 
         if (gUseNewParser) urlroot = cTestURL;
@@ -781,6 +768,9 @@ option_option(integer num) {
             }
         }
     }
+    linkLabels = [];
+    linkRefs = [];
+    gOptions = [];
 }
 
 set_button(string btn, string cond) {
@@ -1039,14 +1029,15 @@ state active
     }
 
     http_response(key request_id, integer status, list metadata, string body) {
-        llSay(0, body);
+        //llSay(0, body);
         string errorTXT = "";
+        //gOptions = [];
         parseFeed(body);
 
         gPage = "node";
         gNodeMedia = "";
         gNodeImage = "";
-        gOptions = [];
+
 
         integer nAssets = llGetListLength(assetTypes);
 
@@ -1056,21 +1047,21 @@ state active
         integer n = llGetListLength(parts);
         integer i;
 
-        orderedAssets = ["OL"]; // always add OL vpdText
+        orderedAssets = ["99999"]; // always add OL vpdText
 
         for(i = 0; i < n; i++){
-            string thisAssetName = llList2String(parts, i);
-            orderedAssets += [thisAssetName];
+            string thisAssetId = llList2String(parts, i);
+            orderedAssets += [thisAssetId];
         }
 
         // run the assets in order
         n = llGetListLength(orderedAssets);
       //  llSay(0, "number of items to run: "+(string)n);
         for(i = 0; i < n; i++){
-            string name = llList2String(orderedAssets, i);
+            string id = llList2String(orderedAssets, i);
           //   llSay(0, "name to run: "+name);
-            string value = getAssetAttribValByName(name, "value");
-            string type = getAssetAttribValByName(name, "type");
+            string value = getAssetAttribValById(id, "value");
+            string type = getAssetAttribValById(id, "type");
 
             string dtext = "";
             string device = "";
@@ -1120,7 +1111,7 @@ state active
 
             if(llGetSubString( llToLower(type), 0, 1 ) == "sl"){
               //  llSay(0,"******** about to assign: "+type+value + name + getAssetAttribValByName(name, "target") );
-                assignSL(type, getAssetAttribValByName(name, "target"), name, value, 0 );
+                assignSL(type, getAssetAttribValById(id, "target"), getAssetAttribValById(id, "name"), value, 0 );
             }
 
             if (gNode == "finish") {

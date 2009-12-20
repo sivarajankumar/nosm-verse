@@ -1,12 +1,43 @@
+var thissessid;
 $(document).ready(function(){
+	var sessidStr = "";
     mnode = $(document).getUrlParam("mnodeid");
-    $.get("Ariadne?mnodeid=" + mnode + "&mode=admin", {}, function(xml){//&mode=admin will return assetTypeattrib xml
+	thissessid = $(document).getUrlParam("sessid");
+	if (thissessid != null  ){
+		sessidStr = "&sessid="+ thissessid;
+	}else{
+		/*
+		$.get("Ariadne?v=2&mnodeid=start&mode=admin", {}, function(xml){
+			$('node', xml).each(function(k){
+				mnode = $(this).attr("id");
+	        });
+			// get session
+			$('session', xml).each(function(y){
+				//if (sessidStr != $(this).attr("id")) {
+				sessidStr = "&sessid=" + $(this).attr("id");
+	        });
+		});
+		*/
+	}
+
+// now gets called with correct node and session ids from returned /data/classic/ xml:
+    $.get("Ariadne?v=2&mnodeid=" + mnode + "&mode=admin"+sessidStr, {}, function(xml){//&mode=admin will return assetTypeattrib xml
         //$.get("asset.xml", {}, function(xml){ // testing xml
-       // mnode = $('node', xml).attr("id");
-		// 'mnodeid';  // labyrinth
+
+        // get node id (decouples from url )
+		$('node', xml).each(function(k){
+			mnode = $(this).attr("id");
+        });
         $("input[name='assetMapNodeid']").setValue(mnode);
 
-        // assets
+		// get session
+		$('session', xml).each(function(y){
+			if (thissessid != $(this).attr("id")) {
+				//alert(thissessid +' does not match: '+$(this).attr("id"));
+			}
+
+        });
+
         $('asset', xml).each(function(i){
             assetType = $(this).attr("type");
             assetName = $(this).attr("name");
@@ -159,7 +190,7 @@ $(document).ready(function(){
 		}
     });
 
-	$("input[name='useRespChannel']").click(function(){
+	$("input[name='useRespChannel']").change(function(){
 		if ($("input[id='useRespChannel']").getValue() == '1'){
 			$("div[id^=use_resp_chatchannel]").show();
 		}else{
@@ -261,7 +292,51 @@ $(document).ready(function(){
         }
     });
 
-});
+    $("input[name='manq_action']").change(function(){
+		$("div[id^=manq_]").hide();
+        $("div[id^=manq_" + $("input[name='manq_action']").getValue()+"]").show();
+        //$('#selectList :selected').text();
+    });
+
+    $("input[name='type_objs']").change(function(){
+		$("div[id^=_objs]").hide();
+        $("div[id^="+$("input[name='type_objs']").getValue()+"_objs]").show();
+        //$('#selectList :selected').text();
+    });
+
+    $("input[name='type_linkable_objs']").change(function(){
+		$("div[id^=_objs]").hide();
+		if ($("input[name='type_linkable_objs']").getValue() != "mvp_paramedic"){
+				$("div[id^=linkable_obj_name]").show();
+				$("div[id^=mvp_paramedic_linkable_objs]").hide();
+			}else{
+				$("div[id^=linkable_obj_name]").hide();
+				$("div[id^=mvp_paramedic_linkable_objs]").show();
+			}
+    });
+
+	$("input[name='target_key']").change(function(){
+        if ($("select[name='target_key']").getValue() == 'parameter' ) {
+            $("div[id^=target_key_param]").show();
+        } else {
+	        if ($("select[name='target_key']").getValue() == 'owner') {
+				$("div[id^=target_key_user]").show();
+			} else {
+				$("div[id^=target_key_user]").hide();
+			}
+            $("div[id^=target_key_param]").hide();
+        }
+	});
+
+    $("#mannequin_cmds").change(function(){
+        if ($("select[name='mannequin_cmds']").getValue() == 'resize' ) {
+            $("div[id^=mannequin_func_resize]").show();
+        } else {
+            $("div[id^=mannequin_func_resize]").hide();
+        }
+    });
+
+}); // end ready
 
 function processXml(responseXML){
     $('#hidden_dummy').ajaxSubmit();
@@ -306,12 +381,12 @@ function submitIt(){
 
 			if (curChan == '9993') { //HOLODECK
 				outgoingVal = $("select[name='Holodeck_chat_cmds']").getValue();
-				if (outgoingVal.indexOf('run') == 0 || outgoingVal.indexOf('end') == 0) {
-					if (outgoingVal.indexOf('run shell') > -1 || outgoingVal.indexOf('end shell') > -1) {
-						outgoingVal = outgoingVal + ' ' + $("select[id^=ainv_slchat]").getValue().replace("SHELL ", "");
-						outgoingName = $("select[id^=ainv_slchat]").getValue().replace("SHELL ", "");
-					}
-					else {
+				if (outgoingVal.indexOf('run') == 0) {
+					if (outgoingVal == 'run shell') {
+						var shTrim = $("select[id^=ainv_slchat]").getValue().replace("SHELL ", "");
+						outgoingVal = outgoingVal + ' ' + shTrim;
+						outgoingName = shTrim;
+					}else {
 						outgoingName = $("select[id^=ainv_slchat]").getValue();
 						outgoingVal = outgoingVal + ' ' + $("select[id^=ainv_slchat]").getValue();
 					}
@@ -328,14 +403,36 @@ function submitIt(){
 			}
 
 			if (curChan == "7051674") { //MANNEQUIN
-				if ($("select[name='manq_int']").getValue() == "talk") {
-					outgoingVal = $("select[name='mannequin_cmds']").getValue();
+				if ($("input[name='manq_action']").getValue().indexOf("set") == 0) {
+					if ($("select[name='manq_int']").getValue() == "talk") {
+						outgoingVal = 'ask '+ $("select[name='mannequin_ask']").getValue();
+					}
+					else {
+						outgoingVal = $("select[name='mannequin_parts']").getValue();
+					}
+					outgoingName = outgoingVal;
+					outgoingVal = "set " + outgoingVal + ":" + $("select[name='linklist_manq']").getValue() + ":" + $("#linklist_manq :selected").text();
+				}else{
+					var tCmd = $("select[name='mannequin_cmds']").getValue();
+					if (tCmd.indexOf("resize") > -1){
+						tCmd = tCmd + "~" + $("select[name='mannequin_resize']").getValue();
+					}
+					outgoingVal = tCmd;
 				}
-				else {
-					outgoingVal = $("select[name='mannequin_parts']").getValue();
-				}
-				outgoingName = outgoingVal;
-				outgoingVal = "set " + outgoingVal + ":" + $("select[name='linklist_manq']").getValue()+ ":" + $("#linklist_manq :selected").text();
+			}
+
+			if (curChan == "-9898") {
+
+			if ($("input[name='type_linkable_objs']").getValue() != "mvp_paramedic"){
+//
+			}else{
+//
+			}
+
+
+				if ($("input[name='linkable_ch_val']").getValue() != "") curChan = $("input[name='linkable_ch_val']").getValue();
+				outgoingVal = "set " + $("input[name='linkable_obj_val']").getValue() + ":" + $("select[name='linklist_linkable']").getValue() + ":" + $("#linklist_linkable :selected").text();
+				outgoingName = $("input[name='linkable_obj_val']").getValue();
 			}
 
 			if (curChan == "23") { //Multigadget_Multicast
@@ -451,7 +548,7 @@ function submitIt(){
 				outgoingVal = outgoingVal +  "~0"
 			}
 
-			if ($("input[name='isctrlsanim']").getValue() == "1") { // animation states, comma-delimited
+			if ($("input[name='isctrlsanim']").getValue() == "1") { // animation states
 				outgoingVal = outgoingVal + "~" + $("select[name='ao_ctrls']").getValue();
 			}
 			else{
@@ -474,9 +571,9 @@ function submitIt(){
             break;
 
         case 'SLIM':
-            //outgoingVal = 'msg';
+            outgoingVal = $("input[id='imt']").getValue()
             outgoingTarget = $("input[id^=userlist_] :visible").val();
-            //outgoingName = "";
+            outgoingName = "IM:"+ $("input[id^=userlist_] :visible").val();
             break;
 
         case 'SLExtFeedObject':
@@ -522,12 +619,10 @@ function submitIt(){
 			GenCode();
 
 			outgoingVal = $("input[id='generatedcode']").getValue();
-
 			outgoingTarget = $("input[id^=userlist_] :visible").val();
-			if ($("select[id='target_key']").getValue() != "") {
+			if ($("select[id='target_key']").getValue() != "owner") {
 				outgoingTarget = $("select[id='target_key']").getValue();
 			}
-
             outgoingName = $("select[id='ftcname']").getValue();
             break;
 
@@ -590,22 +685,15 @@ function submitIt(){
             outgoingName = '';
             break;
 
-       /* case 'VPMannequin':
-			var mAction = $("input[name='manq_int']").getValue();
-			if (mAction == " manq_talk") {
-				outgoingName = $("select[name='mannequin_cmds']").getValue();
-	        } else {
-				outgoingName = $("select[name='mannequin_parts']").getValue();
-	        }
-			outgoingTarget = $("select[name='linklist_manq']").getValue();
-            outgoingVal = mAction.substring('manq_'.length, mAction.length);
-            break;
-*/
         default:
             alert('oops... did not get the current type');
             //break;
 			return;
     }
+
+	if (outgoingVal.indexOf("~") == -1){
+		outgoingVal = outgoingVal + "~"; // append one to not break assignSL()
+	}
 
     $("input[id='assetValueIN']").setValue(outgoingVal);
     $("input[id='assetTargetIN']").setValue(outgoingTarget);

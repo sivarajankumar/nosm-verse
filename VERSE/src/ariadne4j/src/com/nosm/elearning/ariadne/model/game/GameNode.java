@@ -9,12 +9,13 @@ import javax.xml.xpath.XPathExpressionException;
 
 import org.w3c.dom.Document;
 
+import com.nosm.elearning.ariadne.AriadneData;
 import com.nosm.elearning.ariadne.XPathReader;
+import com.nosm.elearning.ariadne.constants.C;
+import com.nosm.elearning.ariadne.constants.EC;
+import com.nosm.elearning.ariadne.constants.XC;
 import com.nosm.elearning.ariadne.model.Asset;
 import com.nosm.elearning.ariadne.model.game.uri.GameUri;
-import com.nosm.elearning.ariadne.util.Constants;
-import com.nosm.elearning.ariadne.util.ErrorConstants;
-import com.nosm.elearning.ariadne.util.XConstants;
 
 public class GameNode {
 	private int id;
@@ -27,112 +28,97 @@ public class GameNode {
 	private org.w3c.dom.Document ariadnexml;
 	private Game parentGame;
 	private GameUri uri;
+	private boolean adminMode = false;
+	private boolean isRootNode = false;
 
-	public GameNode(GameUri gameUrl, Game thisGame, Document gameResults){
+	public GameNode(GameUri gameUrl, Game thisGame, Document gameResults, boolean isAdminMode){
 		super();
+		this.setAdminMode(isAdminMode);
 		this.setUri(gameUrl);
 		this.setParentGame(thisGame);
 		this.setGameXml(gameResults);
-		transform(gameResults);
-	}
-	public GameNode(Game pGame, Document xml) {
-		super();
-		this.setParentGame(pGame);
-		this.setGameXml(xml);
-		transform(xml);
+		consumeContent();
+		this.setRootNode(this.getId()== thisGame.getRootNode());
 	}
 
 	public GameNode(Document xml) {
 		super();
 		this.setGameXml(xml);
-		transform(xml);
+		consumeContent(xml);
 	}
 
 	public org.w3c.dom.Document getAriadneXml(boolean isAdmin) {
-		if (ariadnexml != null) {
+			ariadnexml = getAriadneXml(isAdmin, true);
 			return ariadnexml;
-		} else {
-			return getAriadneXml(isAdmin, true);
-		}
 	}
 
 	public Document getAriadneXml(boolean isAdmin, boolean autoIncludeTextAsset) {
-		if (ariadnexml != null) {
-			return ariadnexml;
-		} else {
-
 			StringBuffer reply = new StringBuffer();
-			reply.append(XConstants.XML_HEAD_ARIADNE + Constants.lineSep
+			reply.append(XC.XML_HEAD_ARIADNE + C.br
 					+ "<session id=\"" + this.getParentGame().getSession()
 					+ "\" type=\"OL\" ></session>"
-					+ Constants.lineSep
-					+ "<node id=\"" + Integer.toString(this.getId())
-					+ "\" label=\"" + this.getName() + "\" ></node>"
-					+ Constants.lineSep);
-
-			reply.append("<"+XConstants.XML_ASSET + "s>" + Constants.lineSep);
+					+ C.br + "<node id=\"" + Integer.toString(this.getId())
+					+ "\" label=\"" + this.getName() + "\" ></node>" + C.br);
+			reply.append("<"+XC.XML_ASSET + "s>" + C.br);
 			if (autoIncludeTextAsset) {
 				// hack to avoid parse error
 				//this.setContent(java.net.URLDecoder.decode(this.getContent()));
-
 				// trim paragraph
-				if (this.getContent().indexOf(this.getUri().getLinkPrefix()) > -1) {
-					this.setContent(this.getContent().substring(this.getContent().indexOf(this.getUri().getLinkPrefix())
-							+ this.getUri().getLinkPrefix().length(), this.getContent().indexOf(this.getUri().getLinkSuffix())));
+				if (this.getContent() != null ){
+					if (this.getContent().indexOf(this.getUri().getLinkPrefix()) > -1) {
+						this.setContent(this.getContent().substring(this.getContent().indexOf(this.getUri().getLinkPrefix())
+								+ this.getUri().getLinkPrefix().length(), this.getContent().indexOf(this.getUri().getLinkSuffix())));
+					}
+
+					Asset textAsset = new Asset( XC.XML_TEXT_NAME,  XC.XML_TEXT_TYPE,
+							java.net.URLEncoder.encode(this.getContent()),  "",  XC.XML_TEXT_TARGET, this.getId());
+					textAsset.setId(99999);
+					reply.append(textAsset.getXML(isAdmin));
+				}else{
+					throw new RuntimeException(EC.XML_BASIC_PREFIX +
+							" ***********  No Content in getAriadneXml() for URI: " + this.getUri().getAddress()+EC.XML_ET);
+				}
+			}
+			if (this.getAssets() != null){
+				Iterator i = this.getAssets().iterator();
+				while (i.hasNext()) {
+					Asset thisAsset = (Asset) i.next();
+					reply.append(thisAsset.getXML(isAdmin));
 				}
 
-				Asset textAsset = new Asset( XConstants.XML_TEXT_NAME,  XConstants.XML_TEXT_TYPE,
-						this.getContent(),  "",  XConstants.XML_TEXT_TARGET, this.getId());
-				reply.append(textAsset.getXML(isAdmin));
 			}
-
-			Iterator i = this.getAssets().iterator();
-			while (i.hasNext()) {
-				Asset thisAsset = (Asset) i.next();
-				reply.append(thisAsset.getXML(isAdmin));
-			}
-			reply.append(Constants.lineSep + "</"+XConstants.XML_ASSET+"s>" + Constants.lineSep);
-
+			reply.append(C.br + "</"+XC.XML_ASSET+"s>" + C.br);
 			reply.append(this.getLinksXML());
-
 			reply.append("</ariadne>");
 			System.out.println("built this ariadne xml  "+reply.toString());
 			XPathReader xR = new XPathReader(reply.toString());
 			ariadnexml = xR.getXmlDocument();
 			return ariadnexml;
-		}
-
 	}
 
-	public void transform() {
-		transform(gamexml);
+	public void consumeContent() {
+		consumeContent(gamexml);
 	}
 
-	public void transform(Document gamexml) {
+	public void consumeContent(Document gamexml) {
 
 		try {
 			XPathReader xR = new XPathReader(gamexml);
-			this.setName(java.net.URLDecoder.decode(xR.extractNode(
-					XConstants.XPATH_TITLE + XConstants.XPATH_VAL, gamexml)));
+			this.setName(java.net.URLDecoder.decode(xR.extractNode(XC.XPATH_TITLE + XC.XPATH_VAL, gamexml), "ISO-8859-1"));
+			this.setContent(java.net.URLDecoder.decode(xR.extractNode(XC.XPATH_CONTENT + XC.XPATH_VAL, gamexml), "ISO-8859-1"));
 
-			this.setContent(java.net.URLDecoder.decode(xR.extractNode(XConstants.XPATH_CONTENT + XConstants.XPATH_VAL, gamexml)));
-
-			String thisSSID = java.net.URLDecoder.decode(xR.extractNode(XConstants.XPATH_SESSION +
-					XConstants.XPATH_VAL, gamexml));
+			String thisSSID = xR.extractNode(XC.XPATH_SESSION +XC.XPATH_VAL, gamexml);
 
 			GameUri url = this.getUri();
 			url.setSession(thisSSID);
 
 			Game thisGame = this.getParentGame();
-
 			if(!thisSSID.equals(thisGame.getSession())){
-				System.out.println(ErrorConstants.XML_BASIC_PREFIX +
-						" SSIDs don't match: "+thisSSID + " : "+
-						thisGame.getSession() +ErrorConstants.XML_ET);
+				System.out.println(EC.XML_BASIC_PREFIX + " SSIDs don't match: "+thisSSID + " : "+
+				thisGame.getSession() +EC.XML_ET);
 			}
 
 			thisGame.setSession(thisSSID);
-
 			this.setParentGame(thisGame);
 			this.setUri(url);
 
@@ -150,18 +136,23 @@ public class GameNode {
 						+ this.getUri().getLinkPrefix().length(), this.getContent().indexOf(this.getUri().getLinkSuffix())));
 			}
 
-			this.setId(Integer.parseInt(xR.extractNode(XConstants.XPATH_ID + XConstants.XPATH_VAL,
+			this.setId(Integer.parseInt(xR.extractNode(XC.XPATH_ID + XC.XPATH_VAL,
 					gamexml)));
-			String linkerXML = xR.extractNode( XConstants.XPATH_LINKS + XConstants.XPATH_VAL, gamexml);
+			String linkerXML = xR.extractNode( XC.XPATH_LINKS + XC.XPATH_VAL, gamexml);
 			//linkerXML = java.net.URLEncoder.encode(linkerXML); // if v3, simulate v2
 			this.setLinks(linkerXML);
+			this.setAssets((ArrayList)AriadneData.selectAssetsByMNodeId(Integer.parseInt(this.getUri().getNodeId()), this.isAdminMode()));
+
+
 			} catch (UnsupportedEncodingException e) {
-				System.out.println(ErrorConstants.XML_BASIC_PREFIX+" transform UnsupportedEncodingException: "+e.getMessage()+ErrorConstants.XML_ET);
+				System.out.println(EC.XML_BASIC_PREFIX+" transform UnsupportedEncodingException: "+e.getMessage()+EC.XML_ET);
 				// e.printStackTrace(response.getWriter());
 				// response.getWriter().println("<Error>AriadneControllerException:
 				// "+e.getMessage()+ e."</Error>");
 			} catch (XPathExpressionException ex) {
-				System.out.println(ErrorConstants.XML_BASIC_PREFIX+" transform XPathExpressionException: "+ex.getMessage()+ErrorConstants.XML_ET);
+				System.out.println(EC.XML_BASIC_PREFIX+" transform XPathExpressionException: "+ex.getMessage()+EC.XML_ET);
+			} catch (Exception ex) {
+				System.out.println(EC.XML_BASIC_PREFIX+" transform general Exception: "+ex.getMessage()+EC.XML_ET);
 			}
 	}
 
@@ -172,9 +163,9 @@ public class GameNode {
 	public void setAssets(ArrayList<Asset> assets) {
 		if (this.getAssets() != null){
 			if (assets.get(0).getNodeid() != this.getId()){
-				System.out.println(ErrorConstants.XML_BASIC_PREFIX+" GameNode asset node ids do not match"+assets.get(0).getNodeid() + ":"+ this.getId());
+				System.out.println(EC.XML_BASIC_PREFIX+" GameNode asset node ids do not match"+assets.get(0).getNodeid() + ":"+ this.getId());
 				if(this.getAssets().get(0).getNodeid()!= assets.get(0).getNodeid()){
-					System.out.println(ErrorConstants.XML_BASIC_PREFIX+" ArrayList asset node ids do not match"+this.assets.get(0).getNodeid()  + ":"+ assets.get(0).getNodeid());
+					System.out.println(EC.XML_BASIC_PREFIX+" ArrayList asset node ids do not match"+this.assets.get(0).getNodeid()  + ":"+ assets.get(0).getNodeid());
 				}
 			}
 		}
@@ -199,7 +190,7 @@ public class GameNode {
 
 	public String getLinksXML() {
 		StringBuffer reply = new StringBuffer();
-		reply.append("<"+XConstants.XML_LINK+"s>");
+		reply.append("<"+XC.XML_LINK+"s>");
 		Iterator j = this.getLinks().iterator();
 		while (j.hasNext()) {
 			StringTokenizer lT = new StringTokenizer((String) j.next(), ":");
@@ -207,12 +198,12 @@ public class GameNode {
 			String thisID = lT.nextToken();
 			String thisLabel = lT.nextToken();
 			//}
-			reply.append("<"+XConstants.XML_LINK+" "+XConstants.XML_LINK_LABEL+"=\"" + thisLabel + "\" "+
-					XConstants.XML_LINK_REF+"=\""
+			reply.append("<"+XC.XML_LINK+" "+XC.XML_LINK_LABEL+"=\"" + thisLabel + "\" "+
+					XC.XML_LINK_REF+"=\""
 					+ thisID
-					+ "\" ></"+XConstants.XML_LINK+">" + Constants.lineSep);
+					+ "\" ></"+XC.XML_LINK+">" + C.br);
 		}
-		reply.append("</"+XConstants.XML_LINK+"s>" + Constants.lineSep);
+		reply.append("</"+XC.XML_LINK+"s>" + C.br);
 
 		return reply.toString();
 	}
@@ -221,8 +212,12 @@ public class GameNode {
 		this.links = (ArrayList<String>)links.clone();
 	}
 
-	public void setLinks(String pLnk) {
-		pLnk = java.net.URLDecoder.decode(pLnk);
+	public void setLinks(String pLnk) throws UnsupportedEncodingException{
+		if (this.getParentGame().getVersion() == 2){
+			pLnk = java.net.URLDecoder.decode(pLnk, "ISO-8859-1");
+		}else{
+			pLnk = java.net.URLDecoder.decode(pLnk); // UTF-8
+		}
 		ArrayList<String> theseLnks = new ArrayList<String>();
 
 		//theseLnks.ensureCapacity(64);
@@ -240,23 +235,23 @@ public class GameNode {
 		}
 
 		if(theseLnks == null || theseLnks.isEmpty()){
-			StringTokenizer lT = new StringTokenizer(pLnk, ";");
-				while(lT.hasMoreTokens()){
-					StringTokenizer lT2 = new StringTokenizer((String)lT.nextToken(), ",");
-					String thisID = lT2.nextToken();
-					String thisLabel = lT2.nextToken();
+			StringTokenizer links = new StringTokenizer(pLnk, ";");
+				while(links.hasMoreTokens()){
+					StringTokenizer linkItems = new StringTokenizer((String)links.nextToken(), ",");
+					String thisID = linkItems.nextToken();
+					String thisLabel = linkItems.nextToken();
 					try{
 						theseLnks.add(thisID+":"+thisLabel);
 					}catch(IndexOutOfBoundsException noArryE){
-						System.out.println(ErrorConstants.XML_BASIC_PREFIX+
+						System.out.println(EC.XML_BASIC_PREFIX+
 								" setLinks IndexOutOfBoundsException: "+
-								noArryE.getMessage()+ErrorConstants.XML_ET);
+								noArryE.getMessage()+EC.XML_ET);
 					}
 				}
 		}else{
-			System.out.println(ErrorConstants.XML_BASIC_PREFIX+
+			System.out.println(EC.XML_BASIC_PREFIX+
 					" alert: overwriting a set of links with these new links: "+
-					pLnk + ErrorConstants.XML_ET);
+					pLnk + EC.XML_ET);
 		}
 
 		this.setLinks(theseLnks) ;
@@ -304,6 +299,22 @@ public class GameNode {
 
 	public void setUri(GameUri uri) {
 		this.uri = uri;
+	}
+
+	public boolean isAdminMode() {
+		return adminMode;
+	}
+
+	public void setAdminMode(boolean adminMode) {
+		this.adminMode = adminMode;
+	}
+
+	public boolean isRootNode() {
+		return isRootNode;
+	}
+
+	public void setRootNode(boolean isRootNode) {
+		this.isRootNode = isRootNode;
 	}
 
 }

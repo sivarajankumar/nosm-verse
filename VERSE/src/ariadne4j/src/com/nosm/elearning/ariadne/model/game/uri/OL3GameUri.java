@@ -5,7 +5,7 @@ public class OL3GameUri extends GameUri {
 	  public OL3GameUri(){
 		  super();
 	  }
-	  public OL3GameUri(int nodeId){
+	  public OL3GameUri(String nodeId){
 		  super(nodeId);
 	  }
 

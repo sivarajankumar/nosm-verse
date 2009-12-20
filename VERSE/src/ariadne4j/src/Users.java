@@ -1,5 +1,3 @@
-import static com.nosm.elearning.ariadne.util.Constants.XML_HEAD_ARIADNE;
-import static com.nosm.elearning.ariadne.util.Constants.XML_HEAD_USER;
 
 import java.io.*;
 
@@ -31,12 +29,13 @@ import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 import com.nosm.elearning.ariadne.AriadneData;
+import com.nosm.elearning.ariadne.XPathReader;
 //import com.nosm.elearning.ariadne.AriadneJdbc;
 
+import com.nosm.elearning.ariadne.constants.*;
 import com.nosm.elearning.ariadne.model.Asset;
 import com.nosm.elearning.ariadne.model.AssetType;
 import com.nosm.elearning.ariadne.model.User;
-import com.nosm.elearning.ariadne.util.XPathReader;
 
 import java.nio.charset.Charset;
 import java.sql.SQLException;
@@ -66,7 +65,7 @@ javax.servlet.Servlet {
 					reply.append("<user name=\""+ thisUser.getAvatarFirst()+ " " +thisUser.getAvatarLast()+ "\"></user>");
 				}
 
-				String xmlout = XML_HEAD_USER + reply.toString()+ "</users>";
+				String xmlout = com.nosm.elearning.ariadne.constants.XC.XML_HEAD_USER + reply.toString()+ "</users>";
 				response.setContentType("text/html");
 
 				PrintWriter out = response.getWriter();
@@ -109,7 +108,7 @@ javax.servlet.Servlet {
 			}
 
 			PrintWriter out = response.getWriter();
-			out.println(XML_HEAD_USER +"<error>" +(String)request.getParameter("fname") +" "+(String)request.getParameter("lname") + " has been removed.</error></users>" );
+			out.println(XC.XML_HEAD_USER +"<error>" +(String)request.getParameter("fname") +" "+(String)request.getParameter("lname") + " has been removed.</error></users>" );
 		} catch (Exception e) {
 			e.printStackTrace(response.getWriter());
 		}

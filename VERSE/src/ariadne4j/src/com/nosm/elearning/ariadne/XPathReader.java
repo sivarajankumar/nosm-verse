@@ -32,11 +32,12 @@ public class XPathReader {
 
 
     public XPathReader(java.io.InputStream is){
+    	super();
     	try{
 	    	this.xmlDocument = XPathReader.loadXMLFrom(is, true);
 	    	xPath =  XPathFactory.newInstance().newXPath();
 		}catch (Exception e) {
-			//ex.printStackTrace();
+			e.printStackTrace();
 	        //return null;
 		}
 	}
@@ -44,11 +45,13 @@ public class XPathReader {
 
 
     public XPathReader(String xml) {
+    	super();
     	try{
-        	this.xmlDocument = 	DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new InputSource(new StringReader(xml)));
+        	this.xmlDocument = 	DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(
+        			new InputSource(new StringReader(xml)));
         	xPath =  XPathFactory.newInstance().newXPath();
     	}catch (Exception e) {
-			//ex.printStackTrace();
+			e.printStackTrace();
             //return null;
 		}
     }
@@ -56,33 +59,41 @@ public class XPathReader {
 
 
     public XPathReader(URL url) throws IOException, ParserConfigurationException, SAXException{
-    	//try{
+    	super();
+    	try{
     	    InputStream stream = url.openStream();
     	    this.xmlDocument = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(stream);
     	    xPath =  XPathFactory.newInstance().newXPath();
-    //	}catch (Exception e) {
-			//ex.printStackTrace();
+    	}catch (Exception e) {
+			e.printStackTrace();
             //return null;
-		//}
+		}
     }
 
 
 
     public XPathReader(Document doc) {// throws Exception{
-    	//try{
-        	this.xmlDocument = doc;
-        	xPath =  XPathFactory.newInstance().newXPath();
-    	//}catch (Exception e) {
-			//ex.printStackTrace();
+    	try{
+	    	if (doc != null && xmlToString(doc).length() > 50){
+	        	this.xmlDocument = doc;
+	        	xPath =  XPathFactory.newInstance().newXPath();
+	    	}else{
+	    		throw new Exception("XPathReader: attempted to create XML doc with empty OL request:"+xmlToString(doc));
+	    	}
+    	}catch (Exception e) {
+			e.printStackTrace();
             //return null;
-		//}
+		}
     }
 
-	public String extractNode(String nodePath, org.w3c.dom.Document doc)  throws XPathExpressionException, UnsupportedEncodingException {
+	public String extractNode(String nodePath, org.w3c.dom.Document doc)
+		throws XPathExpressionException, UnsupportedEncodingException {
 		//xml = new String(xml.getBytes(),"utf-8"); // is this correct?
-		System.out.println("` document retrieved from OL3: "+ xmlToString(doc));
+
 		XPathReader reader = new XPathReader(doc);
-		return reader.read(nodePath, XPathConstants.STRING).toString();
+		String outS = reader.read(nodePath, XPathConstants.STRING).toString();
+		System.out.println("XPathReader: this xPath"+nodePath+" call retrieved this value: "+ outS);
+		return outS;
 	}
 
 

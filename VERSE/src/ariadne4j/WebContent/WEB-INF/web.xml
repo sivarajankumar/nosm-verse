@@ -6,6 +6,30 @@
 		<display-name>Ariadne</display-name>
 		<servlet-name>Ariadne</servlet-name>
 		<servlet-class>Ariadne</servlet-class>
+		<init-param>
+			<param-name>GAME_NAME</param-name>
+			<param-value>siku</param-value>
+		</init-param>
+		<init-param>
+			<param-name>GAME_HOST</param-name>
+			<param-value>142.51.75.17</param-value>
+		</init-param>
+		<init-param>
+			<param-name>GAME_HOST3</param-name>
+			<param-value>142.51.75.11</param-value>
+		</init-param>
+		<init-param>
+			<param-name>GAME_USER</param-name>
+			<param-value>olremote</param-value>
+		</init-param>
+		<init-param>
+			<param-name>GAME_PASSWORD</param-name>
+			<param-value>s3cr3t</param-value>
+		</init-param>
+		<init-param>
+			<param-name>uselinks</param-name>
+			<param-value>TRUE</param-value>
+		</init-param>
 	</servlet>
 	<servlet>
 		<description>

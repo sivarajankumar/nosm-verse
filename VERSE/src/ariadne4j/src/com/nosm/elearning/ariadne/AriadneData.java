@@ -3,10 +3,10 @@ package com.nosm.elearning.ariadne;
 import com.ibatis.sqlmap.client.SqlMapClient;
 import com.ibatis.sqlmap.client.SqlMapClientBuilder;
 import com.ibatis.common.resources.Resources;
+import com.nosm.elearning.ariadne.constants.EC;
 import com.nosm.elearning.ariadne.model.Asset;
 import com.nosm.elearning.ariadne.model.AssetType;
 import com.nosm.elearning.ariadne.model.User;
-import com.nosm.elearning.ariadne.util.ErrorConstants;
 
 import java.io.Reader;
 import java.io.IOException;
@@ -28,7 +28,7 @@ public class AriadneData {
 			sqlMapper = SqlMapClientBuilder.buildSqlMapClient(reader);
 			reader.close();
 		} catch (IOException e) {
-			throw new RuntimeException("<error>Ariadne: Error while building the SqlMapClient instance." + e + ErrorConstants.XML_ET, e);
+			throw new RuntimeException("<error>Ariadne: Error while building the SqlMapClient instance." + e + EC.XML_ET, e);
 		}
 	}
 
@@ -47,6 +47,14 @@ public class AriadneData {
 
 	public static Asset getAssetById(int id)throws SQLException{
 		return (Asset)sqlMapper.queryForObject("getAssetById", id);
+	}
+
+	public static int getIdByAsset(Asset asset)throws SQLException{
+		return ((Integer)sqlMapper.queryForObject("getIdforAsset", asset)).intValue();
+	}
+
+	public static Asset refreshAsset(Asset asset)throws SQLException{ // gets you the id...
+		return AriadneData.getAssetById(AriadneData.getIdByAsset( asset));
 	}
 
 	public static void insertAsset (Asset asset) throws SQLException {
@@ -70,16 +78,12 @@ public class AriadneData {
 	}
 
 
-
-
 //	 ------ asset class/attrib/type ------
 	public static void setAssetType(String type, String name, String value) throws SQLException{
-
 		sqlMapper.insert("insertAssetAttrib", new AssetType(type,name,value));
 	}
 
 	public static AssetType getAssetType(AssetType attribs) throws SQLException{
-
 		return (AssetType)sqlMapper.queryForObject("selectAttribByNameAndType", attribs);
 	}
 
@@ -99,7 +103,6 @@ public class AriadneData {
 
 	public static AssetType getAssetTypeBySlType(int slInvtype)throws SQLException{
 		return (AssetType)sqlMapper.queryForObject("getAssetTypeBySlType", slInvtype);
-
 	}
 
 
@@ -147,106 +150,92 @@ public class AriadneData {
 	public static void addNode2Seq(Asset asset) throws Exception{
 		Asset thisSeq = AriadneData.getSeqForNode(asset);
 		if (thisSeq != null){
-			thisSeq.setValue(thisSeq.getValue()+ ","+asset.getName());
-			sqlMapper.update("resetSequence", thisSeq);
+			setSeqForNode(asset, "update");
 		}else{
-			thisSeq = new Asset("master",
-							"SLInnerSequence",
-							asset.getName(),
-							"",
-							Integer.toString(asset.getNodeid()),
-							asset.getNodeid()
-						);
-			sqlMapper.insert("insertAsset", thisSeq);
+			thisSeq = new Asset("master~id"+ Integer.toString(asset.getNodeid()),
+					"SLInnerSequence",
+					Integer.toString(asset.getId()),
+					"",
+					Integer.toString(asset.getNodeid()), // target for a seq is a node id
+					asset.getNodeid()
+				);
+				sqlMapper.insert("insertAsset", thisSeq);
 		}
 	}
 
-
 	public static void removeAssetFromSeq(int assetID) throws Exception{
-
 		Asset thisAsset = AriadneData.getAssetById(assetID);
-		Asset thisSeq = AriadneData.getSeqbyNodeID(thisAsset.getNodeid());
-		if (thisSeq == null || thisAsset == null){
-			throw new Exception("<error>NoAssetOrSeqException: tried with id: " +
-					Integer.toString(assetID)+ ", gets this node ID: " +thisAsset.getNodeid() +
-					", seq:" + Integer.toString(thisSeq.getId())+ErrorConstants.XML_ET);
-		}
-
-		String assetName = thisAsset.getName();
-
-		StringBuffer newSeqBuff = new StringBuffer();
-        StringTokenizer st =  new StringTokenizer(thisSeq.getValue(), ",");
-        int cnt = 0;
-        String delim = ",";
-	    while (st.hasMoreElements()){
-	        String token = st.nextElement().toString();
-	        if (!token.equals(assetName)){ //will exclude current asset
-	        	//if (new Integer(cnt).equals(new Integer(st.countTokens()))){ // does this work?
-	        		//delim = "";
-	        	//}
-	        	newSeqBuff.append(token + delim);
-	        }
-	        cnt++;
-	    }
-
-	    if (newSeqBuff.toString().equals(",")){
-	    	newSeqBuff = new StringBuffer();
-	    }
-
-	    if (newSeqBuff.toString().length() > 0){
-
-		    // double comma trim hack:
-		    if (newSeqBuff.toString().indexOf(",,") > -1){
-		    	System.out.println("Ariadne: Sequence edit alert "+newSeqBuff.toString());
-		    	newSeqBuff = new StringBuffer(newSeqBuff.toString().replaceFirst(",,", ","));
-		    	//newSeqBuff = new StringBuffer(newSeqBuff.toString().replace(",,", ","));
-		    }
-
-		    // end trim hack:
-		    if (newSeqBuff.toString().endsWith(",")){
-		    	System.out.println("Ariadne: Sequence edit alert "+newSeqBuff.toString());
-		    	newSeqBuff = new StringBuffer(newSeqBuff.toString().substring(0, newSeqBuff.toString().length() -1));
-		    }
-
-		    // front trim hack:
-		    if (newSeqBuff.toString().startsWith(",")){
-		    	System.out.println("Ariadne: Sequence edit alert "+newSeqBuff.toString());
-		    	newSeqBuff = new StringBuffer(newSeqBuff.toString().substring(1, newSeqBuff.toString().length()));
-		    }
-
-	    }
-		thisSeq.setValue(newSeqBuff.toString());
-		sqlMapper.update("resetSequence", thisSeq);
+		setSeqForNode(thisAsset, "delete");
 	}
 
 	public static Asset getSeqbyNodeID(int mnodeid)throws Exception {
 		return (Asset)sqlMapper.queryForObject("getSeqbyNodeID", mnodeid);
 	}
 
-
 	public static Asset getSeqForNode(Asset asset)throws SQLException{
 		return (Asset)sqlMapper.queryForObject("getSeqForNode", asset.getNodeid());
 	}
 
-	public static void resetSeqForNode(Asset nonSeqAsset, String oldAssetName) throws Exception {
-		if (nonSeqAsset.getName().toLowerCase().indexOf("master") == -1){ // if this is not a node's  main sequence  asset
+	public static void resetSeqForNode(Asset nonSeqAsset) throws Exception {
+		setSeqForNode(nonSeqAsset, "update");
+	}
+
+	public static void setSeqForNode(Asset nonSeqAsset, String action) throws Exception {
+		if (nonSeqAsset.getName().toLowerCase().indexOf("master~id") == -1){ // if this is not a node's main sequence asset
 			Asset thisSeq = null;
 			try{
 				thisSeq = AriadneData.getSeqForNode(nonSeqAsset); // get seq for this asset's node
-				if (thisSeq.getValue().indexOf(oldAssetName) > -1){
-					// just runs simple find/replace for now
-					// resequencing later
-					thisSeq.setValue(thisSeq.getValue().replace(oldAssetName, nonSeqAsset.getName()));
-				}else{
-					//append
-					thisSeq.setValue(thisSeq.getValue() + ","+nonSeqAsset.getName());
+
+
+				StringBuffer newSeqBuff = new StringBuffer();
+				StringTokenizer st =  new StringTokenizer(thisSeq.getValue(), ",");
+				if (action.indexOf("del") > -1){
+					while (st.hasMoreElements()){
+						int token = Integer.parseInt((String)st.nextElement());
+							if (nonSeqAsset.getId() != token ){ //will exclude current asset
+								newSeqBuff.append(token + ",");
+							}
+					}
+				}else{//add
+					newSeqBuff.append(thisSeq.getValue()+","+Integer.toString(nonSeqAsset.getId()));
 				}
-				sqlMapper.update("resetSequence", thisSeq);
+
+				if (newSeqBuff.toString().equals(",")){
+					newSeqBuff = new StringBuffer();
+				}
+				// all these insts kinda defeat the ppse of using stringbuffers...
+				if (newSeqBuff.toString().length() > 0){
+					// double comma trim. shouldn't happen, but...
+					if (newSeqBuff.toString().indexOf(",,") > -1){
+						System.out.println("Ariadne: Sequence edit alert "+newSeqBuff.toString());
+						newSeqBuff = new StringBuffer(newSeqBuff.toString().replace(",,", ","));
+					}
+
+					// end trim :
+					if (newSeqBuff.toString().endsWith(",")){
+						System.out.println("Ariadne: Sequence edit alert "+newSeqBuff.toString());
+						newSeqBuff = new StringBuffer(newSeqBuff.toString().substring(0, newSeqBuff.toString().length() -1));
+					}
+
+					// front trim :
+					if (newSeqBuff.toString().startsWith(",")){
+						System.out.println("Ariadne: Sequence edit alert "+newSeqBuff.toString());
+						newSeqBuff = new StringBuffer(newSeqBuff.toString().substring(1, newSeqBuff.toString().length()));
+					}
+				}
+				thisSeq.setValue(newSeqBuff.toString());
+
+
+				if (thisSeq.getValue().trim().length() > 0){
+					sqlMapper.update("resetSequence", thisSeq);
+				}else{
+					AriadneData.deleteAsset (thisSeq.getId());
+				}
 			}catch (NullPointerException npe) {
-				if (thisSeq == null) throw new Exception("<error>: no sequence found for node: "+nonSeqAsset.getNodeid() +ErrorConstants.XML_ET);
+				if (thisSeq == null) throw new Exception("<error>: no sequence found for node: "+nonSeqAsset.getNodeid() +EC.XML_ET);
 			}
 		}else{
-			throw new Exception("<error>Cannot add an SLInnerSequence to this sequence: "+nonSeqAsset.getName()+ErrorConstants.XML_ET);
+			throw new Exception("<error>Cannot add the asset: "+nonSeqAsset.getName()+" to an SLInnerSequence."+ EC.XML_ET);
 		}
 	}
 }

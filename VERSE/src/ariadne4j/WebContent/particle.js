@@ -1,38 +1,48 @@
 ﻿function valide_start_color(){
-	if (document.forms[1].start_color_r.value > 1 || document.forms[1].start_color_r.value < 0 || IsNumeric(document.forms[1].start_color_r.value) == 0){
+	if ($("input[name='start_color_r']").getValue() > 1 || $("input[name='start_color_r']").getValue() < 0
+	|| IsNumeric($("input[name='start_color_r']").getValue()) == 0){
 		alert("Start Color RED must be a value between 0 and 1 (included.)");
-		document.forms[1].start_color_r.value = "0";
+		$("input[name='start_color_r']").getValue() = "0";
 	}
 
-	if (document.forms[1].start_color_g.value > 1 || document.forms[1].start_color_g.value < 0 || IsNumeric(document.forms[1].start_color_g.value) == 0){
+	if ($("input[name='start_color_g']").getValue() > 1 || $("input[name='start_color_g']").getValue() < 0
+	|| IsNumeric($("input[name='start_color_g']").getValue()) == 0){
 		alert("Start Color GREEN must be a value between 0 and 1 (included.)");
-		document.forms[1].start_color_g.value = "0";
+		$("input[name='start_color_g']").getValue() = "0";
 	}
 
-	if (document.forms[1].start_color_b.value > 1 || document.forms[1].start_color_b.value < 0 || IsNumeric(document.forms[1].start_color_b.value) == 0){
+	if ($("input[name='start_color_b']").getValue() > 1 || $("input[name='start_color_b']").getValue() < 0
+	|| IsNumeric($("input[name='start_color_b']").getValue()) == 0){
 		alert("Start Color BLUE must be a value between 0 and 1 (included.)");
-		document.forms[1].start_color_b.value = "0";
+		$("input[name='start_color_b']").getValue() = "0";
 	}
-	mycol ='#' + tohex(document.forms[1].start_color_r.value*255)  +  tohex(document.forms[1].start_color_g.value*255)+  tohex(document.forms[1].start_color_b.value*255);
+	mycol ='#' + tohex($("input[name='start_color_r']").getValue()*255)  +
+	tohex($("input[name='start_color_g']").getValue()*255)+
+	tohex($("input[name='start_color_b']").getValue()*255);
 	document.all.start_col.style.backgroundColor = mycol;
 }
 
 function valide_end_color(){
-	if (document.forms[1].end_color_r.value > 1 || document.forms[1].end_color_r.value < 0 || IsNumeric(document.forms[1].end_color_r.value) == 0){
+	if ($("input[name='end_color_r']").getValue() > 1 || $("input[name='end_color_r']").getValue() < 0
+	|| IsNumeric($("input[name='end_color_r']").getValue()) == 0){
 		alert("End Color RED must be a value between 0 and 1 (included.)");
-		document.forms[1].end_color_r.value = "0";
+		$("input[name='end_color_r']").getValue() = "0";
 	}
 
-	if (document.forms[1].end_color_g.value > 1 || document.forms[1].end_color_g.value < 0 || IsNumeric(document.forms[1].end_color_g.value) == 0){
+	if ($("input[name='end_color_g']").getValue() > 1 || $("input[name='end_color_g']").getValue() < 0
+	|| IsNumeric($("input[name='end_color_g']").getValue()) == 0){
 		alert("End Color GREEN must be a value between 0 and 1 (included.)");
-		document.forms[1].end_color_g.value = "0";
+		$("input[name='end_color_g']").getValue() = "0";
 	}
 
-	if (document.forms[1].end_color_b.value > 1 || document.forms[1].end_color_b.value < 0 || IsNumeric(document.forms[1].end_color_b.value) == 0){
+	if ($("input[name='end_color_b']").getValue() > 1 || $("input[name='end_color_b']").getValue() < 0
+	|| IsNumeric($("input[name='end_color_b']").getValue()) == 0){
 		alert("End Color BLUE must be a value between 0 and 1 (included.)");
-		document.forms[1].end_color_b.value = "0";
+		$("input[name='end_color_b']").getValue() = "0";
 	}
-	mycol ='#' + tohex(document.forms[1].end_color_r.value*255)  +  tohex(document.forms[1].end_color_g.value*255)+  tohex(document.forms[1].end_color_b.value*255);
+	mycol ='#' + tohex($("input[name='end_color_r']").getValue()*255)  +
+	tohex($("input[name='end_color_g']").getValue()*255)+
+	tohex($("input[name='end_color_b']").getValue()*255);
 	document.all.end_col.style.backgroundColor = mycol;
 }
 
@@ -41,8 +51,6 @@ function IsNumeric(sText)
    var ValidChars = "0123456789.";
    var IsNumber=1;
    var Char;
-
-
    for (i = 0; i < sText.length && IsNumber == true; i++)
       {
       Char = sText.charAt(i);
@@ -52,7 +60,6 @@ function IsNumeric(sText)
          }
       }
    return IsNumber;
-
    }
 
 
@@ -136,84 +143,66 @@ function IsNumeric(sText)
       return aa
    }
 
-function GetBool(valONOFF) {
-	rez = "TRUE";
-	if (valONOFF == false){
-		rez = "FALSE";
-	}
-	return rez;
-}
 
 function GenCode(){
-ttt = "";
-if (document.forms[1].ftcname.value != ""){
-	if (document.forms[1].target.checked == true && document.forms[1].target_key.value == "parameter"){
-		ttt = ttt + document.forms[1].ftcname.value +" (key myTarget){\n";
-	}else{
-		ttt = ttt + document.forms[1].ftcname.value +" (){\n";
-	}
+
+outStr = "";
+outStr = outStr +"IS="+$("input[name='interpolate_scale']").getValue()+"~";
+outStr = outStr +"SS=<" + $("input[name='start_scale_x']").getValue() + "," + $("input[name='start_scale_y']").getValue() + ", 0>~";
+outStr = outStr +"ES=<" + $("input[name='end_scale_x']").getValue() + "," + $("input[name='end_scale_y']").getValue() + ", 0>~";
+outStr = outStr +"IC="+$("input[name='interpolate_color']").getValue()+"~";
+outStr = outStr +"SC=< " + $("input[name='start_color_r']").getValue() + ", " + $("input[name='start_color_g']").getValue() + ", " + $("input[name='start_color_b']").getValue() + " >~";
+outStr = outStr +"EC=< " + $("input[name='end_color_r']").getValue() + ", " + $("input[name='end_color_g']").getValue() + ", " + $("input[name='end_color_b']").getValue() + " >~";
+outStr = outStr +"SA=" + $("input[name='start_alpha']").getValue() + "~";
+outStr = outStr +"EA=" + $("input[name='end_alpha']").getValue() + "~";
+outStr = outStr +"E="+$("input[name='emissive']").getValue()+"~";
+outStr = outStr +"A=" + $("input[name='age']").getValue() + "~";
+outStr = outStr +"R=" + $("input[name='rate']").getValue() + "~";
+outStr = outStr +"C=" + $("input[name='count']").getValue() + "~";
+outStr = outStr +"L=" + $("input[name='life']").getValue() + "~";
+outStr = outStr +"P=" + $("select[name='patern']").getValue() + "~";
+outStr = outStr +"RD=" + $("input[name='radius']").getValue() + "~";
+outStr = outStr +"BAN=" + ($("input[name='begin_angle']").getValue() * 3.14159 / 180) + "~";
+outStr = outStr +"EAN=" + ($("input[name='end_angle']").getValue() * 3.14159 / 180) + "~";
+outStr = outStr +"O=<" + $("input[name='omega_x']").getValue() + ", " + $("input[name='omega_y']").getValue() + ", " + $("input[name='omega_z']").getValue() + " >~";
+outStr = outStr +"FS="+$("input[name='follow_source']").getValue()+"~";
+outStr = outStr +"FV="+$("input[name='follow_velocity']").getValue()+"~";
+outStr = outStr +"W="+$("input[name='wind']").getValue()+"~";
+outStr = outStr +"B="+$("input[name='bounce']").getValue()+"~";
+outStr = outStr +"MIS=" + $("input[name='min_speed']").getValue() + "~";
+outStr = outStr +"MAS=" + $("input[name='max_speed']").getValue() + "~";
+outStr = outStr +"AC=< " + $("input[name='acceleration_x']").getValue() + ", " + $("input[name='acceleration_y']").getValue() + ", " + $("input[name='acceleration_z']").getValue() + " >~";
+outStr = outStr +"TG="+$("input[name='target']").getValue()+"~";
+
+if ($("input[name='target']").getValue() == "TRUE"){
+	var strParam = "";
+		if($("input[name='target_key']").getValue() == "parameter"){
+					strParam = $("input[name='target_param1']").getValue() +"-"+
+					$("input[name='target_param2']").getValue() +"-"+
+					$("input[name='target_param3']").getValue() +"-"+
+					$("input[name='target_param4']").getValue() +"-"+
+					$("input[name='target_param5']").getValue();
+		}else{
+			if ($("input[name='target_key']").getValue() == "owner") {
+					strParam = $("select[name='userlist_particle']").getValue();
+			}else{
+				if ($("input[name='target_key']").getValue() == "controller"){
+					strParam = "2bb64898-bc05-7697-ea07-0854bb64226d";
+				}
+			}
+		}
+		outStr = outStr +"TGK="+strParam+"~";
+		outStr = outStr + "FN=" + $("input[name='ftcname']").getValue() +" (key "+ strParam+")~";
 }else{
-	alert("Function name can't be null !");
+	outStr = outStr +"TGK=NULL_KEY~";
+	outStr = outStr + "FN=" +$("input[name='ftcname']").getValue() +" ()~";
 }
 
-if (document.forms[1].ainv_sltexture.value != ""){
-	ttt = ttt +'Texture = "'+ document.forms[1].ainv_sltexture.value +'";\n';
+if ($("input[name='ainv_sltexture']").getValue() != ""){
+	outStr = outStr +"TX="+ $("select[name='ainv_sltexture']").getValue() +"~";
 }else{
-	alert("Texture can't be null !");
+	//alert("Texture can't be null !");
 }
 
-
-ttt = ttt +"Interpolate_Scale = "+GetBool(document.forms[1].interpolate_scale.checked)+";\n";
-ttt = ttt +"Start_Scale = <" + document.forms[1].start_scale_x.value + "," + document.forms[1].start_scale_y.value + ", 0>;\n";
-ttt = ttt +"End_Scale = <" + document.forms[1].end_scale_x.value + "," + document.forms[1].end_scale_y.value + ", 0>;\n";
-ttt = ttt +"Interpolate_Colour = "+GetBool(document.forms[1].interpolate_color.checked)+";\n";
-ttt = ttt +"Start_Colour = < " + document.forms[1].start_color_r.value + ", " + document.forms[1].start_color_g.value + ", " + document.forms[1].start_color_b.value + " >;\n";
-ttt = ttt +"End_Colour = < " + document.forms[1].end_color_r.value + ", " + document.forms[1].end_color_g.value + ", " + document.forms[1].end_color_b.value + " >;\n";
-ttt = ttt +"Start_Alpha = " + document.forms[1].start_alpha.value + ";\n";
-ttt = ttt +"End_Alpha =" + document.forms[1].end_alpha.value + ";\n";
-ttt = ttt +"Emissive = "+GetBool(document.forms[1].emissive.checked)+";\n";
-ttt = ttt +"Age = " + document.forms[1].age.value + ";\n";
-ttt = ttt +"Rate = " + document.forms[1].rate.value + ";\n";
-ttt = ttt +"Count = " + document.forms[1].count.value + ";\n";
-ttt = ttt +"Life = " + document.forms[1].life.value + ";\n";
-ttt = ttt +"Pattern = " + document.forms[1].patern.value + ";\n";
-ttt = ttt +"Radius = " + document.forms[1].radius.value + ";\n";
-ttt = ttt +"Begin_Angle = " + (document.forms[1].begin_angle.value * 3.14159 / 180) + ";\n";
-ttt = ttt +"End_Angle = " + (document.forms[1].end_angle.value * 3.14159 / 180) + ";\n";
-ttt = ttt +"Omega = < " + document.forms[1].omega_x.value + ", " + document.forms[1].omega_y.value + ", " + document.forms[1].omega_z.value + " >;\n";
-ttt = ttt +"Follow_Source = "+GetBool(document.forms[1].follow_source.checked)+";\n";
-ttt = ttt +"Follow_Velocity = "+GetBool(document.forms[1].follow_velocity.checked)+";\n";
-ttt = ttt +"Wind = "+GetBool(document.forms[1].wind.checked)+";\n";
-ttt = ttt +"Bounce = "+GetBool(document.forms[1].bounce.checked)+";\n";
-ttt = ttt +"Minimum_Speed = " + document.forms[1].min_speed.value + ";\n";
-ttt = ttt +"Maximum_Speed = " + document.forms[1].max_speed.value + ";\n";
-ttt = ttt +"Acceleration = < " + document.forms[1].acceleration_x.value + ", " + document.forms[1].acceleration_y.value + ", " + document.forms[1].acceleration_z.value + " >;\n";
-ttt = ttt +"Target = "+GetBool(document.forms[1].target.checked)+";\n";
-
-if (document.forms[1].target.checked == false){
-	ttt = ttt +"Target_Key = NULL_KEY;\n";
-}else{
-	if (document.forms[1].target_key.value == "parameter"){
-		ttt = ttt +"Target_Key = myTarget;\n";
-	}
-
-	if (document.forms[1].target_key.value == "object"){
-		ttt = ttt +"Target_Key =  llGetKey ();\n";
-	}
-
-	if (document.forms[1].target_key.value == "owner"){
-		ttt = ttt +"Target_Key = llGetOwner ();\n";
-	}
-
-}
-
-
-if (document.forms[1].target.checked == true && document.forms[1].target_key.value == "parameter"){
-	ttt = ttt +"key MyTraget_key = NULL_KEY;"+"/"+"/ Replace by your value;\n";
-	ttt = ttt + document.forms[1].ftcname.value + " (MyTraget_key); "+"/"+"/Start the Particles\n";
-}else{
-	ttt = ttt + document.forms[1].ftcname.value +" ();\n";
-}
-
-document.forms[1].generatedcode.value = ttt;
+$("input[name='generatedcode']").setValue(outStr);
 }

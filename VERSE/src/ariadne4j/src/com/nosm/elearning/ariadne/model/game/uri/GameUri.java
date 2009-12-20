@@ -1,55 +1,70 @@
 package com.nosm.elearning.ariadne.model.game.uri;
 
-import com.nosm.elearning.ariadne.util.Constants;
+import com.nosm.elearning.ariadne.constants.C;
 
 public abstract class GameUri {
-	private  String host = Constants.GAME_HOST3;
+	private  String host = C.GAME_HOST3;
 
-	private  int gameId = 2; // hard-coded until picking Lab from list is supported
-	private int nodeId;
+	private  int gameId = C.GAME_GAME_ID3; // hard-coded until picking Lab from list is supported
+	private String nodeId;
 
 	private  String session;
 
-	private  String user = Constants.GAME_USER;
-	private  String password = Constants.GAME_PASSWORD;
+	private  String user = C.GAME_USER;
+	private  String password = C.GAME_PASSWORD;
 
-	private  String path = Constants.GAME_URL_PATH3;
-	private  String pathSuffix = Constants.GAME_URL_PATH_SUFFIX3;
+	private  String path = C.GAME_URL_PATH3;
+	private  String pathSuffix = C.GAME_URL_PATH_SUFFIX3;
 
-	private String nameSuffix = Constants.GAME_URL_NAME_SUFFIX;
-	private String namePrefix = Constants.GAME_URL_NAME_PREFIX3;
+	private String nameSuffix = C.GAME_URL_NAME_SUFFIX;
+	private String namePrefix = C.GAME_URL_NAME_PREFIX3;
 
-	private String linkPrefix = Constants.GAME_URL_LINKER_PREFIX;
-	private String linkSuffix = Constants.GAME_URL_LINKER_SUFFIX;
+	private String ssidPrefix = C.GAME_URL_LINK_SSID3;
+	private String linkStart = C.GAME_URL_LINK_START;
 
-	private String linkStart = Constants.GAME_URL_LINK_START;
-	private String linkSsid = Constants.GAME_URL_LINK_SSID;
+	private String linkPrefix = C.GAME_URL_LINKER_PREFIX;
+	private String linkSuffix = C.GAME_URL_LINKER_SUFFIX;
 
-	private String idSuffix = Constants.GAME_URL_ID_SUFFIX3;
-	private String nodePath = Constants.GAME_URL_NODE_PATH3;
-	private String idPrefix = this.getGameId() + Constants.GAME_URL_ID_PREFIX3 ;
+
+	private String linkSsid = C.GAME_URL_LINK_SSID3;
+
+	private String idSuffix = C.GAME_URL_ID_SUFFIX3;
+	private String nodePath = C.GAME_URL_NODE_PATH3;
+	private String rootPath = C.GAME_URL_ROOT3;
+	private String idPrefix = this.getGameId() + C.GAME_URL_ID_PREFIX3 ;
 
 	public GameUri(){
 		super();
 	}
 
 	public String getAddress(){
-		return this.getPath() + this.getGameId() +"/"+
-		this.getNodePath()+"/"+ Integer.toString(this.getNodeId())  + this.getPathSuffix();
-	}
-
-	public String getAddress(boolean uselinks){
-		if (uselinks)
-		{
-			return this.getPath() +  this.getIdPrefix()+ Integer.toString(this.getNodeId())  + this.getPathSuffix();
+		if (this.getNodeId()== null || this.getNodeId().equals("")|| this.getNodeId().equals(this.getLinkStart())){
+			return getRootAddress();
 		}else{
-			return getAddress(); // use node syntax
+			return this.getPath() + this.getGameId() +"/"+
+			this.getNodePath()+"/"+ this.getNodeId()  + this.getPathSuffix(true);
 		}
 	}
 
-	public GameUri(int nodeId){
+	public String getRootAddress(){
+		return this.getPath() + this.getGameId() +this.getRootPath() + this.getPathSuffix(false) ;
+	}
+
+
+	public String getAddress(String ssid){
+		if (ssid != null){
+				this.setSession(ssid);
+		}
+		return getAddress();
+	}
+
+	public GameUri(String nodeId){
 		this();
-		this.setNodeId(nodeId);
+		if (nodeId != null ){
+			if (nodeId != ""  ){
+				this.setNodeId(nodeId);
+			}
+		}
 	}
 
 	public int getGameId() {
@@ -89,9 +104,9 @@ public abstract class GameUri {
 	public void setLinkSsid(String linkSsid) {
 		this.linkSsid = linkSsid;
 	}
-	public String getLinkStart() {
-		return linkStart;
-	}
+	//public String getLinkStart() {
+	//	return linkStart;
+	//}
 	public void setLinkStart(String linkStart) {
 		this.linkStart = linkStart;
 	}
@@ -125,6 +140,16 @@ public abstract class GameUri {
 	public void setPath(String path) {
 		this.path = path;
 	}
+
+
+	public String getPathSuffix(boolean appendSSID) {
+		if (appendSSID && this.getSession() != null ){
+			return pathSuffix +"&" +this.getSsidPrefix()+"="+this.getSession();
+		}else{
+			return pathSuffix;
+		}
+	}
+
 	public String getPathSuffix() {
 		return pathSuffix;
 	}
@@ -137,10 +162,10 @@ public abstract class GameUri {
 	public void setUser(String user) {
 		this.user = user;
 	}
-	public int getNodeId() {
+	public String getNodeId() {
 		return nodeId;
 	}
-	public void setNodeId(int nodeId) {
+	public void setNodeId(String nodeId) {
 		this.nodeId = nodeId;
 	}
 
@@ -158,6 +183,26 @@ public abstract class GameUri {
 
 	public void setSession(String session) {
 		this.session = session;
+	}
+
+	public String getRootPath() {
+		return rootPath;
+	}
+
+	public void setRootPath(String rootPath) {
+		this.rootPath = rootPath;
+	}
+
+	public String getSsidPrefix() {
+		return ssidPrefix;
+	}
+
+	public void setSsidPrefix(String ssidPrefix) {
+		this.ssidPrefix = ssidPrefix;
+	}
+
+	public String getLinkStart() {
+		return linkStart;
 	}
 
 

@@ -33,6 +33,11 @@
 			.unhidden {
                 display: block;
             }
+
+			 /* will this work? */
+			.visible {
+                display: block;
+            }
         </style>
         <script type="text/javascript" src="http://www.google.com/jsapi?key=ABQIAAAAKtBwpoUmQp880AOn2bPHchT-tJ5jYecKhc1KUg5XP_L4bJqgbxTPd-I4LxiNZJw06GFyH4-V7-8Zng&amp;autoload=%7B%22modules%22%3A%5B%7B%22name%22%3A%22maps%22%2C%22version%22%3A%222%22%7D%2C%7B%22name%22%3A%22language%22%2C%22version%22%3A%221%22%7D%2C%7B%22name%22%3A%22gdata%22%2C%22version%22%3A%221%22%7D%2C%7B%22name%22%3A%22visualization%22%2C%22version%22%3A%221%22%7D%5D%7D"></script>
 		<script type="text/javascript">
@@ -138,8 +143,8 @@
                     <option value="SLTexture">a texture</option>
                     <option value="SLClothing">some clothing</option>
                     <option disabled="" value="separator">-- Communication --</option>
-                    <option value="SLChat">Use a chat channel (talk to in-world objects)</option>
-                    <option value="SLIM">Send an Instant Message (IM)</option>
+                    <option value="SLChat">Send messages and commands to in-world objects</option>
+                    <option value="SLIM">Send an Instant Message (IM) to a player</option>
                     <option disabled="" value="separator">-- Parcel Feeds --</option>
                     <option value="SLAudio">Stream radio or sound into parcel</option>
                     <option value="VPDImage">Show an external patient image on parcel viewer(s)</option>
@@ -395,8 +400,8 @@
                     </div>
 				</div>
                 <div class="hidden" id="type_rlanimation">
-                    <input type="checkbox" id="recvemote" value="recvemote" name="recvemote">Allow seeing emotes <br/>
-					<input type="checkbox" value="true" id="recvemote_sec" name="recvemote_sec">Allow seeing emotes secure way
+                    <input type="radio" id="recvemote" value="recvemote" name="recvemote">Allow seeing emotes <br/>
+					<input type="radio" value="recvemote_sec" id="recvemote_sec" name="recvemote">Allow seeing emotes secure way
                 </div>
                 <div class="hidden" id="type_slclothing">
                         <br/>
@@ -434,10 +439,10 @@
                 <div class="hidden" id="type_rlclothing">
                     <br/>
                     <br/>
-                    <input type="radio" value="defaultwear" id="rlclothing" name="rlclothing"> Allow the Wear contextual menu<br/>
-					<input type="radio" value="addoutfit" id="rlclothing" name="rlclothing"> Allow wearing clothes <br/>
-					<input type="radio" value="remoutfit_force" id="rlclothing" name="rlclothing"> Force removing clothes<br/>
-					<input type="radio" value="getoutfit" id="rlclothing" name="rlclothing"> Get the list of worn clothes
+                    <input type="radio" value="defaultwear" id="defaultwear" name="rlclothing"> Allow the Wear contextual menu<br/>
+					<input type="radio" value="addoutfit" id="addoutfit" name="rlclothing"> Allow wearing clothes <br/>
+					<input type="radio" value="remoutfit_force" id="remoutfit_force" name="rlclothing"> Force removing clothes<br/>
+					<input type="radio" value="getoutfit" id="getoutfit" name="rlclothing"> Get the list of worn clothes
                 </div>
                 <div class="hidden" id="type_slbodypart">
                         <br/>
@@ -487,6 +492,7 @@
                         <option value="-8787">Registration_Booth-viewer_area_edition</option>
                         <option value="687686">Main_Parcel_Game_Controller-viewer_area_edition</option>
                         <option value="-63342">Controller_Media_Relay-viewer_area_edition</option>
+						<option value="-9898">Linkable_Object</option>
                         <option value="603">NOSM_Bracelet_Multicast</option>
                         <option value="-3857343">Sloodle_Object</option>
                         <option value="1001">Sloodle_Player_Multicast</option>
@@ -527,6 +533,83 @@
                         Message to be chatted : <input name="chatChannelMsg" type="text" size="50">
                         <br/>
                     </div>
+
+
+                    <div class="hidden" id="channelType_Linkable_Object">
+                    	<br/>
+                        Channel: <input name="linkable_ch_val" size="12" type="text"> Default if blank<br />
+
+						                   <br/>
+                    Use MVP Paramedic Equipment Box? (must be already rezzed) <input type="checkbox" id="type_linkable_objs" value="mvp_paramedic" name="type_linkable_objs">
+					<br/>
+                    <br/>
+                    :
+                    <br/>
+                    <br/>
+
+                   <div class="hidden" id="mvp_paramedic_linkable_objs">
+	                    <br/>
+	                    <br/>
+	                    <select id="lomvp" name="lomvp">
+	                    	<option value=""></option>
+	                        <option value="MVP Bandage">Bandage</option>
+	                        <option value="MVP Blanket">Blanket</option>
+	                        <option value="MVP Blood Glucose Machine">Blood Glucose Machine</option>
+	                        <option value="MVP Blood Pressure Cuff">Blood Pressure Cuff</option>
+	                        <option value="MVP Box Splint">Box Splint</option>
+	                        <option value="MVP Burns Dressing">Burns Dressing</option>
+	                        <option value="MVP Carry Chair">Carry Chair</option>
+	                        <option value="MVP Cervical Collar">Cervical Collar</option>
+	                        <option value="MVP Chest Needle 1.0.2">Chest Needle</option>
+	                        <option value="MVP ECG 1.0.2">ECG</option>
+	                        <option value="MVP ET Airway">ET Airway</option>
+	                        <option value="MVP Handheld Radio 1.0.2">Handheld Radio</option>
+	                        <option value="MVP IM Hypodermic 1.0.2">IM Hypodermic</option>
+	                        <option value="MVP IV Cannular">IV Cannular</option>
+	                        <option value="MVP LMA Airway 1.0.6">LMA Airway</option>
+	                        <option value="MVP Nasal Cannula 1.0.2">Nasal Cannula</option>
+	                        <option value="MVP Nebuliser Mask 1.0.2">Nebuliser Mask</option>
+	                        <option value="MVP NP Airway 1.0.2">NP Airway</option>
+	                        <option value="MVP OP Airway 1.0.2">OP Airway</option>
+	                        <option value="MVP Orthopedic Stretcher 1.0.2">Orthopedic Stretcher</option>
+	                        <option value="MVP Oxygen Mask 1.0.2">Oxygen Mask</option>
+	                        <option value="MVP Peak Flow">Peak Flow</option>
+	                        <option value="MVP Pill Bottle">Pill Bottle</option>
+	                        <option value="MVP Pulse Oximeter 1.0.2">Pulse Oximeter</option>
+	                        <option value="MVP Rectal Diazepam Tube 1.0.2">Rectal Diazepam Tube</option>
+	                        <option value="MVP Rescue Board 1.0.2">Rescue Board</option>
+	                        <option value="MVP Shears 1.0.2">Shears</option>
+	                        <option value="MVP Suction Unit 1.0.6">Suction Unit</option>
+	                        <option value="MVP Traction Splint 1.0.2">Traction Splint</option>
+	                        <option value="MVP Trolley Bed 1.0.3">Trolley Bed</option>
+	                        <option value="MVP Tympanic Thermometer 1.0.2">Tympanic Thermometer</option>
+							<option value="MVP Vacuum Splint 1.0.2">Vacuum Splint</option>
+	                    </select>
+	                    <br/>
+					</div>
+
+					<div id ="linkable_obj_name">
+                    <br/>
+						Your object's name: <input name="linkable_obj_val" size="32" type="text"><br />
+                        <br/>
+					</div>
+
+
+                    <br/>
+                    Avatars clicking this object will trigger one of the
+                    possible Labyrinth Nodes:
+                    <select id="linklist_linkable_object" name="linklist_linkable_object">
+                        <option value=""></option>
+                    </select>
+
+	                        <select name="linklist_linkable" id="linklist_linkable">
+	                            <option value=""></option>
+	                        </select>
+	                        <br/>
+                        <br/>
+                    </div>
+
+
                     <div class="hidden" id="channelType_Multigadget_Multicast">
                     	Command to send the Multi-Gadget:
                         <select id="mg_cmd" name="mg_cmd">
@@ -692,81 +775,108 @@
                         <br/>
                     </div>
                     <div class="hidden" id="channelType_PIVOTE_Mannequin">
-                        PIVOTE Mannequin Interactions:
-                        <br/>
-                        <br/>
-                        Execute this node link:
-                        <select name="linklist_manq" id="linklist_manq">
-                            <option value=""></option>
-                        </select>
-                        <br/>
-                        when a player:
-                        <br/><br/>
-						<select name="manq_int" id="manq_int">
-							<option disabled="" value=""></option>
-							<option value="attach"> attaches to it</option>
-							<option value="click"> clicks it</option>
-							<option value="talk"> chats with</option>
-						</select>
-                        <br/><br/>
-                        <div class="hidden" id="mannequin_part">on this part of the mannequin body:
-                            <br/>
-                            	<select name="mannequin_parts" id="mannequin_parts">
-                                <option disabled="" value=""></option>
-                                <option value="Head">head</option>
-                                <option value="Right Pupil">right pupil</option>
-                                <option value="Left Pupil">left pupil</option>
-                                <option value="Breathing">breathing</option>
-								<option value="Airway">airway</option>
-                                <option value="Neck">neck</option>
-                                <option value="Right Arm">right arm</option>
-                                <option value="Left Arm">left arm</option>
-                                <option value="Chest">chest</option>
-                                <option value="Abdominal">abdomen</option>
-                                <option value="Pelvic Spring">pelvis</option>
-                                <option value="Right Wrist">right wrist</option>
-                                <option value="Left Wrist">left wrist</option>
-                                <option value="Right Leg">right leg</option>
-                                <option value="Left Leg">left leg</option>
-                            </select><br/>
-                        </div>
-                        <div class="hidden" id="mannequin_talk"> says the following, within range of the mannequin:
-                            <br/>
-                            <select name="mannequin_cmds" id="mannequin_cmds">
-                                <option disabled="" value=""></option>
-                                <option value="ask can you hear me">Ask the patient Can You Hear Me</option>
-                                <option value="ask history full">Ask the patient their history, as detailed as possible</option>
-                                <option value="ask history brief previous">Ask the patient their history, in brief</option>
-                                <option value="ask pain score">Ask the patient about their pain</option>
-                                <option value="ask pain where">Ask the patient where it hurts</option>
-                                <option value="ask pain describe">Ask the patient to describe the pain</option>
-                                <option value="ask pain duration">Ask the patient how long the pain lasts</option>
-                                <option value="ask pain change">Ask the patient if the pain has changed</option>
-                                <option value="ask walk to the ambulance">Ask the patient if they can walk to the ambulance</option>
-                                <option value="ask how are you">Ask the patient how they are</option>
-                                <option value="ask happened">Ask the patient what happened</option>
-                                <option value="ask medication">Ask the patient if they have taken medication</option>
-                                <option value="ask allergy">Ask the patient if they have allergies</option>
-                                <option value="ask name">Ask the patient their name</option>
-                                <option value="ask age">Ask the patient their age</option>
-                                <option value="ask stand">Ask the patient to stand</option>
-                                <option value="ask move">Ask the patient to move</option>
-                                <option value="show attach">Show attachment points on the mannequin</option>
-                                <option value="hide attach">Hide attachment points on the mannequin</option>
-                                <option value="show touch">Show touch points on the mannequin</option>
-                                <option value="hide touch">Hide touch points on the mannequin</option>
-                                <option value="show anchor">Show mannequin anchor prim</option>
-                                <option value="hide anchor">Hide mannequin anchor prim</option>
-                                <option value="show all">Show attachment and touch points on the mannequin</option>
-                                <option value="attach show">Show attachment points on the mannequin</option>
-                                <option value="touch show">Show touch points on the mannequin</option>
-                                <option value="hide all">Hide all attachment and touch points on the mannequin</option>
-                                <option value="tidy">Reset the mannequin</option>
-                                <option value="give paramedic box">Rez MVP Paramedic Box beside mannequin</option>
-                            </select>
-                            the node will be
-                            selected.<br/>
-                        </div>
+	                        PIVOTE Mannequin Interactions:
+	                        <br/>
+						<input name="manq_action" id="cmd" type="radio" value="cmd"> Send a command directly to the mannequin<br/>
+						<input name="manq_action" id="set" type="radio" value="set"> Set a game link as executable<br/>
+
+						<div class="hidden" id="manq_set">
+	                        <br/>
+	                        <select name="linklist_manq" id="linklist_manq">
+	                            <option value=""></option>
+	                        </select>
+	                        <br/>
+	                        when a player:
+	                        <br/><br/>
+							<select name="manq_int" id="manq_int">
+								<option disabled="" value=""></option>
+								<option value="attach"> attaches to</option>
+								<option value="click"> clicks on</option>
+								<option value="talk"> chats with</option>
+							</select>
+	                        <br/><br/>
+	                        <div class="hidden" id="mannequin_part"> this part of the mannequin body:
+	                            <br/>
+	                            	<select name="mannequin_parts" id="mannequin_parts">
+	                                <option disabled="" value=""></option>
+	                                <option value="Head">head</option>
+	                                <option value="Right Pupil">right pupil</option>
+	                                <option value="Left Pupil">left pupil</option>
+	                                <option value="Breathing">breathing</option>
+									<option value="Airway">airway</option>
+	                                <option value="Neck">neck</option>
+	                                <option value="Right Arm">right arm</option>
+	                                <option value="Left Arm">left arm</option>
+	                                <option value="Chest">chest</option>
+	                                <option value="Abdominal">abdomen</option>
+	                                <option value="Pelvic Spring">pelvis</option>
+	                                <option value="Right Wrist">right wrist</option>
+	                                <option value="Left Wrist">left wrist</option>
+	                                <option value="Right Leg">right leg</option>
+	                                <option value="Left Leg">left leg</option>
+	                            </select><br/>
+	                        </div>
+	                        <div class="hidden" id="mannequin_talk"> says the following, within range of the mannequin:
+	                            <br/>
+	                            <select name="mannequin_ask" id="mannequin_ask">
+	                                <option disabled="" value=""></option>
+	                                <option value="can you hear me">Ask the patient Can You Hear Me</option>
+	                                <option value="history full">Ask the patient their history, as detailed as possible</option>
+	                                <option value="history brief previous">Ask the patient their history, in brief</option>
+	                                <option value="pain score">Ask the patient about their pain</option>
+	                                <option value="pain where">Ask the patient where it hurts</option>
+	                                <option value="pain describe">Ask the patient to describe the pain</option>
+	                                <option value="pain duration">Ask the patient how long the pain lasts</option>
+	                                <option value="pain change">Ask the patient if the pain has changed</option>
+	                                <option value="walk to the ambulance">Ask the patient if they can walk to the ambulance</option>
+	                                <option value="how are you">Ask the patient how they are</option>
+	                                <option value="happened">Ask the patient what happened</option>
+	                                <option value="medication">Ask the patient if they have taken medication</option>
+	                                <option value="allergy">Ask the patient if they have allergies</option>
+	                                <option value="name">Ask the patient their name</option>
+	                                <option value="age">Ask the patient their age</option>
+	                                <option value="stand">Ask the patient to stand</option>
+	                                <option value="move">Ask the patient to move</option>
+	                            </select>
+	                            the node will be
+	                            selected.<br/>
+	                        </div>
+						</div>
+						<div class="hidden" id="manq_cmd">
+	                        <br/>
+	                        Command to send to mannequin:
+	                        <select id="mannequin_cmds" name="mannequin_cmds">
+	                            <option value="show attach">Show attachment points on the mannequin</option>
+	                            <option value="hide attach">Hide attachment points on the mannequin</option>
+	                            <option value="show touch">Show touch points on the mannequin</option>
+	                            <option value="hide touch">Hide touch points on the mannequin</option>
+	                            <option value="show anchor">Show mannequin anchor prim</option>
+	                            <option value="hide anchor">Hide mannequin anchor prim</option>
+	                            <option value="show all">Show attachment and touch points on the mannequin</option>
+	                            <option value="attach show">Show attachment points on the mannequin</option>
+	                            <option value="touch show">Show touch points on the mannequin</option>
+	                            <option value="hide all">Hide all attachment and touch points on the mannequin</option>
+	                            <option value="tidy">Reset the mannequin</option>
+	                            <option value="give paramedic box">Rez MVP Paramedic Box beside mannequin</option>
+								<option value="resize">Rescale the mannequin:</option>
+	                        </select>
+							<br/>
+							<div class="hidden" id="mannequin_func_resize">
+		                        <br/>
+		                        Resize percentage:
+		                        <select id="mannequin_resize" name="mannequin_resize">
+		                        	<option value="1.125">112.5</option>
+		                        	<option value="1.10">110</option>
+									<option value="1.05">105</option>
+		                            <option value="0.90">90</option>
+									<option value="0.95">95</option>
+									<option value="0.80">80</option>
+									<option value="0.85">85</option>
+									<option value="0.75">75</option>
+									<option value="0.50">50</option>
+		                        </select>
+		                    </div>
+		                </div>
                     </div>
                     <div class="hidden" id="channelType_Horizons_Holodeck-viewer_area_edition">
                         Holodeck commands:
@@ -774,7 +884,6 @@
                             <option disabled="" value=""></option>
                             <option value="list scenes">Lists available scenes on public chat channel</option>
                             <option value="clear">Clears the current scene</option>
-                            <option value="end scene">Clears this scene:</option>
                             <option value="run scene">Runs this scene:</option>
                             <option value="list shells">Lists available shells</option>
                             <option value="run shell">Loads this shell:</option>
@@ -1095,8 +1204,8 @@
                         <br/>
                         source language:
                         <br/>
-                        <select tabindex="0" id="old_sl" name="sl">
-                        	<option value="auto">Detect language</option>
+                        <select tabindex="0" id="old_sl" name="from_lang">
+                        	<option value="auto" selected="">Detect language</option>
                             <option value="en">English</option>
                             <option value="es">Spanish</option>
                             <option value="fr">French</option>
@@ -1115,7 +1224,6 @@
                             <option value="et">Estonian</option>
                             <option value="tl">Filipino</option>
                             <option value="fi">Finnish</option>
-                            <option value="fr">French</option>
                             <option value="gl">Galician</option>
                             <option value="de">German</option>
                             <option value="el">Greek</option>
@@ -1157,7 +1265,7 @@
                         <br/>
                         destination language:
                         <br/>
-                        <select tabindex="0" id="old_tl" name="tl">
+                        <select tabindex="0" id="old_tl" name="to_lang">
                         	<option value="fr" selected="">French</option>
                             <option value="es">Spanish</option>
                             <option value="en">English</option>
@@ -1177,7 +1285,6 @@
                             <option value="et">Estonian</option>
                             <option value="tl">Filipino</option>
                             <option value="fi">Finnish</option>
-                            <option value="fr">French</option>
                             <option value="gl">Galician</option>
                             <option value="de">German</option>
                             <option value="el">Greek</option>
@@ -1413,66 +1520,63 @@
                         the player.
                     </div>
                     <br/>
-                    Use MVP Paramedic Equipment Box <input type="radio" id="ismvp" value="mvp" name="ismvp"><br/>
-                    Use Other POSLOs <input type="radio" id="ismvp" value="other" name="ismvp"><br/>
+                    Use MVP Paramedic Equipment Box <input type="radio" id="mvp_paramedic" value="mvp_paramedic" name="type_objs"><br/>
+                    Use custom VERSE Objects <input type="radio" id="verse_custom" value="verse_custom" name="type_objs"><br/>
 					<br/>
                     <br/>
-                    VERSE/PIVOTE Objects:
+                    :
                     <br/>
                     <br/>
 
-                    1.12
-                    <br/>
-                    <br/>
-                    <select id="omvp" name="omvp">
-                    	<option value=""></option>
-                        <option value="MVP Bandage">Bandage</option>
-                        <option value="MVP Blanket">Blanket</option>
-                        <option value="MVP Blood Glucose Machine">Blood Glucose Machine</option>
-                        <option value="MVP Blood Pressure Cuff">Blood Pressure Cuff</option>
-                        <option value="MVP Box Splint">Box Splint</option>
-                        <option value="MVP Burns Dressing">Burns Dressing</option>
-                        <option value="MVP Carry Chair">Carry Chair</option>
-                        <option value="MVP Cervical Collar">Cervical Collar</option>
-                        <option value="MVP Chest Needle 1.0.2">Chest Needle</option>
-                        <option value="MVP ECG 1.0.2">ECG</option>
-                        <option value="MVP ET Airway">ET Airway</option>
-                        <option value="MVP Handheld Radio 1.0.2">Handheld Radio</option>
-                        <option value="MVP IM Hypodermic 1.0.2">IM Hypodermic</option>
-                        <option value="MVP IV Cannular">IV Cannular</option>
-                        <option value="MVP LMA Airway 1.0.6">LMA Airway</option>
-                        <option value="MVP Nasal Cannula 1.0.2">Nasal Cannula</option>
-                        <option value="MVP Nebuliser Mask 1.0.2">Nebuliser Mask</option>
-                        <option value="MVP NP Airway 1.0.2">NP Airway</option>
-                        <option value="MVP OP Airway 1.0.2">OP Airway</option>
-                        <option value="MVP Orthopedic Stretcher 1.0.2">Orthopedic Stretcher</option>
-                        <option value="MVP Oxygen Mask 1.0.2">Oxygen Mask</option>
-                        <option value="MVP Peak Flow">Peak Flow</option>
-                        <option value="MVP Pill Bottle">Pill Bottle</option>
-                        <option value="MVP Pulse Oximeter 1.0.2">Pulse Oximeter</option>
-                        <option value="MVP Rectal Diazepam Tube 1.0.2">Rectal Diazepam Tube</option>
-                        <option value="MVP Rescue Board 1.0.2">Rescue Board</option>
-                        <option value="MVP Shears 1.0.2">Shears</option>
-                        <option value="MVP Suction Unit 1.0.6">Suction Unit</option>
-                        <option value="MVP Traction Splint 1.0.2">Traction Splint</option>
-                        <option value="MVP Trolley Bed 1.0.3">Trolley Bed</option>
-                        <option value="MVP Tympanic Thermometer 1.0.2">Tympanic Thermometer</option>
-                    </select>
-                    <br/>
-                    <br/>
-                    others:
-                    <br/>
-                    <select id="ainv_slobject">
-                        <option value=""></option>
-                    </select>
-                    <br/>
-                    -S4SL lineSegment Object: needed
-                    for any object that has a Scratch 4
-                    SL script running the blocks in the
-                    &Ograve;pen&Oacute; category
-                    <br/>
-                    -3D Pie Chart
-                    <br/>
+                   <div class="hidden" id="mvp_paramedic_objs">
+	                    <br/>
+	                    <br/>
+	                    <select id="omvp" name="omvp">
+	                    	<option value=""></option>
+	                        <option value="MVP Bandage">Bandage</option>
+	                        <option value="MVP Blanket">Blanket</option>
+	                        <option value="MVP Blood Glucose Machine">Blood Glucose Machine</option>
+	                        <option value="MVP Blood Pressure Cuff">Blood Pressure Cuff</option>
+	                        <option value="MVP Box Splint">Box Splint</option>
+	                        <option value="MVP Burns Dressing">Burns Dressing</option>
+	                        <option value="MVP Carry Chair">Carry Chair</option>
+	                        <option value="MVP Cervical Collar">Cervical Collar</option>
+	                        <option value="MVP Chest Needle 1.0.2">Chest Needle</option>
+	                        <option value="MVP ECG 1.0.2">ECG</option>
+	                        <option value="MVP ET Airway">ET Airway</option>
+	                        <option value="MVP Handheld Radio 1.0.2">Handheld Radio</option>
+	                        <option value="MVP IM Hypodermic 1.0.2">IM Hypodermic</option>
+	                        <option value="MVP IV Cannular">IV Cannular</option>
+	                        <option value="MVP LMA Airway 1.0.6">LMA Airway</option>
+	                        <option value="MVP Nasal Cannula 1.0.2">Nasal Cannula</option>
+	                        <option value="MVP Nebuliser Mask 1.0.2">Nebuliser Mask</option>
+	                        <option value="MVP NP Airway 1.0.2">NP Airway</option>
+	                        <option value="MVP OP Airway 1.0.2">OP Airway</option>
+	                        <option value="MVP Orthopedic Stretcher 1.0.2">Orthopedic Stretcher</option>
+	                        <option value="MVP Oxygen Mask 1.0.2">Oxygen Mask</option>
+	                        <option value="MVP Peak Flow">Peak Flow</option>
+	                        <option value="MVP Pill Bottle">Pill Bottle</option>
+	                        <option value="MVP Pulse Oximeter 1.0.2">Pulse Oximeter</option>
+	                        <option value="MVP Rectal Diazepam Tube 1.0.2">Rectal Diazepam Tube</option>
+	                        <option value="MVP Rescue Board 1.0.2">Rescue Board</option>
+	                        <option value="MVP Shears 1.0.2">Shears</option>
+	                        <option value="MVP Suction Unit 1.0.6">Suction Unit</option>
+	                        <option value="MVP Traction Splint 1.0.2">Traction Splint</option>
+	                        <option value="MVP Trolley Bed 1.0.3">Trolley Bed</option>
+	                        <option value="MVP Tympanic Thermometer 1.0.2">Tympanic Thermometer</option>
+							<option value="MVP Vacuum Splint 1.0.2">Vacuum Splint</option>
+	                    </select>
+	                    <br/>
+					</div>
+					<div class="hidden" id="verse_custom_objs">
+	                    <br/>
+	                    others:
+	                    <br/>
+	                    <select id="ainv_slobject">
+	                        <option value=""></option>
+	                    </select>
+	                    <br/>
+					</div>
                     <br/>
                     Clicking this object will trigger one of the
                     possible Labyrinth Nodes:
@@ -1640,18 +1744,18 @@
                                 <br>
                                 <br>
                                 <br>
-                                <input name="emissive" type="checkbox"><b>Glowing.</b>
+                                <input name="emissive" value="TRUE" type="checkbox"><b>Glowing.</b>
                                 <font color="ffffff" face="arial, helvetica, sans-serif" size="2">
                                     <i>(Particles will glow in the dark, otherwise will reflect the ambiant light)</i>
                                 </font>
                                 <br>
                                 <br>
-                                <input name="interpolate_color" type="checkbox"><b>Interpolate Color.</b>
+                                <input name="interpolate_color" value="TRUE" type="checkbox"><b>Interpolate Color.</b>
                                 <font color="ffffff" face="arial, helvetica, sans-serif" size="2">
                                     <i>(Turns on or off interpolating color.)</i>
                                 </font>
                                 <br>
-                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Start color: </b>
+                                <br/><br/><b>Start color: </b>
                                 &lt;<input name="start_color_r" size="3" value="1" onchange="valide_start_color();" type="text"> , <input name="start_color_g" size="3" value="1" onchange="valide_start_color();" type="text">, <input name="start_color_b" size="3" value="1" onchange="valide_start_color();" type="text">&gt;
                                 <font color="ffffff" face="arial, helvetica, sans-serif" size="2">
                                     <i>(Initial color value, RGB (values between 0.0 to 1.0)</i>
@@ -1660,7 +1764,7 @@
                                     &nbsp;
                                 </div>
                                 <br>
-                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>End color:</b>
+                                <br/><br/><b>End color:</b>
                                 &lt;<input name="end_color_r" size="3" value="1" onchange="valide_end_color();" type="text"> , <input name="end_color_g" size="3" value="1" onchange="valide_end_color();" type="text">, <input name="end_color_b" size="3" value="1" onchange="valide_end_color();" type="text">&gt;
                                 <font color="ffffff" face="arial, helvetica, sans-serif" size="2">
                                     <i>(Final color value, RGB (values between 0.0 to 1.0))</i>
@@ -1669,31 +1773,31 @@
                                     &nbsp;
                                 </div>
                                 <br>
-                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Start Apha:</b>
+                                <br/><br/><b>Start Apha:</b>
                                 <input name="start_alpha" size="3" value="1" type="text">
                                 <font color="ffffff" face="arial, helvetica, sans-serif" size="2">
                                     <i>(Initial transparency value. Range: 0.0 to 1.0)</i>
                                 </font>
                                 <br>
-                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>End Apha:</b>
+                                <br/><br/><b>End Apha:</b>
                                 <input name="end_alpha" size="3" value="1" type="text">
                                 <font color="ffffff" face="arial, helvetica, sans-serif" size="2">
                                     <i>(final transparency value. Range: 0.0 to 1.0)</i>
                                 </font>
                                 <br>
                                 <br>
-                                <input name="interpolate_scale" type="checkbox"><b>Interpolate Scale.</b>
+                                <input name="interpolate_scale" value="TRUE" type="checkbox"><b>Interpolate Scale.</b>
                                 <font color="ffffff" face="arial, helvetica, sans-serif" size="2">
                                     <i>(Turns on or off interpolating scale.)</i>
                                 </font>
                                 <br>
-                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Start Scale:</b>
+                                <br/><br/><b>Start Scale:</b>
                                 X: <input name="start_scale_x" size="5" value="0.04" type="text">m | Y:<input name="start_scale_y" size="5" value="0.04" type="text">m
                                 <font color="ffffff" face="arial, helvetica, sans-serif" size="2">
                                     <i>(Initial scale value. Range (0.04m to 4m))</i>
                                 </font>
                                 <br>
-                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>End Scale:</b>
+                                <br/><br/><b>End Scale:</b>
                                 X: <input name="end_scale_x" size="5" value="0.04" type="text">m | Y:<input name="end_scale_y" size="5" value="0.04" type="text">m
                                 <font color="ffffff" face="arial, helvetica, sans-serif" size="2">
                                     <i>(final scale value. Range (0.04m to 4m))</i>
@@ -1760,68 +1864,85 @@
                                         </tr>
                                     </tbody>
                                 </table>
-                                <br>
-                                <br>
+                                <br/>
+                                <br/>
                                 <b>Minimum Speed:</b>
                                 <input name="min_speed" size="5" value="1" type="text">m &nbsp;&nbsp;
                                 <font color="ffffff" face="arial, helvetica, sans-serif" size="2">
                                     <i>(Slowest speed of new particles. 0.01 to ? (Speed is ignore by DROP Pattern.))</i>
                                 </font>
-                                <br>
+                                <br/>
                                 <b>Maximum Speed:</b>
                                 <input name="max_speed" size="5" value="1" type="text">m &nbsp;&nbsp;
                                 <font color="ffffff" face="arial, helvetica, sans-serif" size="2">
                                     <i>(Fastest speed of new particles. 0.01 to ? (Speed is ignore by DROP Pattern.))</i>
                                 </font>
-                                <br>
-                                <br>
+                                <br/>
+                                <br/>
                                 <b>Acceleration vector: </b>
                                 &lt;<input name="acceleration_x" size="3" value="0" type="text"> , <input name="acceleration_y" size="3" value="0" type="text">, <input name="acceleration_z" size="3" value="0" type="text">&gt;
-                                <br>
+                                <br/>
                                 <font color="ffffff" face="arial, helvetica, sans-serif" size="2">
                                     <i>(A continous force pushed on particles. Use small settings for long lived particles.)</i>
                                 </font>
-                                <br>
-                                <br>
+                                <br/>
+                                <br/>
                                 <b>Rotation (Omega): </b>
                                 &lt;<input name="omega_x" size="3" value="0" type="text"> , <input name="omega_y" size="3" value="0" type="text">, <input name="omega_z" size="3" value="0" type="text">&gt;
-                                <br>
+                                <br/>
                                 <font color="ffffff" face="arial, helvetica, sans-serif" size="2">
                                     <i>(How much to rotate the emitter around the X, Y &amp; Z axes after each burst.)</i>
                                 </font>
-                                <br>
-                                <br>
-                                <input name="follow_source" type="checkbox"><b>Follow Source.</b>
+                                <br/>
+                                <br/>
+                                <input name="follow_source" value="TRUE" type="checkbox"><b>Follow Source.</b>
                                 <font color="ffffff" face="arial, helvetica, sans-serif" size="2">
                                     <i>(Moves particles when emitter moves. Disables Radius.)</i>
                                 </font>
-                                <br>
-                                <input name="follow_velocity" type="checkbox"><b>Follow Velocity.</b>
+                                <br/>
+                                <input name="follow_velocity" value="TRUE" type="checkbox"><b>Follow Velocity.</b>
                                 <font color="ffffff" face="arial, helvetica, sans-serif" size="2">
                                     <i>(Particles rotate towards their heading.)</i>
                                 </font>
-                                <br>
-                                <input name="wind" type="checkbox"><b>Wind.</b>
+                                <br/>
+                                <input name="wind" value="TRUE" type="checkbox"><b>Wind.</b>
                                 <font color="ffffff" face="arial, helvetica, sans-serif" size="2">
                                     <i>(Sim's wind will push particles.)</i>
                                 </font>
-                                <br>
-                                <input name="bounce" type="checkbox"><b>Bounce.</b>
+                                <br/>
+                                <input name="bounce" value="TRUE" type="checkbox"><b>Bounce.</b>
                                 <font color="ffffff" face="arial, helvetica, sans-serif" size="2">
                                     <i>(Make particles bounce above the Z altitude of emitter.)</i>
                                 </font>
-                                <br>
-                                <input name="target" type="checkbox"><b>Target.</b>
+                                <br/>
+                                <input name="target" value="TRUE" type="checkbox"><b>Target.</b>
                                 <font color="ffffff" face="arial, helvetica, sans-serif" size="2">
                                     <i>(Turns on or off targeting of particles.)</i>
                                 </font>
-                                <br>
-                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Target Key:</b>
+                                <br/>
+                                <br/><br/>
+								<b>Target Key:</b>
                                 <select name="target_key">
-                                    <option selected="selected" value="object">To the badge it-self.</option>
-                                    <option value="owner">To the badge owner.</option>
+                                    <option selected="selected" value="controller">To the controller itself.</option>
+                                    <option value="owner">To a bracelet owner:</option>
                                     <option value="parameter">To the agent or object key passed in the target parameter:</option>
                                 </select>
+								<div id="target_key_user" class="hidden">
+									<br/>
+									Agent/Prim Key :
+					                    <select id="userlist_particle" name="userlist_particle">
+					                        <option value=""></option>
+					                    </select>
+								</div>
+								<div id="target_key_param" class="hidden">
+									<br/>
+									Agent/Prim Key :
+									<input name="target_param1" size="8" value="" type="text">-
+									<input name="target_param2" size="4" value="" type="text">-
+									<input name="target_param3" size="4" value="" type="text">-
+									<input name="target_param4" size="4" value="" type="text">-
+									<input name="target_param5" size="12" value="" type="text">
+								</div>
                             </blockquote>
                             <hr>
                             <font size="5">
@@ -1831,13 +1952,13 @@
                             <blockquote>
                                 <b>Particle Burst:</b>
                                 <br>
-                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Rate:</b>
+                                <br/><br/><b>Rate:</b>
                                 <input name="rate" size="5" value="1" type="text">&nbsp;&nbsp;
                                 <font color="ffffff" face="arial, helvetica, sans-serif" size="2">
                                     <i>(Seconds between particle bursts, 0.0 to 60.)</i>
                                 </font>
                                 <br>
-                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Number of Particles per Burst:</b>
+                                <br/><br/><b>Number of Particles per Burst:</b>
                                 <input name="count" size="5" value="50" type="text">&nbsp;&nbsp;
                                 <font color="ffffff" face="arial, helvetica, sans-serif" size="2">
                                     <i>(Number of particles per burst, 1 to 4096.)</i>
@@ -1851,7 +1972,7 @@
                                 </font>
                                 <br>
                             </blockquote>
-                            <hr><input name="generatedcode" type="hidden">
+                            <input name="generatedcode" type="hidden">
                             <!--/form-->
                             <script  type="text/javascript" language="javascript">
                                 valide_start_color();
@@ -2976,10 +3097,10 @@
 Google spreadsheet key (e.g. <em>rvWgEEGK9xuUQBR1EFcxHWA</em> ) or spreadsheet URL <input type="text" size=30 id='gsKey'  /> Sheet number* (optional): <input type="text" size=3 id='gsSheet'  />
 <input type="button" value="Preview table headings" onclick="preview()" /><br/>
 
-<p>* The number of the first sheet in a spreadsheet (which is used by default) is 0. To select thesecond sheet, add: 1; for the third sheet, add 2, and so on.</p>
-<p>Alternatively, grab an entire sheet: <select name="dList" id="datastore"></select>
+<br/>* The number of the first sheet in a spreadsheet (which is used by default) is 0. To select thesecond sheet, add: 1; for the third sheet, add 2, and so on.
+<br/>Alternatively, grab an entire sheet: <select name="dList" id="datastore"></select>
 <input type="button" value="Preview" onclick="preview3()" />
-<p>If you are prompted to sign in, wait a few seconds and then try again.</p>
+<br/>If you are prompted to sign in, wait a few seconds and then try again.
 <div id="statrep"></div>
 </form>
 <hr/>
@@ -3009,10 +3130,10 @@ Google spreadsheet key (e.g. <em>rvWgEEGK9xuUQBR1EFcxHWA</em> ) or spreadsheet U
 <tr><td>D,sum(I)/count(I)</td><td>I>=0 group by D</td><td>for the total claimed by each party (column D), how much on average does each member of that party claim</td></tr>
 </table>
 <br/>
-<p>Try out some visualisation queries here...</p>
+<br/>Try out some visualisation queries here...
 <table summary="" id='colLookup' border='1'></table>
 <br/>
-<p>Select the columns from the list box (ctrl+click for multiple selections in IE, command+click on a Mac) or type the elements directly into the appropriate text box.</p><br/>
+<br/>Select the columns from the list box (ctrl+click for multiple selections in IE, command+click on a Mac) or type the elements directly into the appropriate text box.<br/>
 <div><tt>select</tt> <span id='boxes'></span> <input type="text" id="gqc" size=20  /><br/>
 
 <br/><tt>where</tt> <span id='boxes2'></span> <input type="text" id="gqw" size=30  />
@@ -3203,39 +3324,39 @@ Google spreadsheet key (e.g. <em>rvWgEEGK9xuUQBR1EFcxHWA</em> ) or spreadsheet U
                 <h2>Create a map with a marker and optional info window.</h2>
                 <h3><img alt="" src="http://www.google.com/uds/solutions/wizards/img/1b.gif" style="vertical-align:middle"/> Customize Map View, Marker Location, and Paths</h3>
                 <br/>
-                <p>
-                    <b>To change the map view:</b>
-                </p>
-                <p>
-                    Use the map control to zoom in/out to the desired zoom level.
-                </p>
                 <br/>
-                <p>
+                    <b>To change the map view:</b>
+
+                <br/>
+                    Use the map control to zoom in/out to the desired zoom level.
+
+                <br/>
+                <br/>
                     <b>To create a marker:</b>
-                </p>
-                <p>
+
+                <br/>
                     Enter the desired address/location in the box and press the button. If the marker is a little off, drag it around to where it should be.
                     <br/>
                     <input type="text" size="30" id="addressTEXT" value="Mountain View, CA" /><input type="button" value="Create Marker Here" onclick="showAddress()"/>
-                </p>
+
                 <br/>
-                <p>
+                <br/>
                     <b>To add a path:</b>
-                </p>
-                <p>
+
+                <br/>
                     You can optionally click on the map to indicate a starting point for a path. Clicking multiple times afterwards builds out the path.
-                </p>
+
                 <br/>
                 <div id="map" style="width: 500px; margin-left: 20px; height: 300px"></div>
 
-                <p>
+                <br/>
                     <input type="button" value="Clear Marker" onclick="clearMarkers()"/>
 					<input type="button" value="Clear Poly" onclick="clearPolys()"/>
-                </p>
+
                 <br clear="all"/>
                 <h3 alt=""><img alt="" src="http://www.google.com/uds/solutions/wizards/img/2b.gif" style="vertical-align:middle"/>Customize Size and Preview</h3>
-                <p>
-                    <table>
+                <br/>
+                    <table summary="">
                         <tr>
                             <td>
                                 <b>Map</b>
@@ -3380,7 +3501,7 @@ Google spreadsheet key (e.g. <em>rvWgEEGK9xuUQBR1EFcxHWA</em> ) or spreadsheet U
                             </td>
                         </tr>
                     </table>
-                </p>
+
                 <div id="staticMapIMG" style="width: 500px; margin-left: 20px; height: 300px"></div>
                 <br clear="all"/>
                 Generated URL: <input type="text" name="staticMapURL" id="staticMapURL" class="code">
@@ -3403,7 +3524,7 @@ Google spreadsheet key (e.g. <em>rvWgEEGK9xuUQBR1EFcxHWA</em> ) or spreadsheet U
 							<td align="left" valign="top">
 								<form>
 									<div class="c1">
-										<p class="header">Location data:</p>
+										Location data:
 
 										<table summary="">
 											<tbody><tr>
@@ -3434,10 +3555,10 @@ Google spreadsheet key (e.g. <em>rvWgEEGK9xuUQBR1EFcxHWA</em> ) or spreadsheet U
                         <option value="7">7</option>
                         <option value="8">8</option>
                     </select>
-									<p class="header">Options:</p>
-									<p class="c1">(leave these blank if not wanted)</p>
+									<br/>Options:
+									<br/>(leave these blank if not wanted)
 
-									<table>
+									<table summary="">
 										<tbody><tr>
 											<td>Window title:</td>
 											<td><input value="bla" id="windowTitle" type="text"></td>
@@ -3453,15 +3574,15 @@ Google spreadsheet key (e.g. <em>rvWgEEGK9xuUQBR1EFcxHWA</em> ) or spreadsheet U
 										</tr>
 									</tbody></table>
 									<input id="u" value="" type="hidden">
-									<p><input onclick="document.getElementById('output').value = build_url();" value="Generate SLurl" type="button"> <input value="Clear form" type="reset"></p>
+									<br/><input onclick="document.getElementById('output').value = build_url();" value="Generate SLurl" type="button"> <input value="Clear form" type="reset">
 									<div class="c1">
 										<span class="headline">Your SLurl:</span>
-										<p><input value="http://slurl.com/secondlife/nossum/128/128/128/?img=gla&amp;title=bla&amp;msg=lala" id="output" size="80" type="text">
-										<input onclick="window.open(document.getElementById('output').value);" value="Go!" type="button"></p>
+										<br/><input value="http://slurl.com/secondlife/nossum/128/128/128/?img=gla&amp;title=bla&amp;msg=lala" id="output" size="80" type="text">
+										<input onclick="window.open(document.getElementById('output').value);" value="Go!" type="button">
 									</div>
 								</form>
 									<div class="c1">
-										<p class="fineprint">*This SLurlBuilder form was originally created by <a href="http://engine-proceeding.blogspot.com/">Ordinal Malaprop</a> on 24 February 2006. Thanks Ordinal!</p>
+										<br/>*This SLurlBuilder form was originally created by <a href="http://engine-proceeding.blogspot.com/">Ordinal Malaprop</a> on 24 February 2006. Thanks Ordinal!
 
 									</div>
 							</td>

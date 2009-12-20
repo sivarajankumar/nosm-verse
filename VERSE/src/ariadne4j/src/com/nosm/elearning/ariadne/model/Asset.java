@@ -2,8 +2,8 @@ package com.nosm.elearning.ariadne.model;
 
 import java.util.Iterator;
 
-import com.nosm.elearning.ariadne.util.Constants;
-import com.nosm.elearning.ariadne.util.XConstants;
+import com.nosm.elearning.ariadne.constants.C;
+import com.nosm.elearning.ariadne.constants.XC;
 
 public class Asset {
 
@@ -128,18 +128,18 @@ public class Asset {
 	}
 
 	public String getXML( boolean isAdmin){
-		String oXML = "<"+XConstants.XML_ASSET+" "+XConstants.XML_ASSET_TYPE+"=\"" + this.getType();
+		String oXML = "<"+XC.XML_ASSET+" "+XC.XML_ASSET_TYPE+"=\"" + this.getType();
 
 		if(isAdmin)oXML = oXML + "\" "+
-			XConstants.XML_ASSET_ID+"=\"" + this.getId();
+			XC.XML_ASSET_ID+"=\"" + this.getId();
 
-		oXML = oXML + "\" "+XConstants.XML_ASSET_NAME+"=\"" + this.getName()+
-			"\" "+XConstants.XML_ASSET_TARGET+"=\"" + this.getTarget()+ "\" "+
-			XConstants.XML_ASSET_VALUE+"=\"" + this.getValue();
+		oXML = oXML + "\" "+XC.XML_ASSET_NAME+"=\"" + this.getName()+
+			"\" "+XC.XML_ASSET_TARGET+"=\"" + this.getTarget()+ "\" "+
+			XC.XML_ASSET_VALUE+"=\"" + this.getValue();
 
-		if(isAdmin)oXML = oXML + "\" "+XConstants.XML_ASSET_PAIRS+"=\"" + this.getEncodedUIPairs();
+		//if(isAdmin)oXML = oXML + "\" "+XC.XML_ASSET_PAIRS+"=\"" + this.getEncodedUIPairs();
 
-		oXML = oXML + "\" ></"+XConstants.XML_ASSET+">" + Constants.lineSep;
+		oXML = oXML + "\" ></"+XC.XML_ASSET+">" + C.br;
 		return oXML;
 	}
 
