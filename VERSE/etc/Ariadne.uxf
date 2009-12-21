@@ -20,7 +20,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 
 
-// This text will be stored with each diagram;  use it for notes.</help_text><zoom_level>10</zoom_level><element><type>com.umlet.element.base.SequenceDiagram</type><coordinates><x>0</x><y>0</y><w>1710</w><h>1830</h></coordinates><panel_attributes>title: doGet
+// This text will be stored with each diagram;  use it for notes.</help_text><zoom_level>10</zoom_level><element><type>com.umlet.element.base.SequenceDiagram</type><coordinates><x>0</x><y>0</y><w>1500</w><h>1820</h></coordinates><panel_attributes>title: doGet
 Ariadne~id1|GameList~id2|GameUri~id3|HttpFetch~id4|Game~id5|GameNode~id6|AriadneData~id7|Asset~id8|iBatis.sql~id9
 id1-&gt;&gt;&gt;id4:id1,id4:if v2 &amp; nodeid=null getString4Url(.../remote.asp)
 id4.&gt;&gt;&gt;id1:id1,id4:xml
@@ -59,23 +59,23 @@ id8.&gt;&gt;&gt;id6:id1,id6,id8:xml
 id6.&gt;&gt;&gt;id1:id1,id6:xml
 id1-&gt;id1:id1:print(xml)
 iframe{: doGet (action=del)
-id1-&gt;&gt;&gt;id6:id1,id6:removeAssetFromSeq(id)
-id1-&gt;&gt;&gt;id6:id1,id6:deleteAsset(id)
+id1-&gt;&gt;&gt;id7:id1,id7:removeAssetFromSeq(id)
+id1-&gt;&gt;&gt;id7:id1,id7:deleteAsset(id)
 id1-&gt;id1:id1:redirect()
 iframe}
 iframe{: doPost
-id1-&gt;&gt;&gt;id7:id1,id7:new Asset()
-id7.&gt;&gt;&gt;id1:id7,id1:asset
-id1-&gt;&gt;&gt;id6:id1,id6:if doesAssetExist(asset.getId())
-id6-&gt;&gt;&gt;id8:id1,id6,id8:select()
-id1-&gt;&gt;&gt;id7:id1,id7:asset.setId(id)
-id1-&gt;&gt;&gt;id6:id1,id6:updateAsset(asset)
-id6-&gt;&gt;&gt;id8:id1,id6,id8:update()
-id1-&gt;&gt;&gt;id6:id1,id6:resetSeqForNode(asset, asset.getName())
-id6-&gt;&gt;&gt;id8:id1,id6,id8:update()
-id1-&gt;&gt;&gt;id6:id1,id6:insertAsset(asset)
-id6-&gt;&gt;&gt;id8:id1,id6,id8:insert()
-id1-&gt;&gt;&gt;id6:id1,id6:addNode2Seq(asset)
-id6-&gt;&gt;&gt;id8:id1,id6,id8:update()
+id1-&gt;&gt;&gt;id8:id1,id8:new Asset()
+id8.&gt;&gt;&gt;id1:id8,id1:asset
+id1-&gt;&gt;&gt;id7:id1,id7:if doesAssetExist(asset.getId())
+id7-&gt;&gt;&gt;id9:id1,id7,id9:select()
+id1-&gt;&gt;&gt;id8:id1,id8:asset.setId(id)
+id1-&gt;&gt;&gt;id7:id1,id7:updateAsset(asset)
+id7-&gt;&gt;&gt;id9:id1,id7,id9:update()
+id1-&gt;&gt;&gt;id7:id1,id7:resetSeqForNode(asset, asset.getName())
+id7-&gt;&gt;&gt;id9:id1,id7,id9:update()
+id1-&gt;&gt;&gt;id7:id1,id7:insertAsset(asset)
+id7-&gt;&gt;&gt;id9:id1,id7,id9:insert()
+id1-&gt;&gt;&gt;id7:id1,id7:addNode2Seq(asset)
+id7-&gt;&gt;&gt;id9:id1,id7,id9:update()
 id1-&gt;id1:id1:redirect()
 iframe}</panel_attributes><additional_attributes></additional_attributes></element></umlet_diagram>
