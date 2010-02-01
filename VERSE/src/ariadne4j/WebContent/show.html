@@ -54,7 +54,7 @@ Querystring.prototype.contains = function(key) {
 
 var qs = new Querystring();
 if (qs.contains("dtext")){
-    document.write("<br/><h4 style='font-size:80px'>"+ unescape(String(qs.get("dtext")).replace(/\+/g, " "))+"<\/h4><hr/><br/>");
+    document.write("<h4 style='font-size:60px'>"+ unescape(String(qs.get("dtext")).replace(/\+/g, " "))+"<\/h4><hr/>");
 }
 if (qs.contains("dimage")){
     document.write("<img src='http://"+qs.get("dimage")+"'/>");
@@ -63,7 +63,7 @@ var optList = qs.get("doptions").split(",");
 var displayStr = "<ol> ";
 for ( var i=0, len=optList.length; i<len; ++i ){
 	if (String(optList[i]) != null && String(optList[i]).length >0){
-		displayStr += "<li style='font-size:60px'><h1 style='font-size:80px'>"+unescape(String(optList[i]).replace(/\+/g, " "))+"<\/h1><\/li>";
+		displayStr += "<li style='font-size:40px'><h1 style='font-size:80px'>"+unescape(String(optList[i]).replace(/\+/g, " "))+"<\/h1><\/li>";
 	}
 }
 

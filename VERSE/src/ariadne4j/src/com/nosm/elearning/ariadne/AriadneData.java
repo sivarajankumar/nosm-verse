@@ -117,12 +117,19 @@ public class AriadneData {
 	}
 
 	public static boolean isUser(User user)throws SQLException{
-		return  Boolean.parseBoolean((String)sqlMapper.queryForObject("isUser", user ));
-
+		if(Boolean.parseBoolean((String)sqlMapper.queryForObject("isUser", user ))){
+			return true;
+		}else{
+			return false;
+		}
 	}
 
 	public static boolean isAdmin(User user)throws SQLException{
-		return  Boolean.parseBoolean((String)sqlMapper.queryForObject("isAdmin", user ));
+		if(Boolean.parseBoolean((String)sqlMapper.queryForObject("isAdmin", user ))){
+			return true;
+		}else{
+			return false;
+		}
 
 	}
 

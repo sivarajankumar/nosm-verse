@@ -61,9 +61,9 @@ javax.servlet.Servlet {
 					//response.getWriter().println(EC.XML_REDIR_PREFIX +mnodeid+ EC.XML_REDIR_SUFFIX);
 				}else{
 					// using web.xml params:
-					//gameUrl.setGameId(Integer.parseInt(getInitParameter("Game_ID")));
-					//gameUrl.setUser(getInitParameter("GAME_USER"));
-					//gameUrl.setPassword(getInitParameter("GAME_PASSWORD"));
+					// gameUrl.setGameId(Integer.parseInt(getInitParameter("Game_ID")));
+					// gameUrl.setUser(getInitParameter("GAME_USER"));
+					// gameUrl.setPassword(getInitParameter("GAME_PASSWORD"));
 
 					org.w3c.dom.Document gameResults = null;
 					try{
@@ -88,19 +88,30 @@ javax.servlet.Servlet {
 							}
 							*/
 						}else{
+							// starting a new session
 							if(isV2){
 								GameList thisList = new GameList(XPathReader.loadXMLFrom( // retrieve our game from remote.asp
 										HttpFetch.getString4Url(gameUrl, false),isLive));
+
 								//thisGame = thisList.getGames().get(0); // == thisList.currentGame;
 								//if (thisGame == null ){
-
-									thisGame = thisList.currentGame;
+							//		thisGame = thisList.currentGame;
 								//}
-								System.out.println("OL2: Game.getName: "+thisGame.getName());
-								System.out.println("OL2: Game.getRootNode: "+thisGame.getRootNode());
-								gameUrl.setNodeId(
-										Integer.toString(thisGame.getRootNode())
-										);
+								//System.out.println("OL2: Game.getName: "+thisGame.getName());
+								//System.out.println("OL2: Game.getRootNode: "+thisGame.getRootNode());
+								//gameUrl.setNodeId( Integer.toString(thisGame.getRootNode()) );
+
+
+								//if(thisList.getGames().size() > 1){
+								response.setContentType("text/xml");
+								PrintWriter out = response.getWriter();
+								//out.println(XPathReader.xmlToString(thisNode.getAriadneXml(aMode.equals("admin"))));
+								out.println(XPathReader.xmlToString(thisList.getAriadneXml(true, false)));
+								return;
+							//}
+
+
+
 							}else{ // is ol3, and no id or start link included:
 								throw new RuntimeException(EC.XML_SSID_PREFIX+"problem setting the node id in Ariadne servlet for OL3: "+ gameUrl.getNodeId()+", "+mnodeid+
 										EC.XML_SSID_SUFFIX + gameUrl.getSession() +EC.XML_ET );
@@ -133,9 +144,6 @@ javax.servlet.Servlet {
 										HttpFetch.getString4Url(gameUrl, (!isV2)),// use Get if not v3, otherwise use post with sessionid param
 										isLive); // use 'loose' builder factory
 							}
-
-
-
 						}else{
 							gameResults = XPathReader.loadXMLFrom(getTestXML(gameUrl.getNodeId()), !isLive);
 							gameUrl.setSession(TC.NODE_SSID);

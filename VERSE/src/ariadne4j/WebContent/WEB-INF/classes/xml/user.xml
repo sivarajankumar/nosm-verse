@@ -25,17 +25,17 @@
 	</select>
 
 	<select id="isUser" parameterClass="User" resultClass="String">
-		select '1' from users
-		where sl_first_name = #avatarFirst#
+		select 'true' from users
+		where LOWER(sl_first_name) = LOWER(#avatarFirst#)
 		and
-		sl_last_name = #avatarLast#
+		LOWER(sl_last_name) = LOWER(#avatarLast#)
 	</select>
 
 	<select id="isAdmin" parameterClass="User" resultClass="String">
-		select '1' from users
-		where sl_first_name = #avatarFirst#
+		select 'true' from users
+		where LOWER(sl_first_name) = LOWER(#avatarFirst#)
 		and
-		sl_last_name = #avatarLast#
+		LOWER(sl_last_name) = LOWER(#avatarLast#)
 		and is_super = 1
 	</select>
 
@@ -46,9 +46,9 @@
 	<select id="selectUserByAvatarName" resultClass="User">
 		select sl_first_name, sl_last_name, sl_player_key
 		 from users
-		where sl_first_name = #avatarFirst#
+		where LOWER(sl_first_name) = LOWER(#avatarFirst#)
 		and
-		sl_last_name = #avatarLast#
+		LOWER(sl_last_name) = LOWER(#avatarLast#)
 	</select>
 
 	<insert id="insertAvatarWithKey" parameterClass="User">
@@ -83,8 +83,8 @@
 		   rl_first_name = #first#,
 		   rl_last_name = #last#
 			where
-			sl_first_name = #avatarFirst# and
-		   sl_last_name = #avatarLast#
+			LOWER(sl_first_name) = LOWER(#avatarFirst#) and
+		   LOWER(sl_last_name) = LOWER(#avatarLast#)
 	</update>
 	<update id="updateUserByKey" parameterClass="User">
 	    update users
@@ -92,7 +92,7 @@
 		   rl_first_name = #first#,
 		   rl_last_name = #last#
 			where
-		where sl_player_key = #avatarKey#
+		 sl_player_key = #avatarKey#
 	</update>
 
 	<delete id="deleteUserByAvatarKey" parameterClass="User">
@@ -101,7 +101,7 @@
 	</delete>
 	<delete id="deleteUserByAvatarName" parameterClass="User">
 		delete from users where
-		sl_last_name = #avatarLast# and
-		sl_first_name = #avatarFirst#
+		LOWER(sl_last_name) = LOWER(#avatarLast#) and
+		LOWER(sl_first_name) = LOWER(#avatarFirst#)
 	</delete>
 </sqlMap>

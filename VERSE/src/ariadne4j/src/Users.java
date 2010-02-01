@@ -57,17 +57,14 @@ javax.servlet.Servlet {
 		try{
 			// if mode stats, get total users
 			if (((String)request.getParameter("action")).equals("getall")){
-
 				ArrayList mylist = (ArrayList)AriadneData.getAllUsers();
 				Iterator iterator = mylist.iterator();
 				while (iterator.hasNext()) {
 					User thisUser = (User) iterator.next();
 					reply.append("<user name=\""+ thisUser.getAvatarFirst()+ " " +thisUser.getAvatarLast()+ "\"></user>");
 				}
-
 				String xmlout = com.nosm.elearning.ariadne.constants.XC.XML_HEAD_USER + reply.toString()+ "</users>";
 				response.setContentType("text/html");
-
 				PrintWriter out = response.getWriter();
 				out.println(xmlout);
 			}
@@ -78,25 +75,17 @@ javax.servlet.Servlet {
 
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		StringBuffer reply = new StringBuffer();
 		try{
 
 			if (((String)request.getParameter("action")).equals("register")){
-				;
-
 				StringTokenizer splitter = new StringTokenizer(java.net.URLDecoder.decode((String) request.getParameter("av")), " "); // need to decode?
 				//while (splitter.hasMoreTokens()) {
-					String firstn = splitter.nextToken().trim();
-					String lastn = splitter.nextToken().trim();
+				String firstn = splitter.nextToken().trim();
+				String lastn = splitter.nextToken().trim();
 				//}
+				User usr = new User(firstn, lastn, (String) request.getParameter("aKey"));
 
-				AriadneData.registerUser(
-						new User(
-								firstn,
-								lastn,
-								(String) request.getParameter("aKey")
-								));
-
+				if (!AriadneData.isUser(usr))AriadneData.registerUser(usr);
 				response.setContentType("text/html");
 				PrintWriter out = response.getWriter();
 				out.println("ENLISTED:" +(String)request.getParameter("fname") +" "+(String)request.getParameter("lname") + " has been added." );

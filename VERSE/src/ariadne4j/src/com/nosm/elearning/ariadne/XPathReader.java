@@ -14,6 +14,7 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.*;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import java.io.IOException;
@@ -26,68 +27,68 @@ import java.net.URL;
 
 public class XPathReader {
 
-    private String xmlFile;
-    private Document xmlDocument;
-    private XPath xPath;
+	private String xmlFile;
+	private Document xmlDocument;
+	private XPath xPath;
 
 
-    public XPathReader(java.io.InputStream is){
-    	super();
-    	try{
-	    	this.xmlDocument = XPathReader.loadXMLFrom(is, true);
-	    	xPath =  XPathFactory.newInstance().newXPath();
+	public XPathReader(java.io.InputStream is){
+		super();
+		try{
+			this.xmlDocument = XPathReader.loadXMLFrom(is, true);
+			xPath =  XPathFactory.newInstance().newXPath();
 		}catch (Exception e) {
 			e.printStackTrace();
-	        //return null;
+			//return null;
 		}
 	}
 
 
 
-    public XPathReader(String xml) {
-    	super();
-    	try{
-        	this.xmlDocument = 	DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(
-        			new InputSource(new StringReader(xml)));
-        	xPath =  XPathFactory.newInstance().newXPath();
-    	}catch (Exception e) {
+	public XPathReader(String xml) {
+		super();
+		try{
+			this.xmlDocument = 	DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(
+					new InputSource(new StringReader(xml)));
+			xPath =  XPathFactory.newInstance().newXPath();
+		}catch (Exception e) {
 			e.printStackTrace();
-            //return null;
+			//return null;
 		}
-    }
+	}
 
 
 
-    public XPathReader(URL url) throws IOException, ParserConfigurationException, SAXException{
-    	super();
-    	try{
-    	    InputStream stream = url.openStream();
-    	    this.xmlDocument = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(stream);
-    	    xPath =  XPathFactory.newInstance().newXPath();
-    	}catch (Exception e) {
+	public XPathReader(URL url) throws IOException, ParserConfigurationException, SAXException{
+		super();
+		try{
+			InputStream stream = url.openStream();
+			this.xmlDocument = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(stream);
+			xPath =  XPathFactory.newInstance().newXPath();
+		}catch (Exception e) {
 			e.printStackTrace();
-            //return null;
+			//return null;
 		}
-    }
+	}
 
 
 
-    public XPathReader(Document doc) {// throws Exception{
-    	try{
-	    	if (doc != null && xmlToString(doc).length() > 50){
-	        	this.xmlDocument = doc;
-	        	xPath =  XPathFactory.newInstance().newXPath();
-	    	}else{
-	    		throw new Exception("XPathReader: attempted to create XML doc with empty OL request:"+xmlToString(doc));
-	    	}
-    	}catch (Exception e) {
+	public XPathReader(Document doc) {// throws Exception{
+		try{
+			if (doc != null && xmlToString(doc).length() > 50){
+				this.xmlDocument = doc;
+				xPath =  XPathFactory.newInstance().newXPath();
+			}else{
+				throw new Exception("XPathReader: attempted to create XML doc with empty OL request:"+xmlToString(doc));
+			}
+		}catch (Exception e) {
 			e.printStackTrace();
-            //return null;
+			//return null;
 		}
-    }
+	}
 
 	public String extractNode(String nodePath, org.w3c.dom.Document doc)
-		throws XPathExpressionException, UnsupportedEncodingException {
+	throws XPathExpressionException, UnsupportedEncodingException {
 		//xml = new String(xml.getBytes(),"utf-8"); // is this correct?
 
 		XPathReader reader = new XPathReader(doc);
@@ -95,6 +96,17 @@ public class XPathReader {
 		System.out.println("XPathReader: this xPath"+nodePath+" call retrieved this value: "+ outS);
 		return outS;
 	}
+
+	public NodeList extractNodeSet(String nodePath, org.w3c.dom.Document doc)
+	throws XPathExpressionException, UnsupportedEncodingException {
+		//xml = new String(xml.getBytes(),"utf-8"); // is this correct?
+		XPathReader reader = new XPathReader(doc);
+		NodeList outS = (NodeList)reader.read(nodePath, XPathConstants.NODESET);
+		System.out.println("XPathReader: this xPath"+nodePath+" call retrieved this value: "+ outS.toString());
+		return outS;
+	}
+
+
 
 
 	public String xmlToString() {
@@ -122,18 +134,18 @@ public class XPathReader {
 		return null;
 	}
 
-    public Object read(String expression,
+	public Object read(String expression,
 			QName returnType)throws XPathExpressionException{//throws Exception{
-        //try {
-            XPathExpression xPathExpression =
+		//try {
+		XPathExpression xPathExpression =
 			xPath.compile(expression);
-            return xPathExpression.evaluate
-			(xmlDocument, returnType);
-       // } catch (XPathExpressionException ex) {
-        //    ex.printStackTrace();
-        //    return null;
-        //}
-    }
+		return xPathExpression.evaluate
+		(xmlDocument, returnType);
+		// } catch (XPathExpressionException ex) {
+		//    ex.printStackTrace();
+		//    return null;
+		//}
+	}
 
 
 	public static org.w3c.dom.Document loadXMLFrom(String xml, boolean loose)

@@ -16,7 +16,7 @@
   </transactionManager>
 
   <sqlMap resource="xml/asset.xml"/>
-   <sqlMap resource="xml/assettype.xml"/>
-    <sqlMap resource="xml/user.xml"/>
+  <sqlMap resource="xml/assettype.xml"/>
+  <sqlMap resource="xml/user.xml"/>
 
 </sqlMapConfig>

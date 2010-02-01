@@ -169,7 +169,8 @@ $(document).ready(function(){
 
     $("#chatchannel").change(function(){
 		$("div[id^=channelType_]").hide();
-        $("div[id^=channelType_" + $("#chatchannel :selected").text()+"]").show();
+        $("div[id^=channelType_" + $.trim($("#chatchannel :selected").text())+"]").show();
+		$("input[id='chatchannel_name']").setValue('for ' + $("#chatchannel :selected").text());
        // $('#selectList :selected').text();
     });
 
@@ -181,6 +182,17 @@ $(document).ready(function(){
 				$("div[id=anim_ctrls]").hide();
 		}
 	});
+
+
+
+    $("#override_channel").change(function(){
+		if ( $("input[id='override_channel']").getValue() == 'true'){
+				$("div[id=override_chatchannel]").show();
+			}else{
+				$("div[id=override_chatchannel]").hide();
+		}
+	});
+
 
 	$("#help_ref").click(function(){
 		if ($("select[name='selector']").getValue() != "") {
@@ -357,6 +369,7 @@ function processXml(responseXML){
         return true;
     }
 
+
 function submitIt(){
 
     //$("div[id^=type_] :hidden").attr('disabled', 'disabled');
@@ -375,7 +388,7 @@ function submitIt(){
 
     // params built here MUST match the controller LSL switch statement in assignSL():
     switch (curType) {
-        case 'SLChat':
+		case 'SLChat':
 
 			var curChan = $("select[name='chatchannel']").getValue();
 
@@ -386,7 +399,8 @@ function submitIt(){
 						var shTrim = $("select[id^=ainv_slchat]").getValue().replace("SHELL ", "");
 						outgoingVal = outgoingVal + ' ' + shTrim;
 						outgoingName = shTrim;
-					}else {
+					}
+					else {
 						outgoingName = $("select[id^=ainv_slchat]").getValue();
 						outgoingVal = outgoingVal + ' ' + $("select[id^=ainv_slchat]").getValue();
 					}
@@ -398,23 +412,24 @@ function submitIt(){
 			if (curChan == "687686") { //PIVOTE
 				outgoingVal = $("select[name='controller_cmds']").getValue();
 				if (outgoingVal == 'option') {
-					outgoingVal = outgoingVal + ' ' + $("select[name='controller_opt']").getValue();
+					outgoingVal = outgoingVal + '=' + $("select[name='controller_opt']").getValue();
 				}
 			}
 
 			if (curChan == "7051674") { //MANNEQUIN
 				if ($("input[name='manq_action']").getValue().indexOf("set") == 0) {
 					if ($("select[name='manq_int']").getValue() == "talk") {
-						outgoingVal = 'ask '+ $("select[name='mannequin_ask']").getValue();
+						outgoingVal = 'ask ' + $("select[name='mannequin_ask']").getValue();
 					}
 					else {
 						outgoingVal = $("select[name='mannequin_parts']").getValue();
 					}
 					outgoingName = outgoingVal;
-					outgoingVal = "set " + outgoingVal + ":" + $("select[name='linklist_manq']").getValue() + ":" + $("#linklist_manq :selected").text();
-				}else{
+					outgoingVal = "set " + outgoingVal + ":" + $("select[name='linklist_manq']").getValue() + ":" + $.trim($("#linklist_manq :selected").text());
+				}
+				else {
 					var tCmd = $("select[name='mannequin_cmds']").getValue();
-					if (tCmd.indexOf("resize") > -1){
+					if (tCmd.indexOf("resize") > -1) {
 						tCmd = tCmd + "~" + $("select[name='mannequin_resize']").getValue();
 					}
 					outgoingVal = tCmd;
@@ -423,15 +438,17 @@ function submitIt(){
 
 			if (curChan == "-9898") {
 
-			if ($("input[name='type_linkable_objs']").getValue() != "mvp_paramedic"){
-//
-			}else{
-//
-			}
+				if ($("input[name='type_linkable_objs']").getValue() != "mvp_paramedic") {
+				//
+				}
+				else {
+				//
+				}
 
 
-				if ($("input[name='linkable_ch_val']").getValue() != "") curChan = $("input[name='linkable_ch_val']").getValue();
-				outgoingVal = "set " + $("input[name='linkable_obj_val']").getValue() + ":" + $("select[name='linklist_linkable']").getValue() + ":" + $("#linklist_linkable :selected").text();
+				if ($("input[name='linkable_ch_val']").getValue() != "")
+					curChan = $("input[name='linkable_ch_val']").getValue();
+				outgoingVal = "set " + $("input[name='linkable_obj_val']").getValue() + ":" + $("select[name='linklist_linkable']").getValue() + ":" + $.trim($("#linklist_linkable :selected").text());
 				outgoingName = $("input[name='linkable_obj_val']").getValue();
 			}
 
@@ -487,131 +504,156 @@ function submitIt(){
 				outgoingVal = $("input[name='chatChannelPubMsg']").getValue();
 			}
 
-			if (curChan == ""){
+			if (curChan == "") {
 				outgoingName = $("input[name='chatChannelMsg']").getValue(); // other
 				curChan = $("input[name='chatChannelValue']").getValue();
 				outgoingVal = $("input[name='chatChannelMsg']").getValue();
 			}
 
+			if ($("input[id='override_channel']").getValue() == 'true') {
+				outgoingTarget = $("input[name='override_chatChannelValue']").getValue();
+			}else{
+				outgoingTarget = curChan;
+			}
 
-			outgoingTarget = curChan;
-            outgoingVal = outgoingVal + '~' + $("input[id='csm']").getValue();
-            //outgoingTarget = $("select[name='linklist_manq']").getValue(); // node link
+			//outgoingTarget = curChan;
+			outgoingVal = outgoingVal + '~' + $("input[id='csm']").getValue();
+			//outgoingTarget = $("select[name='linklist_manq']").getValue(); // node link
 
 			//outgoingName = $("#chatchannel :selected").text();
 
-            break;
+			break;
 
-        case 'VPDText':
-            /*
-         if ($("input[name='useExtText']").getValue() == 'wado_useVPD'){
-         outgoingTarget = 'VPD';
-         }else{
-         outgoingTarget = 'wado_useVPD';
-         }
-         outgoingVal = 'url~wado_VPDTextContentType|wado_VPDTextContentType~wado_charset|wado_charset|wado_charset';
-         outgoingName = '???';
-         */
-            break;
+		case 'VPDText':
+			/*
+	 if ($("input[name='useExtText']").getValue() == 'wado_useVPD'){
+	 outgoingTarget = 'VPD';
+	 }else{
+	 outgoingTarget = 'wado_useVPD';
+	 }
+	 outgoingVal = 'url~wado_VPDTextContentType|wado_VPDTextContentType~wado_charset|wado_charset|wado_charset';
+	 outgoingName = '???';
+	 */
+			break;
 
-        case 'SLAnimation':
-            if ($("input[name='atc']").getValue() == 'custom') {
-                outgoingName = $("select[name='ainv_slanimation']").getValue();
-            } else {
-                if ($("input[name='atc']").getValue() == 'canned') {
-                    outgoingName = $("select[name='isla']").getValue();
-                } else {
-                    if ($("input[name='atc']").getValue() == 'cannedOS') {
-                        outgoingName = $("select[name='iosa']").getValue();
-                    } else {
-                        //emote
-                        outgoingName = $("select[name='isle']").getValue();
-                    }
-                }
-            }
+		case 'SLAnimation':
+			if ($("input[name='atc']").getValue() == 'custom') {
+				outgoingName = $("select[name='ainv_slanimation']").getValue();
+			}
+			else {
+				if ($("input[name='atc']").getValue() == 'canned') {
+					outgoingName = $("select[name='isla']").getValue();
+				}
+				else {
+					if ($("input[name='atc']").getValue() == 'cannedOS') {
+						outgoingName = $("select[name='iosa']").getValue();
+					}
+					else {
+						//emote
+						outgoingName = $("select[name='isle']").getValue();
+					}
+				}
+			}
 
-			if(isInt($("input[name='al']").getValue()) != false){ //duration
-                outgoingVal =  $("input[name='al']").getValue();
-            }else{
+			if (isInt($("input[name='al']").getValue()) != false) { //duration
+				outgoingVal = $("input[name='al']").getValue();
+			}
+			else {
 				outgoingVal = outgoingVal + "~0"
 			}
 
 			if ($("input[name='ail']").getValue() != "1") { //isLoop
 				outgoingVal = outgoingVal + "~1";
-			}else{
+			}
+			else {
 				outgoingVal = outgoingVal + "~0"
 			}
 
-			if(isInt($("input[name='alc']").getValue()) != false){  //loop Count
-             	 outgoingVal = outgoingVal +  "~" +$("input[name='alc']").getValue();
-            }else{
-				outgoingVal = outgoingVal +  "~0"
+			if (isInt($("input[name='alc']").getValue()) != false) { //loop Count
+				outgoingVal = outgoingVal + "~" + $("input[name='alc']").getValue();
+			}
+			else {
+				outgoingVal = outgoingVal + "~0"
 			}
 
 			if ($("input[name='isctrlsanim']").getValue() == "1") { // animation states
 				outgoingVal = outgoingVal + "~" + $("select[name='ao_ctrls']").getValue();
 			}
-			else{
-				outgoingVal = outgoingVal +  "~"
+			else {
+				outgoingVal = outgoingVal + "~"
 			}
 
-            outgoingTarget = $("select[id='userlist_anim']").getValue(); // do we need to fetch the key instead?
-            break;
+			outgoingTarget = $("select[id='userlist_anim']").getValue(); // do we need to fetch the key instead?
+			break;
 
-        case 'SLBodypart':
-            outgoingVal = $("select[id='bpt']").getValue();
-            outgoingTarget = $("input[id^=userlist_] :visible").val();
-            outgoingName = $("select[id='ainv_slbodypart']").getValue();
-            break;
+		case 'SLBodypart':
+			outgoingVal = $("select[id='bpt']").getValue();
+			outgoingTarget = $("select[id='userlist_bodypart']").getValue();
+			outgoingName = $("select[id='ainv_slbodypart']").getValue();
+			break;
 
-        case 'SLHud':
-            // outgoingVal = 'r/i, dist, rel, attch point';
-            outgoingTarget = $("input[id^=userlist_] :visible").val();
-            outgoingName = $("select[id='ainv_slhud']").getValue();
-            break;
 
-        case 'SLIM':
-            outgoingVal = $("input[id='imt']").getValue()
-            outgoingTarget = $("input[id^=userlist_] :visible").val();
-            outgoingName = "IM:"+ $("input[id^=userlist_] :visible").val();
-            break;
+		case 'SLClothing':
+			outgoingVal = $("select[id='cltype']").getValue();
+			outgoingTarget = $("select[id='userlist_clothing']").getValue();
+			outgoingName = $("select[id='ainv_slclothing']").getValue();
+			break;
 
-        case 'SLExtFeedObject':
-            /*
-         outgoingVal = 'encode(URL)';
-         outgoingTarget = 'channel?';
-         outgoingName = 'gamename?';
-         */
-            break;
 
-        case 'SLLandmark':
-            //outgoingVal = "";
-            outgoingTarget = $("input[id^=userlist_] :visible").val();
-            outgoingName = $("select[id='ainv_sllandmark']").getValue();
-            break;
+		case 'SLHud':
+			// outgoingVal = 'r/i, dist, rel, attch point';
+			outgoingTarget = $("select[id='userlist_hud']").getValue();
+			outgoingName = $("select[id='ainv_slhud']").getValue();
+			break;
 
-        case 'SLAction':
-            //outgoingVal = 'av/obj(alpha) or vector (<x,x,x>)';
-            outgoingTarget = $("input[id^=userlist_] :visible").val();
-            //outgoingName = '';
-            break;
+		case 'SLIM':
+			outgoingVal = $("input[id='imt']").getValue();
+			outgoingTarget = $("select[id='userlist_IM']").getValue();
+			outgoingName = "IM:" + $("select[id='userlist_IM']").getValue();
+			break;
 
-        case 'SLNotecard':
-            //outgoingVal = '';
-            outgoingTarget = $("input[id^=userlist_] :visible").val();
-            outgoingName = $("select[id='ainv_slnotecard']").getValue();
-            break;
+		case 'SLExtFeedObject':
+			/*
+	 outgoingVal = 'encode(URL)';
+	 outgoingTarget = 'channel?';
+	 outgoingName = 'gamename?';
+	 */
+			break;
 
-        case 'SLObject':
-            //outgoingVal = 'r/i, http (for chattable objs)/or node to call, params';
-            outgoingTarget = $("input[id^=userlist_] :visible").val();
-            outgoingName = $("select[id='ainv_slobject']").getValue();
+		case 'SLLandmark':
+			//outgoingVal = "";
+			outgoingTarget = $("select[id='userlist_landmark']").getValue();
+			outgoingName = $("select[id='ainv_sllandmark']").getValue();
+			break;
+
+		case 'SLAction':
+			//outgoingVal = 'av/obj(alpha) or vector (<x,x,x>)';
+			outgoingTarget = $("select[id='userlist_action']").getValue();
+			//outgoingName = '';
+			break;
+
+		case 'SLNotecard':
+			//outgoingVal = '';
+			outgoingTarget = $("select[id='userlist_notecard']").getValue();
+			outgoingName = $("select[id='ainv_slnotecard']").getValue();
+			break;
+
+		case 'SLObject':
+			//outgoingVal = 'r/i, http (for chattable objs)/or node to call, params';
+
+			outgoingTarget = $("select[id='userlist_object']").getValue();
+//alert($("select[id='userlist_object']").getValue());
+			if ($("input[name='type_objs']").getValue() == 'verse_custom') {
+				outgoingName = $("select[id='ainv_slobject']").getValue();
+			}else{
+				outgoingName = $("select[id='omvp']").getValue();
+			}
             break;
 
         case 'SLPackage':
 
             //outgoingVal = 'r/i, dist, rel,';
-            outgoingTarget = $("input[id^=userlist_] :visible").val();
+            outgoingTarget = $("select[id^=userlist_] :visible").getValue();
             outgoingName = $("select[id='ainv_slpackage']").getValue();
             break;
 
@@ -619,7 +661,7 @@ function submitIt(){
 			GenCode();
 
 			outgoingVal = $("input[id='generatedcode']").getValue();
-			outgoingTarget = $("input[id^=userlist_] :visible").val();
+			outgoingTarget = $("select[id^=userlist_] :visible").getValue(); // if none, then what?
 			if ($("select[id='target_key']").getValue() != "owner") {
 				outgoingTarget = $("select[id='target_key']").getValue();
 			}
@@ -656,12 +698,14 @@ function submitIt(){
 
 
             // outgoingVal = 'vol, isloop, dur, ctrls[]';
-            outgoingTarget = $("input[id^=userlist_] :visible").val();
+			outgoingTarget = $("select[name='userlist_sound']").getValue();
+			//alert(outgoingTarget);
+            //outgoingTarget = $("input[id^=userlist_] :visible").val(); // if none, then what?
             break;
 
         case 'SLTexture':
             //outgoingVal = '';
-            outgoingTarget = $("input[id^=userlist_] :visible").val();
+            outgoingTarget = $("select[id^=userlist_] :visible").getValue();
 			outgoingName = $("select[name='ainv_sltexture']").getValue();
 
             break;

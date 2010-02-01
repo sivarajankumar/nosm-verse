@@ -503,6 +503,14 @@
                         <option value="">Other</option>
                     </select>
                     <br/>
+					<br/>
+					Override configured object's default channel? <input type="checkbox" id="override_channel" value="true" name="override_channel">
+                        <br/>
+					<div class="hidden" id="override_chatchannel">
+						new Channel <input  NAME="chatchannel_name" VALUE="" DISABLED> : <input name="override_chatChannelValue" size="12" type="text"><br />
+                    	<br/>
+
+                    </div>
 
                     <div class="hidden" id="chatchannel_NOSM_Bracelet_Multicast">
                     	<br/>
@@ -594,7 +602,6 @@
                         <br/>
 					</div>
 
-
                     <br/>
                     Avatars clicking this object will trigger one of the
                     possible Labyrinth Nodes:
@@ -608,7 +615,6 @@
 	                        <br/>
                         <br/>
                     </div>
-
 
                     <div class="hidden" id="channelType_Multigadget_Multicast">
                     	Command to send the Multi-Gadget:
@@ -2009,7 +2015,7 @@
 					<input name="stc" id="custom" type="radio" value="custom"> Use VERSE Custom Sounds<br/>
                     <br/>
                     <br/>
-                        <div id="soundType_canned">
+                        <div id="soundType_canned"  class="hidden">
                             Built-in Second Life Sounds:
 					<select id="isls">
 						<option value="ed124764-705d-d497-167a-182cd9fa2e6c" >bell ting</option>
@@ -2049,7 +2055,8 @@
 						<option value="2c346eda-b60c-ab33-1119-b8941916a499" >window close</option>
 						<option value="6cf2be26-90cb-2669-a599-f5ab7698225f" >zipper (Floor squeek)</option>
 					</select>
-					<div id="soundType_custom">
+					</div>
+					<div id="soundType_custom"  class="hidden">
 	                    Custom VERSE sounds: <select id="ainv_slsound" name="ainv_slsound">
 	                        <option value=""></option>
 	                    </select>
@@ -2116,7 +2123,7 @@
                     </div>
 					<br/>
                     Give the texture to:
-                    <select id="userlist_sound" name="userlist_sound">
+                    <select id="userlist_texture" name="userlist_texture">
                         <option value=""></option>
                     </select>
                     <br/><br/>
